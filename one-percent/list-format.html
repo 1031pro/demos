@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>〇〇建設株式会社 様向け 案件リスト</title>
+<style>
+  :root {
+    --text: #222222;
+    --sub: #5a5a5a;
+    --line: #d8d8d8;
+    --accent: #1f4e79;
+    --new: #b3541e;
+    --bg-soft: #f6f7f9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 40px;
+    background: #ffffff;
+    color: var(--text);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+  }
+  .sheet { max-width: 760px; margin: 0 auto; }
+
+  .head { border-bottom: 2px solid var(--accent); padding-bottom: 14px; }
+  .head .to { font-size: 14px; color: var(--sub); margin: 0 0 4px; }
+  .head h1 { font-size: 21px; margin: 0 0 12px; line-height: 1.4; }
+  .head-meta { display: grid; grid-template-columns: 6.5em 1fr; row-gap: 4px; column-gap: 12px; margin: 0; font-size: 14px; }
+  .head-meta dt { color: var(--sub); }
+  .head-meta dd { margin: 0; }
+
+  .notice {
+    margin: 18px 0 22px;
+    padding: 12px 14px;
+    background: var(--bg-soft);
+    border-left: 4px solid var(--new);
+  }
+  .notice p { margin: 0; }
+  .notice .main { font-size: 16px; font-weight: bold; }
+  .notice .sub { font-size: 13px; color: var(--sub); margin-top: 4px; }
+
+  .list-head { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
+
+  .case {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .case-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .badge {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background: var(--new);
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .status {
+    font-size: 12px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 1px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .case h2 { font-size: 17px; margin: 0; line-height: 1.5; width: 100%; }
+
+  .detail { display: grid; grid-template-columns: 7.5em 1fr; row-gap: 6px; column-gap: 12px; margin: 0 0 12px; font-size: 14px; }
+  .detail dt { color: var(--sub); }
+  .detail dd { margin: 0; }
+  .detail .summary { line-height: 1.65; }
+
+  .cta {
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    border-radius: 4px;
+    padding: 12px 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 9px 18px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .cta-note { font-size: 13px; color: var(--sub); margin: 0; }
+
+  .foot { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 14px; font-size: 13px; color: var(--sub); }
+  .foot p { margin: 0 0 6px; }
+  .foot p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 480px) {
+    body { font-size: 14px; padding: 16px 12px 32px; }
+    .head h1 { font-size: 19px; }
+    .head-meta { grid-template-columns: 1fr; row-gap: 2px; }
+    .head-meta dt { font-size: 12px; }
+    .head-meta dd { margin-bottom: 6px; }
+    .detail { grid-template-columns: 1fr; row-gap: 2px; }
+    .detail dt { font-size: 12px; }
+    .detail dd { margin-bottom: 6px; }
+    .case h2 { font-size: 16px; }
+    .cta-btn { display: block; width: 100%; text-align: center; }
+  }
+
+  @page { size: A4 portrait; margin: 15mm; }
+
+  @media print {
+    body { padding: 0; font-size: 10.5pt; line-height: 1.6; }
+    .sheet { max-width: none; }
+    .head h1 { font-size: 15pt; }
+    .case h2 { font-size: 12pt; }
+    .head-meta, .detail, .cta-note, .foot { font-size: 9.5pt; }
+    .notice { background: #f0f0f0; }
+    .cta { background: #f6f6f6; }
+    .cta-btn { background: #ffffff; color: var(--accent); border: 1px solid var(--accent); }
+    .badge { background: #ffffff; color: var(--new); border: 1px solid var(--new); }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="head">
+    <p class="to">〇〇建設株式会社 御中</p>
+    <h1>〇〇建設株式会社 様向け 案件リスト</h1>
+    <dl class="head-meta">
+      <dt>登録工種</dt>
+      <dd>造園（除草・剪定・植栽）</dd>
+      <dt>対応エリア</dt>
+      <dd>茨城県南部（〇〇市・△△市・□□町 ほか）</dd>
+      <dt>発行日</dt>
+      <dd>2026年8月13日（木）</dd>
+    </dl>
+  </header>
+
+  <section class="notice">
+    <p class="main">新着 2件が追加されました</p>
+    <p class="sub">前回お届け（2026年8月6日）以降に公告された案件です。掲載は全5件です。</p>
+  </section>
+
+  <p class="list-head">案件一覧（全5件／新着2件）</p>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="badge">新着</span>
+      <span class="status">受付中</span>
+      <h2>県道〇〇号線 道路法面 除草・低木剪定業務委託</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>〇〇県 〇〇土木事務所</dd>
+      <dt>履行場所</dt>
+      <dd>茨城県 〇〇市</dd>
+      <dt>工種</dt>
+      <dd>造園（除草・伐採）／役務</dd>
+      <dt>工事概要</dt>
+      <dd class="summary">県道の道路法面および歩道植栽帯について、除草と低木の剪定を行う業務。刈草・剪定枝の運搬処分を含みます。施工延長は約2.4km、年内1回の実施予定です。</dd>
+      <dt>公告日</dt>
+      <dd>2026年8月6日（木）</dd>
+      <dt>入札・見積締切</dt>
+      <dd>2026年8月25日（火）17時</dd>
+      <dt>概算規模</dt>
+      <dd>数百万円規模</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件に興味がある → ご連絡ください</a>
+      <p class="cta-note">担当より、公告資料・現場条件の詳細をお送りします。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="badge">新着</span>
+      <span class="status">受付中</span>
+      <h2>△△市 都市公園 樹木剪定・維持管理業務</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>△△市 都市整備部 公園緑地課</dd>
+      <dt>履行場所</dt>
+      <dd>茨城県 △△市（市内公園3か所）</dd>
+      <dt>工種</dt>
+      <dd>造園（剪定・植栽管理）／役務</dd>
+      <dt>工事概要</dt>
+      <dd class="summary">市内都市公園3か所の高木剪定、低木刈込、除草および清掃を行う維持管理業務。作業時期は9月から11月を予定し、公園ごとに工程を分けて実施します。</dd>
+      <dt>公告日</dt>
+      <dd>2026年8月10日（月）</dd>
+      <dt>入札・見積締切</dt>
+      <dd>2026年9月1日（火）正午</dd>
+      <dt>概算規模</dt>
+      <dd>1,000万円前後</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件に興味がある → ご連絡ください</a>
+      <p class="cta-note">担当より、公告資料・現場条件の詳細をお送りします。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="status">受付中</span>
+      <h2>□□町 町道街路樹 植栽帯除草業務</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>□□町 建設課</dd>
+      <dt>履行場所</dt>
+      <dd>茨城県 □□町（町道2路線）</dd>
+      <dt>工種</dt>
+      <dd>造園（除草）／役務</dd>
+      <dt>工事概要</dt>
+      <dd class="summary">町道2路線の街路樹植栽帯について、除草および支障枝の処理を行う業務。刈草は指定の処分場へ運搬します。</dd>
+      <dt>公告日</dt>
+      <dd>2026年7月30日（木）</dd>
+      <dt>入札・見積締切</dt>
+      <dd>2026年8月20日（木）17時</dd>
+      <dt>概算規模</dt>
+      <dd>数十万円～百万円規模</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件に興味がある → ご連絡ください</a>
+      <p class="cta-note">担当より、公告資料・現場条件の詳細をお送りします。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="status">受付中</span>
+      <h2>〇〇地区 調整池 法面草刈業務</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>〇〇県 県南農林事務所</dd>
+      <dt>履行場所</dt>
+      <dd>茨城県 〇〇市 〇〇地区</dd>
+      <dt>工種</dt>
+      <dd>造園（草刈）／役務</dd>
+      <dt>工事概要</dt>
+      <dd class="summary">農業用調整池の法面および管理用道路の草刈を行う業務。斜面部を含むため、肩掛式刈払機による人力作業を主体とします。</dd>
+      <dt>公告日</dt>
+      <dd>2026年8月3日（月）</dd>
+      <dt>入札・見積締切</dt>
+      <dd>2026年8月21日（金）17時</dd>
+      <dt>概算規模</dt>
+      <dd>百万円台</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件に興味がある → ご連絡ください</a>
+      <p class="cta-note">担当より、公告資料・現場条件の詳細をお送りします。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="status">受付中</span>
+      <h2>△△市 市営住宅 敷地内緑地 植栽改修工事</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>△△市 建築住宅課</dd>
+      <dt>履行場所</dt>
+      <dd>茨城県 △△市（市営住宅1団地）</dd>
+      <dt>工種</dt>
+      <dd>造園（植栽工）／工事</dd>
+      <dt>工事概要</dt>
+      <dd class="summary">市営住宅団地の敷地内緑地について、老朽化した低木の撤去と新規植栽、園路まわりの整地を行う工事。既存高木の一部は残置し、剪定のうえ活用します。</dd>
+      <dt>公告日</dt>
+      <dd>2026年8月11日（火）</dd>
+      <dt>入札・見積締切</dt>
+      <dd>2026年9月4日（金）17時</dd>
+      <dt>概算規模</dt>
+      <dd>数百万円～1,000万円規模</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件に興味がある → ご連絡ください</a>
+      <p class="cta-note">担当より、公告資料・現場条件の詳細をお送りします。</p>
+    </div>
+  </article>
+
+  <footer class="foot">
+    <p>本リストは、ご登録内容（工種・対応エリア）に基づき自動抽出し、担当者が確認のうえお届けしています。</p>
+    <p>記載内容は公告時点の情報です。参加条件・提出書類等の詳細は、各案件の公告資料をご確認ください。</p>
+    <p>配信停止・ご登録内容（工種・対応エリア・ご連絡先）の変更は、担当までご連絡ください。</p>
+  </footer>
+
+</div>
+</body>
+</html>

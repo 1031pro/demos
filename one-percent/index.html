@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>本日の新着案件リスト（2026年8月12日）</title>
+<style>
+  :root {
+    --text: #222222;
+    --sub: #5a5a5a;
+    --line: #d8d8d8;
+    --accent: #1f4e79;
+    --new: #b3541e;
+    --ok: #2e7d32;
+    --gray: #5a5a5a;
+    --bg-soft: #f6f7f9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 24px 16px 40px;
+    background: #ffffff;
+    color: var(--text);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-text-size-adjust: 100%;
+  }
+  .sheet { max-width: 760px; margin: 0 auto; }
+
+  .head { border-bottom: 2px solid var(--accent); padding-bottom: 14px; }
+  .head .to { font-size: 14px; color: var(--sub); margin: 0 0 4px; }
+  .head h1 { font-size: 21px; margin: 0 0 12px; line-height: 1.4; }
+  .head-meta { display: grid; grid-template-columns: 6.5em 1fr; row-gap: 4px; column-gap: 12px; margin: 0; font-size: 14px; }
+  .head-meta dt { color: var(--sub); }
+  .head-meta dd { margin: 0; }
+
+  .notice {
+    margin: 18px 0 22px;
+    padding: 12px 14px;
+    background: var(--bg-soft);
+    border-left: 4px solid var(--new);
+  }
+  .notice p { margin: 0; }
+  .notice .main { font-size: 16px; font-weight: bold; }
+  .notice .sub { font-size: 13px; color: var(--sub); margin-top: 4px; }
+
+  .list-head { font-size: 14px; color: var(--sub); margin: 0 0 10px; }
+
+  .case {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .case-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .badge {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background: var(--new);
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .judge {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .judge-ok { background: var(--ok); }
+  .judge-check { background: var(--new); }
+  .judge-out { background: var(--gray); }
+  .case h2 { font-size: 17px; margin: 0; line-height: 1.5; width: 100%; }
+
+  .detail { display: grid; grid-template-columns: 7.5em 1fr; row-gap: 6px; column-gap: 12px; margin: 0 0 12px; font-size: 14px; }
+  .detail dt { color: var(--sub); }
+  .detail dd { margin: 0; }
+  .detail .summary { line-height: 1.65; }
+  .detail .note { display: block; font-size: 12px; color: var(--sub); line-height: 1.5; }
+
+  .cta {
+    border: 1px solid var(--line);
+    background: var(--bg-soft);
+    border-radius: 4px;
+    padding: 12px 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  .cta-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 9px 18px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .cta-note { font-size: 13px; color: var(--sub); margin: 0; }
+
+  .foot { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 14px; font-size: 13px; color: var(--sub); }
+  .foot p { margin: 0 0 6px; }
+  .foot p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 480px) {
+    body { font-size: 14px; padding: 16px 12px 32px; }
+    .head h1 { font-size: 19px; }
+    .head-meta { grid-template-columns: 1fr; row-gap: 2px; }
+    .head-meta dt { font-size: 12px; }
+    .head-meta dd { margin-bottom: 6px; }
+    .detail { grid-template-columns: 1fr; row-gap: 2px; }
+    .detail dt { font-size: 12px; }
+    .detail dd { margin-bottom: 6px; }
+    .case h2 { font-size: 16px; }
+    .cta-btn { display: block; width: 100%; text-align: center; }
+  }
+
+  @page { size: A4 portrait; margin: 15mm; }
+
+  @media print {
+    body { padding: 0; font-size: 10.5pt; line-height: 1.6; }
+    .sheet { max-width: none; }
+    .head h1 { font-size: 15pt; }
+    .case h2 { font-size: 12pt; }
+    .head-meta, .detail, .cta-note, .foot { font-size: 9.5pt; }
+    .detail .note { font-size: 8.5pt; }
+    .notice { background: #f0f0f0; }
+    .cta { background: #f6f6f6; }
+    .cta-btn { background: #ffffff; color: var(--accent); border: 1px solid var(--accent); }
+    .badge { background: #ffffff; color: var(--new); border: 1px solid var(--new); }
+    .judge-ok { background: #ffffff; color: var(--ok); border: 1px solid var(--ok); }
+    .judge-check { background: #ffffff; color: var(--new); border: 1px solid var(--new); }
+    .judge-out { background: #ffffff; color: var(--gray); border: 1px solid var(--gray); }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="head">
+    <p class="to">■■■■■ 御中</p>
+    <h1>本日の新着案件リスト</h1>
+    <dl class="head-meta">
+      <dt>登録条件</dt>
+      <dd>関東・福島 × 工事</dd>
+      <dt>発行日</dt>
+      <dd>2026年8月12日（水）</dd>
+    </dl>
+  </header>
+
+  <section class="notice">
+    <p class="main">本日の新着 3件</p>
+    <p class="sub">前回お届け以降に公告された、ご登録条件に該当する案件です。</p>
+  </section>
+
+  <p class="list-head">案件一覧（新着3件）</p>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="badge">新着</span>
+      <span class="judge judge-ok">候補</span>
+      <h2>棚倉森林管理署庁舎及び棚倉森林管理署新町宿舎消防設備点検業務</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>農林水産省 林野庁 関東森林管理局（群馬県）</dd>
+      <dt>履行場所</dt>
+      <dd>福島県 東白川郡棚倉町（庁舎・宿舎の2か所）</dd>
+      <dt>入札形式</dt>
+      <dd>見積（オープンカウンター）</dd>
+      <dt>業種分類</dt>
+      <dd>建物・指定管理／消防・防災関連／保守・点検・整備</dd>
+      <dt>業務概要</dt>
+      <dd class="summary">庁舎および宿舎に設置された消防用設備の点検と障害排除等を行う業務です。消防法施行規則に基づき、機器点検・総合点検をそれぞれ6か月に1回実施します。履行期間は契約翌日から令和9年3月31日までです。</dd>
+      <dt>公示日</dt>
+      <dd>2026年8月10日（月）</dd>
+      <dt>締切</dt>
+      <dd>入札日 2026年8月26日（水）<span class="note">本日から残り14日</span></dd>
+      <dt>概算規模</dt>
+      <dd>数十万円～数百万円規模<span class="note">福島県内の同種案件（過去12件）の落札価格帯からの目安であり、本案件の予定価格ではありません。</span></dd>
+      <dt>判定根拠</dt>
+      <dd>求められる全省庁統一資格「役務の提供等」を御社は保有済みで、地域要件・実績要件・等級指定がなく、履行場所も登録エリア内です。</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件を検討する → 担当に連絡</a>
+      <p class="cta-note">公告資料・仕様書の確認と参加可否の精査は担当が対応します。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="badge">新着</span>
+      <span class="judge judge-check">要確認</span>
+      <h2>ネットワーク基盤システム・サービス及び運用保守</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>物質・材料研究機構（NIMS）（茨城県）</dd>
+      <dt>履行場所</dt>
+      <dd>公告に記載なし（発注機関所在地：茨城県つくば市）</dd>
+      <dt>入札形式</dt>
+      <dd>意見招請（入札の前段階として仕様への意見を募る手続）</dd>
+      <dt>業種分類</dt>
+      <dd>ソフトウェア・アプリ・システム・Webサービス／回線・通信サービス／保守・点検・整備</dd>
+      <dt>業務概要</dt>
+      <dd class="summary">業種分類からは、ネットワーク基盤システムの導入、回線サービス、運用保守を対象とする調達と見られます。現時点では意見招請の段階であり、業務範囲の詳細は公示資料の確認が必要です。</dd>
+      <dt>公示日</dt>
+      <dd>2026年8月7日（金）</dd>
+      <dt>締切</dt>
+      <dd>説明会 2026年8月21日（金）／資料等提出 2026年9月8日（火）<span class="note">入札日は未定です。</span></dd>
+      <dt>概算規模</dt>
+      <dd>百万円台～3,000万円台規模<span class="note">同発注機関のネットワーク関連案件の落札価格帯からの目安であり、本案件の予定価格ではありません。</span></dd>
+      <dt>判定根拠</dt>
+      <dd>登録キーワード（システム・ネットワーク・保守）で該当しましたが、業種がIT系のため対応工種との整合確認が必要です。意見招請段階のため即応は不要です。</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件を検討する → 担当に連絡</a>
+      <p class="cta-note">公告資料・仕様書の確認と参加可否の精査は担当が対応します。</p>
+    </div>
+  </article>
+
+  <article class="case">
+    <div class="case-head">
+      <span class="badge">新着</span>
+      <span class="judge judge-out">対象外の可能性</span>
+      <h2>令和8年度静岡森林管理署収穫調査業務委託(第2回)</h2>
+    </div>
+    <dl class="detail">
+      <dt>発注機関</dt>
+      <dd>農林水産省 林野庁 関東森林管理局（群馬県）</dd>
+      <dt>履行場所</dt>
+      <dd>静岡県 静岡森林管理署管内の国有林</dd>
+      <dt>入札形式</dt>
+      <dd>一般競争入札</dd>
+      <dt>業種分類</dt>
+      <dd>調査・検査／水道関連</dd>
+      <dt>業務概要</dt>
+      <dd class="summary">国有林を対象とした収穫調査の委託業務です。区域測量、立木調査、伐採搬出関係の調査、報告書作成等を行います。委託予定数量は60.69ha、履行期間は契約日から令和9年3月15日までです。</dd>
+      <dt>公示日</dt>
+      <dd>2026年8月10日（月）</dd>
+      <dt>締切</dt>
+      <dd>資料等提出 2026年8月26日（水）／入札 2026年8月27日（木）<span class="note">本日から残り15日</span></dd>
+      <dt>概算規模</dt>
+      <dd>数百万円～1,600万円規模<span class="note">同種の収穫調査委託の過去実績の落札価格帯からの目安であり、本案件の予定価格ではありません。</span></dd>
+      <dt>判定根拠</dt>
+      <dd>全省庁統一資格の競争参加希望地域が「東海・北陸」の選択者に限られ、加えて指定調査機関の指定が必要なため、該当しない可能性が高い案件です。</dd>
+    </dl>
+    <div class="cta">
+      <a class="cta-btn" href="#">この案件を検討する → 担当に連絡</a>
+      <p class="cta-note">公告資料・仕様書の確認と参加可否の精査は担当が対応します。</p>
+    </div>
+  </article>
+
+  <footer class="foot">
+    <p>本リストは登録条件に基づき自動抽出し、AIが一次判定を付与したものです。参加可否の確定は担当者の確認によります。</p>
+    <p>記載内容は公告時点の情報です。正式な要件は必ず公告資料をご確認ください。</p>
+    <p>配信条件の変更・停止はご連絡ください。</p>
+  </footer>
+
+</div>
+</body>
+</html>
