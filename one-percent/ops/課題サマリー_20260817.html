@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>課題サマリー（内部資料）</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020;
+        --urgent:#c2410c; --accent:#1f4e79; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:#1a1a1a; line-height:1.65; font-size:14px; }
+.wrap { max-width:1000px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:30px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; margin-left:8px; }
+h3 { font-size:15px; margin:18px 0 6px; }
+p { margin:0 0 10px; }
+a { color:#1155cc; }
+
+.nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; font-size:13px; }
+.nav a { display:inline-block; background:#fff; border:1px solid var(--line);
+         border-radius:4px; padding:5px 12px; text-decoration:none; }
+.nav a.here { background:#1f2937; color:#fff; border-color:#1f2937; }
+
+.internal { background:#fff4f4; border:2px solid #d94a4a; border-radius:6px;
+            padding:12px 14px; margin:0 0 18px; font-size:13px; }
+.internal strong { color:#b32020; }
+
+.summary { display:flex; flex-wrap:wrap; gap:10px; background:#1f2937; color:#fff;
+           padding:12px 14px; border-radius:6px; margin:0 0 16px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:13px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid var(--accent);
+        border-radius:6px; padding:14px 16px; }
+.card.flow { border-left-color:#8a4b9c; }
+.card h3 { margin:0 0 4px; font-size:16px; }
+.card .lead { color:var(--muted); font-size:13px; margin:0 0 10px; }
+.card dl { display:grid; grid-template-columns:6.5em 1fr; gap:4px 12px; margin:0 0 10px; font-size:13px; }
+.card dt { color:var(--muted); }
+.card dd { margin:0; }
+.card .big { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.card .links { border-top:1px solid var(--line); padding-top:9px; font-size:13px; }
+
+table { border-collapse:collapse; background:#fff; margin:8px 0 6px; font-size:13px; width:100%; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+th { background:#f0f0f4; font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.total td { background:#f7f7fb; font-weight:700; }
+
+.item-row { background:#fff; border:1px solid var(--line); border-left:5px solid var(--ok);
+            border-radius:5px; padding:11px 14px; margin-bottom:10px; }
+.item-row.todo { border-left-color:#b9b9c0; background:#f4f4f6; color:#55555c; }
+.item-row .name { font-weight:700; font-size:15px; }
+.item-row .val { margin:4px 0 6px; }
+.item-row dl { display:grid; grid-template-columns:9em 1fr; gap:3px 12px; margin:0; font-size:12.5px; }
+.item-row dt { color:var(--muted); white-space:nowrap; }
+.item-row dd { margin:0; }
+.item-row.todo dt { color:#77777e; }
+
+.tag { display:inline-block; border-radius:3px; padding:1px 8px; font-size:12px;
+       font-weight:600; color:#fff; margin-left:6px; white-space:nowrap; }
+.tag.engine { background:#1b7f4b; }
+.tag.manual { background:#8a8a92; }
+.tag.over { background:var(--ng); }
+.tag.near { background:var(--urgent); }
+.tag.ok { background:#4b6cb7; }
+.tag.unknown { background:#8a8a92; }
+.tag.warn { background:var(--hold); }
+
+.note { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+.note .lbl { font-weight:700; color:var(--accent); display:block; margin-bottom:3px; }
+ul.plain { margin:6px 0 12px; padding-left:20px; font-size:13px; }
+ul.plain li { margin-bottom:4px; }
+.src { color:var(--muted); font-size:12px; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px; }
+footer ul { margin:6px 0 0; padding-left:20px; }
+@media (max-width:720px) {
+  .grid { grid-template-columns:1fr; }
+  .card dl, .item-row dl { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav"><a href="データ基盤_20260817.html">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="課題サマリー_20260817.html" class="here">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+
+<h1>課題サマリー（DB4）</h1>
+<p class="sub">受けられなかった案件が「何の条件で」落ちたかの集計。
+対象は判定が対象外・要確認の 544件（全643件のうち）。</p>
+
+<div class="internal"><strong>内部資料。</strong>判定理由・条件名・件数を含む。外部には出さない。</div>
+
+<div class="note"><span class="lbl">この画面の考え方（8/13協議のサマリタブ思想）</span>
+「できなかった」で終わらせると何も残らないが、「何の条件でできなかったか」を数えると、それは課題の一覧になる。
+課題を解決すれば受注できる案件が増えるので、この集計はそのまま会社の成長指針になる。
+どの登録を先に取るか、どの資料を先に集めるかは、勘ではなくこの件数の大きい順に決められる。
+判定エンジンが理由を必ず書き残しているため、集計は毎日自動で更新できる。</div>
+
+<div class="summary">
+  <span class="item">全案件<b>643</b></span>
+  <span class="item">分類対象<b>544</b></span>
+  <span class="item">条件軸<b>9</b></span>
+  <span class="item">その他（未分類）<b>0</b></span>
+</div>
+
+<h2>まず全体の判定内訳</h2>
+<table>
+  <tr><th>判定</th><th class="num">件数</th><th class="num">構成比</th></tr>
+  <tr><td>候補</td><td class="num">13</td><td class="num">2.0%</td></tr><tr><td>要確認</td><td class="num">458</td><td class="num">71.2%</td></tr><tr><td>問い合わせ</td><td class="num">4</td><td class="num">0.6%</td></tr><tr><td>要再点検</td><td class="num">82</td><td class="num">12.8%</td></tr><tr><td>対象外</td><td class="num">86</td><td class="num">13.4%</td></tr>
+  <tr class="total"><td>合計</td><td class="num">643</td><td class="num">100.0%</td></tr>
+</table>
+<p class="src">取得期間 2026-08-07〜
+2026-08-20／
+仕様書 あり180・なし362・
+不明101／AI要約の信頼性フラグあり 120件。</p>
+
+<h2>条件軸別の集計<span class="cnt">対象外86＋要確認458＝544件</span></h2>
+<p>1件が複数の条件で止まっていることが多いため、2通りの数え方を並べる。
+<strong>該当件数</strong>はその条件に言及している案件数（重複あり）。
+<strong>主要因</strong>は優先順位で1件を1軸に割り当てた数（合計が544件に一致）。
+<strong>単独要因</strong>は他の条件軸を併せ持たない案件数＝その条件を潰せば直接前に進む案件数
+（最終行の「素材の情報不足」だけは条件軸ではないため、条件軸をひとつも持たない案件数を入れている）。</p>
+<table>
+  <tr><th>条件軸</th><th class="num">該当件数</th><th class="num">構成比</th>
+      <th class="num">主要因</th><th class="num">単独要因</th></tr>
+  <tr><td>重複・除外（同一案件の別掲載）</td><td class="num">20</td><td class="num">3.7%</td><td class="num">20</td><td class="num">20</td></tr><tr><td>指定認定・指定機関</td><td class="num">1</td><td class="num">0.2%</td><td class="num">1</td><td class="num">1</td></tr><tr><td>地域要件・履行場所</td><td class="num">116</td><td class="num">21.3%</td><td class="num">116</td><td class="num">63</td></tr><tr><td>業種不整合（建設業と合わない）</td><td class="num">62</td><td class="num">11.4%</td><td class="num">56</td><td class="num">15</td></tr><tr><td>省庁別の入札参加登録</td><td class="num">271</td><td class="num">49.8%</td><td class="num">209</td><td class="num">18</td></tr><tr><td>資格の種類・等級（ランク）</td><td class="num">212</td><td class="num">39.0%</td><td class="num">19</td><td class="num">9</td></tr><tr><td>実績要件</td><td class="num">136</td><td class="num">25.0%</td><td class="num">28</td><td class="num">9</td></tr><tr><td>その他要件（免許・技術者・個別条件）</td><td class="num">263</td><td class="num">48.3%</td><td class="num">62</td><td class="num">62</td></tr><tr><td>素材の情報不足（仕様書なし・AI要約フラグ等）</td><td class="num">337</td><td class="num">61.9%</td><td class="num">33</td><td class="num">33</td></tr><tr class="total"><td>その他（上のどれにも当たらない）</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td></tr><tr class="total"><td>主要因の合計</td><td class="num">—</td><td class="num">—</td><td class="num">544</td><td class="num">—</td></tr>
+</table>
+<p class="src">分類は判定理由テキストの文字列パターンで機械的に行っている。
+どのパターンにも当たらなかった案件は「その他」に入れる — 今回は <strong>0件
+（0.0%）</strong>。分類できないものを無理に振り分けてはいない。
+「素材の情報不足」は条件の話ではなく材料が足りない状態なので、単独要因の欄では条件軸と分けて数えている
+（条件軸ゼロ＝情報不足だけで止まっている案件は 33件）。</p>
+
+<h2>課題を解決すると何が増えるか</h2>
+<p>集計から言える範囲だけを書く。効果件数は「単独要因」＝その課題を潰せば直接自動判定へ進める案件数で、
+これを超える効果（他の条件と併せ持つ案件が動く）は人の確認が残るため件数化していない。</p>
+<table>
+  <tr><th>課題（打ち手）</th><th class="num">関係する案件</th><th class="num">直接効く件数</th><th>何が起きるか</th></tr>
+  
+  <tr>
+    <td>省庁別登録のデータ化（DB3）</td>
+    <td class="num">271</td>
+    <td class="num">18</td>
+    <td>登録要件だけで止まっている18件が自動判定へ進める。
+        残りは他の条件も併せ持つため、登録が入っても人の確認が残る</td>
+  </tr>
+  <tr>
+    <td>資料取得フローを回す（DB1第2層）</td>
+    <td class="num">337</td>
+    <td class="num">33</td>
+    <td>公告原文が読めれば、素材の欠落だけで要確認になっている33件が判定可能になる。
+        別枠の要再点検82件＋問い合わせ4件
+        （計86件）も同じ手当てで解ける</td>
+  </tr>
+  <tr>
+    <td>実績台帳の整備（DB3）</td>
+    <td class="num">136</td>
+    <td class="num">9</td>
+    <td>「過去◯年以内の元請完成実績」を機械照合できる。実績要件だけで止まっている9件が対象</td>
+  </tr>
+  <tr>
+    <td>検索条件（第一フィルター）の絞り込み</td>
+    <td class="num">62</td>
+    <td class="num">15</td>
+    <td>建設業と合わない案件が要確認へ大量に流れ込んでいる。入口の検索条件で落とせば、
+        人が見る母数そのものが減る（判定の後段ではなく前段の改善）</td>
+  </tr>
+  <tr>
+    <td>地域要件（対応エリア）</td>
+    <td class="num">116</td>
+    <td class="num">63</td>
+    <td>データ整備では解けない。営業所の設置か、エリア外を最初から取らない検索条件かの事業判断になる</td>
+  </tr>
+</table>
+
+<h2>どの省庁の登録を先に取るか<span class="cnt">登録要件が絡む271件の発注機関内訳</span></h2>
+<table>
+  <tr><th>発注機関</th><th class="num">件数</th></tr>
+  <tr><td>防衛省</td><td class="num">43</td></tr><tr><td>日本郵政グループ〈郵便局/日本郵便/ゆうちょ銀行/かんぽ生命〉</td><td class="num">43</td></tr><tr><td>農林水産省</td><td class="num">23</td></tr><tr><td>国土交通省</td><td class="num">20</td></tr><tr><td>産業技術総合研究所</td><td class="num">14</td></tr><tr><td>日本年金機構</td><td class="num">13</td></tr><tr><td>情報通信研究機構</td><td class="num">12</td></tr><tr><td>農業・食品産業技術総合研究機構</td><td class="num">10</td></tr><tr><td>東京学芸大学</td><td class="num">8</td></tr><tr><td>内閣府</td><td class="num">7</td></tr>
+</table>
+<p class="src">「省庁固有の競争参加資格を併記」「全省庁統一資格の記載なし（省庁固有資格のみ）」で
+要確認・対象外になった案件を、発注機関名の先頭で数えた実測値（上位10）。
+この順は「1〜2ヶ月で効く最速の改善」（8/13協議）の候補順そのものになる。</p>
+
+<h2>地域要件の内訳<span class="cnt">116件</span></h2>
+<table>
+  <tr><th>内訳</th><th class="num">件数</th></tr>
+  <tr><td>関東圏内だが茨城県を含まない指定</td><td class="num">40</td></tr><tr><td>対応エリア外（東北）</td><td class="num">12</td></tr><tr><td>地域の個別条件（営業所所在・距離条件など）</td><td class="num">12</td></tr><tr><td>対応エリア外（東海・北陸）</td><td class="num">8</td></tr><tr><td>履行場所が圏外（北海道）</td><td class="num">6</td></tr><tr><td>対応エリア外（北海道）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（新潟県）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（宮城県）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（青森県）</td><td class="num">3</td></tr><tr><td>遠隔離島（行政区画上は東京都）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（山口県）</td><td class="num">2</td></tr><tr><td>対応エリア外（九州・沖縄）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（長野県）</td><td class="num">2</td></tr><tr><td>対応エリア外（中国・四国）</td><td class="num">1</td></tr><tr><td>対応エリア外（大阪府）</td><td class="num">1</td></tr><tr><td>対応エリア外（四国）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛媛県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（沖縄県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（石川県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（山形県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（鹿児島県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（高知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（大阪府）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（熊本県）</td><td class="num">1</td></tr>
+</table>
+<p class="src">対応エリア外は会社データを整備しても解けない。
+一方「関東圏内だが茨城県を含まない指定」「地域の個別条件」は営業所の所在確認で判断が変わりうる層で、
+ここは人の確認で救える可能性がある。</p>
+
+<h2>資料が足りなくて判定できない案件</h2>
+<p>条件で落ちたのではなく、材料が無くて判定に進めない案件が別枠である。
+要再点検 82件（仕様書の有無がそもそも素材に書かれていない）＋
+問い合わせ 4件（公示書・仕様書のリンクが無く取得手段がない）＝
+<strong>86件</strong>。これが資料取得フロー（人間フロー①）の対象母数になる。
+ここを潰すと分類対象そのものが増え、上の集計の精度も上がる。</p>
+
+<p><a href="データ基盤_20260817.html">← データ基盤（ポータル）へ戻る</a>／
+<a href="会社情報_20260817.html">会社情報（DB3）で整備状況を見る</a></p>
+
+<footer>
+<p><strong>内部資料</strong>／生成 2026-08-20 ／生成スクリプト tools\build_db_screens.py
+（4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
+<p>この画面の数値の出典:</p>
+<ul><li>判定内訳・条件軸分類・機関別内訳: <code>data\案件マスタ_20260807-13_20260814.csv</code>（1,443,760バイト・2026-08-20 12:04・643行）の判定・判定理由列をこの画面の生成時に機械集計</li><li>分類パターンの定義: <code>tools\build_db_screens.py</code> の AXES（条件軸9種・優先順位つき）</li><li>サマリタブ思想の出典: <code>data\analysis_協議書き起こし_20260813.md</code>／<code>data\design_MVP定義_20260814.md</code> §2.5 DB4</li></ul>
+</footer>
+</div>
+</body>
+</html>

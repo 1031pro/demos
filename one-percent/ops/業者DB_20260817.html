@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>業者DB（内部資料）</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020;
+        --urgent:#c2410c; --accent:#1f4e79; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:#1a1a1a; line-height:1.65; font-size:14px; }
+.wrap { max-width:1000px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:30px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; margin-left:8px; }
+h3 { font-size:15px; margin:18px 0 6px; }
+p { margin:0 0 10px; }
+a { color:#1155cc; }
+
+.nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; font-size:13px; }
+.nav a { display:inline-block; background:#fff; border:1px solid var(--line);
+         border-radius:4px; padding:5px 12px; text-decoration:none; }
+.nav a.here { background:#1f2937; color:#fff; border-color:#1f2937; }
+
+.internal { background:#fff4f4; border:2px solid #d94a4a; border-radius:6px;
+            padding:12px 14px; margin:0 0 18px; font-size:13px; }
+.internal strong { color:#b32020; }
+
+.summary { display:flex; flex-wrap:wrap; gap:10px; background:#1f2937; color:#fff;
+           padding:12px 14px; border-radius:6px; margin:0 0 16px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:13px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid var(--accent);
+        border-radius:6px; padding:14px 16px; }
+.card.flow { border-left-color:#8a4b9c; }
+.card h3 { margin:0 0 4px; font-size:16px; }
+.card .lead { color:var(--muted); font-size:13px; margin:0 0 10px; }
+.card dl { display:grid; grid-template-columns:6.5em 1fr; gap:4px 12px; margin:0 0 10px; font-size:13px; }
+.card dt { color:var(--muted); }
+.card dd { margin:0; }
+.card .big { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.card .links { border-top:1px solid var(--line); padding-top:9px; font-size:13px; }
+
+table { border-collapse:collapse; background:#fff; margin:8px 0 6px; font-size:13px; width:100%; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+th { background:#f0f0f4; font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.total td { background:#f7f7fb; font-weight:700; }
+
+.item-row { background:#fff; border:1px solid var(--line); border-left:5px solid var(--ok);
+            border-radius:5px; padding:11px 14px; margin-bottom:10px; }
+.item-row.todo { border-left-color:#b9b9c0; background:#f4f4f6; color:#55555c; }
+.item-row .name { font-weight:700; font-size:15px; }
+.item-row .val { margin:4px 0 6px; }
+.item-row dl { display:grid; grid-template-columns:9em 1fr; gap:3px 12px; margin:0; font-size:12.5px; }
+.item-row dt { color:var(--muted); white-space:nowrap; }
+.item-row dd { margin:0; }
+.item-row.todo dt { color:#77777e; }
+
+.tag { display:inline-block; border-radius:3px; padding:1px 8px; font-size:12px;
+       font-weight:600; color:#fff; margin-left:6px; white-space:nowrap; }
+.tag.engine { background:#1b7f4b; }
+.tag.manual { background:#8a8a92; }
+.tag.over { background:var(--ng); }
+.tag.near { background:var(--urgent); }
+.tag.ok { background:#4b6cb7; }
+.tag.unknown { background:#8a8a92; }
+.tag.warn { background:var(--hold); }
+
+.note { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+.note .lbl { font-weight:700; color:var(--accent); display:block; margin-bottom:3px; }
+ul.plain { margin:6px 0 12px; padding-left:20px; font-size:13px; }
+ul.plain li { margin-bottom:4px; }
+.src { color:var(--muted); font-size:12px; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px; }
+footer ul { margin:6px 0 0; padding-left:20px; }
+@media (max-width:720px) {
+  .grid { grid-template-columns:1fr; }
+  .card dl, .item-row dl { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav"><a href="データ基盤_20260817.html">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html" class="here">業者DB DB2</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+
+<h1>業者DB（DB2 業者データベース）</h1>
+<p class="sub">協力会社 1,020社。案件を実際に施工する側のデータ。
+この画面はCSVを毎回読み直して集計した軽量ビュー。</p>
+
+<div class="internal"><strong>内部資料。</strong>会社数・対応可否・連絡手段の内部集計を含む。外部には出さない。</div>
+
+<div class="summary">
+  <span class="item">登録<b>1,020</b>社</span>
+  <span class="item">対応可<b>169</b></span>
+  <span class="item">個別対応<b>7</b></span>
+  <span class="item">未確認<b>844</b></span>
+  <span class="item">電話到達<b>95.3%</b></span>
+</div>
+
+<h2>工種 × 対応可否</h2>
+<table>
+  <tr><th>工種</th><th class="num">可</th><th class="num">個別対応</th><th class="num">空白（未確認）</th><th class="num">計</th></tr>
+  <tr><td>建築</td><td class="num">56</td><td class="num">3</td><td class="num">227</td><td class="num">286</td></tr><tr><td>土木</td><td class="num">31</td><td class="num">2</td><td class="num">235</td><td class="num">268</td></tr><tr><td>その他（設備）</td><td class="num">26</td><td class="num">0</td><td class="num">92</td><td class="num">118</td></tr><tr><td>その他</td><td class="num">10</td><td class="num">0</td><td class="num">95</td><td class="num">105</td></tr><tr><td>造園</td><td class="num">30</td><td class="num">2</td><td class="num">44</td><td class="num">76</td></tr><tr><td>電気</td><td class="num">6</td><td class="num">0</td><td class="num">54</td><td class="num">60</td></tr><tr><td>管</td><td class="num">5</td><td class="num">0</td><td class="num">45</td><td class="num">50</td></tr><tr><td>解体</td><td class="num">4</td><td class="num">0</td><td class="num">39</td><td class="num">43</td></tr><tr><td>舗装</td><td class="num">0</td><td class="num">0</td><td class="num">12</td><td class="num">12</td></tr><tr><td>（工種空白）</td><td class="num">1</td><td class="num">0</td><td class="num">1</td><td class="num">2</td></tr><tr class="total"><td>合計</td><td class="num">169</td><td class="num">7</td><td class="num">844</td><td class="num">1,020</td></tr>
+</table>
+<p class="src">対応可否が空白＝まだ可否を確認していない相手。全体の 82.7%
+（844社）がここに入る。フォーム案内は「可」への再接触より、この層への初回接触の意味が大きい。</p>
+
+<h2>到達手段（TEL / メール / URL）</h2>
+<table>
+  <tr><th>工種</th><th class="num">件数</th><th class="num">TEL</th><th class="num">TEL率</th>
+      <th class="num">e-mail</th><th class="num">mail率</th><th class="num">URL</th><th class="num">URL率</th></tr>
+  <tr><td>建築</td><td class="num">286</td><td class="num">259</td><td class="num">90.6%</td><td class="num">61</td><td class="num">21.3%</td><td class="num">258</td><td class="num">90.2%</td></tr><tr><td>土木</td><td class="num">268</td><td class="num">262</td><td class="num">97.8%</td><td class="num">32</td><td class="num">11.9%</td><td class="num">240</td><td class="num">89.6%</td></tr><tr><td>その他（設備）</td><td class="num">118</td><td class="num">115</td><td class="num">97.5%</td><td class="num">26</td><td class="num">22.0%</td><td class="num">100</td><td class="num">84.7%</td></tr><tr><td>その他</td><td class="num">105</td><td class="num">103</td><td class="num">98.1%</td><td class="num">16</td><td class="num">15.2%</td><td class="num">94</td><td class="num">89.5%</td></tr><tr><td>造園</td><td class="num">76</td><td class="num">74</td><td class="num">97.4%</td><td class="num">28</td><td class="num">36.8%</td><td class="num">66</td><td class="num">86.8%</td></tr><tr><td>電気</td><td class="num">60</td><td class="num">58</td><td class="num">96.7%</td><td class="num">6</td><td class="num">10.0%</td><td class="num">56</td><td class="num">93.3%</td></tr><tr><td>管</td><td class="num">50</td><td class="num">46</td><td class="num">92.0%</td><td class="num">6</td><td class="num">12.0%</td><td class="num">44</td><td class="num">88.0%</td></tr><tr><td>解体</td><td class="num">43</td><td class="num">43</td><td class="num">100.0%</td><td class="num">4</td><td class="num">9.3%</td><td class="num">43</td><td class="num">100.0%</td></tr><tr><td>舗装</td><td class="num">12</td><td class="num">11</td><td class="num">91.7%</td><td class="num">0</td><td class="num">0.0%</td><td class="num">10</td><td class="num">83.3%</td></tr><tr><td>（工種空白）</td><td class="num">2</td><td class="num">1</td><td class="num">50.0%</td><td class="num">2</td><td class="num">100.0%</td><td class="num">0</td><td class="num">0.0%</td></tr><tr class="total"><td>合計</td><td class="num">1,020</td><td class="num">972</td><td class="num">95.3%</td><td class="num">181</td><td class="num">17.7%</td><td class="num">911</td><td class="num">89.3%</td></tr>
+</table>
+<ul class="plain">
+  <li><strong>主動線は電話。</strong>TEL保有 95.3%に対し、
+      e-mail保有は 17.7% しかない。メール一斉配信だけでは届かない</li>
+  <li>URLは 89.3% あり、サイトの問い合わせフォーム経由が第三の経路になる</li>
+  <li>TELまたはe-mailを持つ行 980社
+      （96.1%）／連絡手段が全く無い行 27社</li>
+</ul>
+
+<h2>更新経路</h2>
+<table>
+  <tr><th>経路</th><th>いまの実数</th><th>説明</th></tr>
+  <tr><td>Googleフォーム登録</td><td class="num">1社</td>
+      <td>「パートナー企業登録書」への回答。工種・対応エリアを本人に書いてもらう唯一の経路</td></tr>
+  <tr><td>電話の反応</td><td class="num">158社</td>
+      <td>連絡日が記録されている行。可否・条件を聞いた結果を対応可否欄へ反映する</td></tr>
+  <tr><td>見積依頼の履歴</td><td class="num">2社</td>
+      <td>見積依頼回数が1以上の行。実際に動いた相手ほどデータが濃くなる</td></tr>
+  <tr><td>案件参画・入札の履歴</td>
+      <td class="num">参画2社／入札1社</td>
+      <td>参画・入札まで進んだ相手。次回の優先声かけ先になる</td></tr>
+</table>
+
+<div class="note"><span class="lbl">突合キーは「会社名＋TEL」（No.は使えない）</span>
+No.列は一意ではない。1,020行に対しユニークNo.は 971 しかなく、
+46種類のNo.が重複して 94行を共有している（欠番もある）。
+フォーム回答と既存レコードを突き合わせるときは、No.ではなく<strong>会社名＋TEL</strong>を鍵にする。
+会社名は「（株）／㈱」等の表記ゆれ、TELは全角・複数番号併記があるため、突合前に正規化が要る。</div>
+
+<h2>所在地の分布（上位8）</h2>
+<table>
+  <tr><th>都道府県</th><th class="num">社数</th></tr>
+  <tr><td>茨城県</td><td class="num">218</td></tr><tr><td>東京都</td><td class="num">182</td></tr><tr><td>千葉県</td><td class="num">163</td></tr><tr><td>神奈川県</td><td class="num">159</td></tr><tr><td>埼玉県</td><td class="num">114</td></tr><tr><td>栃木県</td><td class="num">63</td></tr><tr><td>福島県</td><td class="num">55</td></tr><tr><td>大阪府</td><td class="num">22</td></tr>
+</table>
+<p class="src">対応エリア列の記入は 32社
+（3.1%）しかない。対応可能範囲は所在地から推測するしかない状態で、
+フォームで対応エリアを必須にすると、この空白を埋める価値が最も大きい。</p>
+
+<h2>個別データの参照</h2>
+<p>1社ごとのレコード（連絡先・担当者・備考・履歴の全24列）はCSVを直接見る。
+この画面は集計だけを持つ。</p>
+<ul class="plain">
+  <li>整理済みCSV: <code>D:\Dev\Projects\公共工事1%プロジェクト\data\協力会社整理_可空白_工種別_20260812.csv</code>
+      （168,706バイト・2026-08-12 01:54・UTF-8 BOM付き）</li>
+  <li>元データ: スプレッドシート「★0212東永希工様　公共工事入札確認リスト」の <code>協力会社</code> タブ
+      （対応可否＝不可の272社を除外したものが上のCSV）</li>
+</ul>
+
+<footer>
+<p><strong>内部資料</strong>／生成 2026-08-20 ／生成スクリプト tools\build_db_screens.py
+（4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
+<p>この画面の数値の出典:</p>
+<ul><li>すべての集計値: <code>data\協力会社整理_可空白_工種別_20260812.csv</code>（168,706バイト・2026-08-12 01:54・1,020行）をこの画面の生成時にPython csv で再集計（分析mdからの転記ではない）</li><li>参考: <code>data\analysis_協力会社リスト整理_20260812.md</code>（2026-08-12の整理記録・検証20項目PASS）</li></ul>
+</footer>
+</div>
+</body>
+</html>

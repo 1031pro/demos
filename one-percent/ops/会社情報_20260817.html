@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>会社情報（内部資料）</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020;
+        --urgent:#c2410c; --accent:#1f4e79; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:#1a1a1a; line-height:1.65; font-size:14px; }
+.wrap { max-width:1000px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:30px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; margin-left:8px; }
+h3 { font-size:15px; margin:18px 0 6px; }
+p { margin:0 0 10px; }
+a { color:#1155cc; }
+
+.nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; font-size:13px; }
+.nav a { display:inline-block; background:#fff; border:1px solid var(--line);
+         border-radius:4px; padding:5px 12px; text-decoration:none; }
+.nav a.here { background:#1f2937; color:#fff; border-color:#1f2937; }
+
+.internal { background:#fff4f4; border:2px solid #d94a4a; border-radius:6px;
+            padding:12px 14px; margin:0 0 18px; font-size:13px; }
+.internal strong { color:#b32020; }
+
+.summary { display:flex; flex-wrap:wrap; gap:10px; background:#1f2937; color:#fff;
+           padding:12px 14px; border-radius:6px; margin:0 0 16px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:13px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid var(--accent);
+        border-radius:6px; padding:14px 16px; }
+.card.flow { border-left-color:#8a4b9c; }
+.card h3 { margin:0 0 4px; font-size:16px; }
+.card .lead { color:var(--muted); font-size:13px; margin:0 0 10px; }
+.card dl { display:grid; grid-template-columns:6.5em 1fr; gap:4px 12px; margin:0 0 10px; font-size:13px; }
+.card dt { color:var(--muted); }
+.card dd { margin:0; }
+.card .big { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.card .links { border-top:1px solid var(--line); padding-top:9px; font-size:13px; }
+
+table { border-collapse:collapse; background:#fff; margin:8px 0 6px; font-size:13px; width:100%; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+th { background:#f0f0f4; font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.total td { background:#f7f7fb; font-weight:700; }
+
+.item-row { background:#fff; border:1px solid var(--line); border-left:5px solid var(--ok);
+            border-radius:5px; padding:11px 14px; margin-bottom:10px; }
+.item-row.todo { border-left-color:#b9b9c0; background:#f4f4f6; color:#55555c; }
+.item-row .name { font-weight:700; font-size:15px; }
+.item-row .val { margin:4px 0 6px; }
+.item-row dl { display:grid; grid-template-columns:9em 1fr; gap:3px 12px; margin:0; font-size:12.5px; }
+.item-row dt { color:var(--muted); white-space:nowrap; }
+.item-row dd { margin:0; }
+.item-row.todo dt { color:#77777e; }
+
+.tag { display:inline-block; border-radius:3px; padding:1px 8px; font-size:12px;
+       font-weight:600; color:#fff; margin-left:6px; white-space:nowrap; }
+.tag.engine { background:#1b7f4b; }
+.tag.manual { background:#8a8a92; }
+.tag.over { background:var(--ng); }
+.tag.near { background:var(--urgent); }
+.tag.ok { background:#4b6cb7; }
+.tag.unknown { background:#8a8a92; }
+.tag.warn { background:var(--hold); }
+
+.note { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+.note .lbl { font-weight:700; color:var(--accent); display:block; margin-bottom:3px; }
+ul.plain { margin:6px 0 12px; padding-left:20px; font-size:13px; }
+ul.plain li { margin-bottom:4px; }
+.src { color:var(--muted); font-size:12px; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px; }
+footer ul { margin:6px 0 0; padding-left:20px; }
+@media (max-width:720px) {
+  .grid { grid-template-columns:1fr; }
+  .card dl, .item-row dl { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav"><a href="データ基盤_20260817.html">データ基盤（ポータル）</a><a href="会社情報_20260817.html" class="here">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+
+<h1>会社情報（DB3 会社条件データベース）</h1>
+<p class="sub">東永希工の資格・許可・技術者・エリア。案件マッチングの左辺にあたるデータ。</p>
+
+<div class="internal"><strong>内部資料。</strong>実名・資格情報・スプレッドシートのタブ名を含む。外部には出さない。</div>
+
+<div class="note"><span class="lbl">AIはこの情報を根拠に判定しています</span>
+<p>毎日入ってくる案件の参加要件（右辺）を、この画面に並んだ会社の条件（左辺）と突き合わせて
+「候補／要確認／対象外」を出している。<strong>ここが古いと判定が丸ごとずれる。</strong>
+本来いける案件を落とすか、受けられない案件を協力会社へ流すかのどちらかが起きる。
+期限切れを検知した資格は、判定エンジン側で「持っていない」扱いに切り替える設計にしている。</p>
+<p style="margin:0">なお <span class="tag engine">判定に接続済み</span> は現在の一次判定エンジンが実際に参照している項目、
+<span class="tag manual">判定に未接続</span> は台帳にはあるがまだ判定式に入っていない項目を指す。</p></div>
+
+<h2>データ化済み<span class="cnt">8項目</span></h2>
+
+<div class="item-row">
+  <div class="name">全省庁統一資格<span class="tag ok">アラーム対象外（次は90日前）</span><span class="tag engine">判定に接続済み</span></div>
+  <div class="val">物品販売D／役務提供等D</div>
+  <dl>
+    <dt>有効期限</dt><dd>2025-04-01 〜 2028-03-31（残り 589日）</dd>
+    <dt>出典</dt><dd>スプレッドシート <code>入札資格R7.4～</code> タブ
+      （読み取り元: analysis_東永希工公共工事台帳_20260805.md）／出典ファイルの記述と一致（照合済み）</dd>
+    <dt>判定での使われ方</dt><dd>公告が求める等級にDが含まれるかを見る。Dが含まれない明記があれば対象外へ落とす</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">建設業許可（14工種）<span class="tag ok">アラーム対象外（次は90日前）</span><span class="tag manual">判定に未接続（人が確認）</span></div>
+  <div class="val">茨城県知事・一般建設業許可／土木・建築・左官・とび土工・屋根・タイル/れんが/ブロック・鉄筋・舗装・板金・塗装・防水・内装仕上・建具・解体</div>
+  <dl>
+    <dt>有効期限</dt><dd>2027-05-29（残り 282日）</dd>
+    <dt>出典</dt><dd>スプレッドシート <code>建設資格/許可</code> タブ
+      （読み取り元: analysis_東永希工公共工事台帳_20260805.md）／出典ファイルの記述と一致（照合済み）</dd>
+    <dt>判定での使われ方</dt><dd>工事種別軸の左辺。※現在の一次判定エンジンは工種軸を直接は参照していない（判定は資格・地域・業種の3軸）</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">技術者資格<span class="tag ok">アラーム対象外（次は90日前）</span><span class="tag manual">判定に未接続（人が確認）</span></div>
+  <div class="val">1級土木施工管理技士／1級建築施工管理技士／監理技術者資格者証・講習</div>
+  <dl>
+    <dt>有効期限</dt><dd>2027-02-14（残り 178日）</dd>
+    <dt>出典</dt><dd>スプレッドシート <code>建設資格/許可</code> タブ
+      （読み取り元: analysis_東永希工公共工事台帳_20260805.md）／出典ファイルの記述と一致（照合済み）</dd>
+    <dt>判定での使われ方</dt><dd>公告の「配置技術者」要件と突き合わせる左辺。※現在は判定に未接続（人が承認時に確認）</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">経営審査（総合評定値通知書）<span class="tag over">期限超過（507日）</span><span class="tag manual">判定に未接続（人が確認）</span></div>
+  <div class="val">台帳記載が旧版のまま。現行版の所在が未確認</div>
+  <dl>
+    <dt>有効期限</dt><dd>2025-03-31（<strong>507日超過</strong>）</dd>
+    <dt>出典</dt><dd>スプレッドシート <code>必要書類</code> タブ
+      （読み取り元: analysis_東永希工公共工事台帳_20260805.md）／出典ファイルの記述と一致（照合済み）</dd>
+    <dt>判定での使われ方</dt><dd>公告が点数要件を明記する場合の左辺。期限超過の検知例としてこの画面に出している</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">対応エリア<span class="tag engine">判定に接続済み</span></div>
+  <div class="val">千葉県・埼玉県・東京都・栃木県・神奈川県・福島県・群馬県・茨城県（8都県）</div>
+  <dl>
+    <dt>出典</dt><dd>判定エンジン njss_judge.py の定数 IN_AREA_PREFS（対応エリア＝関東圏＋福島）</dd>
+    <dt>判定での使われ方</dt><dd>履行場所・地域要件がこの範囲外と明記されていれば対象外へ落とす</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">対応エリアに当たる地域区分<span class="tag engine">判定に接続済み</span></div>
+  <div class="val">関東・甲信越／圏外区分＝北海道・東北・東海・北陸・近畿・中国・四国・九州・沖縄</div>
+  <dl>
+    <dt>出典</dt><dd>判定エンジン njss_judge.py の定数 IN_AREA_REGIONS・OUT_AREA_REGIONS</dd>
+    <dt>判定での使われ方</dt><dd>全省庁統一資格の「競争参加希望地域」区分で圏外を判定する</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">非対応の業種・指定<span class="tag engine">判定に接続済み</span></div>
+  <div class="val">非対応業種＝サステナビリティボンド・機構債券／指定認定＝指定調査機関・国有林野の管理経営に関する法律第6条の5</div>
+  <dl>
+    <dt>出典</dt><dd>判定エンジン njss_judge.py の定数 NON_TARGET_BUSINESS_PATTERNS・SPECIAL_DESIGNATION_PATTERNS</dd>
+    <dt>判定での使われ方</dt><dd>通常の建設会社では取れない指定・明らかな異業種を対象外へ落とす</dd>
+  </dl>
+</div>
+<div class="item-row">
+  <div class="name">発注元の志向<span class="tag manual">検索条件側で使用</span></div>
+  <div class="val">国・第三セクター（エリア＝関東圏。県は検討可・市は入れない）</div>
+  <dl>
+    <dt>出典</dt><dd>analysis_協議書き起こし_20260813.md（第一フィルターの合意）／出典の記述と一致（照合済み）</dd>
+    <dt>判定での使われ方</dt><dd>NJSS保存検索条件（案件を取ってくる入口）の設定値。判定より前段のフィルター</dd>
+  </dl>
+</div>
+
+<h2>未整備<span class="cnt">5層・正直に出す</span></h2>
+<p>下は「原本はスプレッドシートにあるが、まだ機械が読める形になっていない」層。
+効果件数は案件マスタ643件の判定理由から機械集計した実数で、
+集計から言えない項目は件数を書かずに定性表現にとどめている。</p>
+
+<div class="item-row todo">
+  <div class="name">省庁別の工事登録・指名願<span class="tag warn">未整備</span></div>
+  <dl>
+    <dt>状態</dt><dd>未データ化（スプシ `入札資格R7.4～` に原本あり）</dd>
+    <dt>整備効果</dt><dd>判定理由がこの条件に言及している案件 <strong>271件</strong>（544件中 49.8%）。うち他の条件軸が無いもの <strong>18件</strong>＝この層が埋まれば自動判定へ進める案件数<br>省庁別の登録有無が判定に入ると、「東永希工の登録有無は未確認」で止まっている案件を自動で振り分けられる</dd>
+  </dl>
+</div>
+<div class="item-row todo">
+  <div class="name">省庁別ランク（等級）<span class="tag warn">未整備</span></div>
+  <dl>
+    <dt>状態</dt><dd>未データ化（台帳には発注機関ごとにB〜D等級の記録あり）</dd>
+    <dt>整備効果</dt><dd>判定理由がこの条件に言及している案件 <strong>212件</strong>（544件中 39.0%）。うち他の条件軸が無いもの <strong>9件</strong>＝この層が埋まれば自動判定へ進める案件数<br>等級の左辺が省庁別に持てる。ただし該当件数の多くは公告側の記載不備（種類・ランク不明）で、会社側データだけでは解けない</dd>
+  </dl>
+</div>
+<div class="item-row todo">
+  <div class="name">完成工事・落札実績<span class="tag warn">未整備</span></div>
+  <dl>
+    <dt>状態</dt><dd>未データ化（`実績` タブに開札日・落札者つきの記録あり）</dd>
+    <dt>整備効果</dt><dd>判定理由がこの条件に言及している案件 <strong>136件</strong>（544件中 25.0%）。うち他の条件軸が無いもの <strong>9件</strong>＝この層が埋まれば自動判定へ進める案件数<br>「過去◯年以内の元請完成実績」要件を機械照合できる。完成年月・元請/下請・工種・請負金額の4項目が揃った実績台帳が必要</dd>
+  </dl>
+</div>
+<div class="item-row todo">
+  <div class="name">経営審査点数（総合評定値）<span class="tag warn">未整備</span></div>
+  <dl>
+    <dt>状態</dt><dd>未データ化・かつ台帳の記載が期限切れのまま（現行版の所在が未確認）</dd>
+    <dt>整備効果</dt><dd>今回の544件では判定理由に経審・総合評定値の言及は <strong>15件</strong>。本データからは効果件数を出せない（定性判断）<br>公告が点数要件を明記する場合の左辺になる（8/13協議で防衛省の公告実物を確認）</dd>
+  </dl>
+</div>
+<div class="item-row todo">
+  <div class="name">技術者の配置可否・稼働<span class="tag warn">未整備</span></div>
+  <dl>
+    <dt>状態</dt><dd>未データ化（資格の保有は台帳にあるが、誰がいつ空くかの情報がない）</dd>
+    <dt>整備効果</dt><dd>判定理由に「技術者」を含む案件 <strong>36件</strong>（技術者要件が論点になっている案件数。配置可否データが無いため現在は全て人手確認）<br>配置技術者を求める公告に対して「出せるか」を判定に入れられる。承認時の人手チェックが減る</dd>
+  </dl>
+</div>
+
+<h2>更新の仕組み</h2>
+<h3>期限アラーム（90日前／30日前／7日前・期限超過）</h3>
+<p>期限のある項目を1箇所に正規化し、毎日 JST で残り日数を計算する。
+90日前・30日前・7日前の3段階と期限超過の計4回を通知する（段階ごとに1回。超過だけは解消まで週1回）。
+<strong>期限超過を検知したら通知するだけでなく、判定エンジン側でその資格を「なし」扱いへ切り替える。</strong>
+通知だけで済ませると、期限切れの資格を根拠に「いける」と判定した案件を配信してしまう。</p>
+<table>
+  <tr><th>項目</th><th>期限</th><th class="num">残り日数</th><th>いまの段階</th><th>出典タブ</th></tr>
+  <tr><td>全省庁統一資格</td><td>2028-03-31</td><td class="num">589</td><td>アラーム対象外（次は90日前）</td><td>入札資格R7.4～</td></tr><tr><td>建設業許可（14工種）</td><td>2027-05-29</td><td class="num">282</td><td>アラーム対象外（次は90日前）</td><td>建設資格/許可</td></tr><tr><td>技術者資格</td><td>2027-02-14</td><td class="num">178</td><td>アラーム対象外（次は90日前）</td><td>建設資格/許可</td></tr><tr><td>経営審査（総合評定値通知書）</td><td>2025-03-31</td><td class="num">-507</td><td>期限超過（507日）</td><td>必要書類</td></tr>
+</table>
+<p class="src">残り日数は 2026-08-20（JST）基準でこの画面の生成時に計算した値。
+期限超過 1件／アラーム段階に入っているもの 0件。</p>
+<div class='note'><span class='lbl'>いま鳴っているアラーム</span>経営審査（総合評定値通知書）（期限超過（507日））。総合評定値通知書は台帳の記載が旧版のままで、現行版の所在が未確認。「入力されていない」のか「未確認」なのかを区別するため、消さずに要確認として残す設計にしている。</div>
+
+<h3>更新経路</h3>
+<ul class="plain">
+  <li><strong>人が更新する</strong> — 資格を更新したらその場で期限マスタを直し、証憑を差し替える。初期入力は手作業（8/13協議で了解済み）</li>
+  <li><strong>AIとの対話で訂正する</strong> — 「この条件は違う」「この登録は取った」を会話で受け、
+      読解ナレッジ・会社条件へ反映する。次回の判定から効く</li>
+  <li><strong>判定結果から逆算する</strong> — 課題サマリー（DB4）が「どの条件で落ちたか」を出すので、
+      どの登録を先に取るかが決まる（1〜2ヶ月で効く最速の改善）</li>
+</ul>
+
+<div class="note"><span class="lbl">日々更新される生き物として扱う</span>
+会社の条件は固定値ではない。資格は期限で切れ、等級は経審で変わり、登録は増え、技術者は入れ替わる。
+このDBを止めた瞬間に判定の信頼性が落ちるため、「一度作って終わり」ではなく毎日チェックが回る対象として置く。
+なお、このDBを別の元請会社のものに差し替えれば、取得→判定→承認→配信→課題サマリーのパイプラインは
+そのまま横展開できる（会社固有の値をスクリプトへ直書きしない規律を守っている）。</div>
+
+<footer>
+<p><strong>内部資料</strong>／生成 2026-08-20 ／生成スクリプト tools\build_db_screens.py
+（4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
+<p>この画面の数値の出典:</p>
+<ul><li>会社の資格・許可・技術者・期限: <code>data\analysis_東永希工公共工事台帳_20260805.md</code> §4（2026-08-05 16:49）。宣言値が同ファイルに実在するかを生成時に照合</li><li>対応エリア・地域区分・非対応業種・指定認定: 判定エンジン <code>tools\njss_judge.py</code> の定数を実測</li><li>未整備層の整備効果件数: <code>data\案件マスタ_20260807-13_20260814.csv</code> の判定理由544件を条件軸で機械分類した実測値</li><li>期限アラームの段階設計: <code>data\design_会社データ整備・更新アラーム_20260814.md</code> §4</li><li>第一フィルター（エリア・発注元）: <code>data\analysis_協議書き起こし_20260813.md</code></li></ul>
+</footer>
+</div>
+</body>
+</html>

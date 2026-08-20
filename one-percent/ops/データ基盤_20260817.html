@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>データ基盤（内部資料）</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020;
+        --urgent:#c2410c; --accent:#1f4e79; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:#1a1a1a; line-height:1.65; font-size:14px; }
+.wrap { max-width:1000px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:30px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; margin-left:8px; }
+h3 { font-size:15px; margin:18px 0 6px; }
+p { margin:0 0 10px; }
+a { color:#1155cc; }
+
+.nav { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; font-size:13px; }
+.nav a { display:inline-block; background:#fff; border:1px solid var(--line);
+         border-radius:4px; padding:5px 12px; text-decoration:none; }
+.nav a.here { background:#1f2937; color:#fff; border-color:#1f2937; }
+
+.internal { background:#fff4f4; border:2px solid #d94a4a; border-radius:6px;
+            padding:12px 14px; margin:0 0 18px; font-size:13px; }
+.internal strong { color:#b32020; }
+
+.summary { display:flex; flex-wrap:wrap; gap:10px; background:#1f2937; color:#fff;
+           padding:12px 14px; border-radius:6px; margin:0 0 16px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:13px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid var(--accent);
+        border-radius:6px; padding:14px 16px; }
+.card.flow { border-left-color:#8a4b9c; }
+.card h3 { margin:0 0 4px; font-size:16px; }
+.card .lead { color:var(--muted); font-size:13px; margin:0 0 10px; }
+.card dl { display:grid; grid-template-columns:6.5em 1fr; gap:4px 12px; margin:0 0 10px; font-size:13px; }
+.card dt { color:var(--muted); }
+.card dd { margin:0; }
+.card .big { font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; }
+.card .links { border-top:1px solid var(--line); padding-top:9px; font-size:13px; }
+
+table { border-collapse:collapse; background:#fff; margin:8px 0 6px; font-size:13px; width:100%; }
+th, td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+th { background:#f0f0f4; font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+tr.total td { background:#f7f7fb; font-weight:700; }
+
+.item-row { background:#fff; border:1px solid var(--line); border-left:5px solid var(--ok);
+            border-radius:5px; padding:11px 14px; margin-bottom:10px; }
+.item-row.todo { border-left-color:#b9b9c0; background:#f4f4f6; color:#55555c; }
+.item-row .name { font-weight:700; font-size:15px; }
+.item-row .val { margin:4px 0 6px; }
+.item-row dl { display:grid; grid-template-columns:9em 1fr; gap:3px 12px; margin:0; font-size:12.5px; }
+.item-row dt { color:var(--muted); white-space:nowrap; }
+.item-row dd { margin:0; }
+.item-row.todo dt { color:#77777e; }
+
+.tag { display:inline-block; border-radius:3px; padding:1px 8px; font-size:12px;
+       font-weight:600; color:#fff; margin-left:6px; white-space:nowrap; }
+.tag.engine { background:#1b7f4b; }
+.tag.manual { background:#8a8a92; }
+.tag.over { background:var(--ng); }
+.tag.near { background:var(--urgent); }
+.tag.ok { background:#4b6cb7; }
+.tag.unknown { background:#8a8a92; }
+.tag.warn { background:var(--hold); }
+
+.note { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:8px 0 12px; font-size:13px; }
+.note .lbl { font-weight:700; color:var(--accent); display:block; margin-bottom:3px; }
+ul.plain { margin:6px 0 12px; padding-left:20px; font-size:13px; }
+ul.plain li { margin-bottom:4px; }
+.src { color:var(--muted); font-size:12px; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12.5px; }
+footer ul { margin:6px 0 0; padding-left:20px; }
+@media (max-width:720px) {
+  .grid { grid-template-columns:1fr; }
+  .card dl, .item-row dl { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav"><a href="データ基盤_20260817.html" class="here">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+
+<h1>データ基盤</h1>
+<p class="sub">4つのデータベース（案件・業者・会社条件・課題）の上でパイプラインが回る。
+どんなDBがあり、いま何件入っていて、どう更新され、どの画面で見るかの一覧。</p>
+
+<div class="internal"><strong>内部資料。</strong>実名・データ源名・内部件数を含む。協力会社・外部には出さない。
+数値は 2026-08-20 時点で元データ（案件マスタCSV・協力会社CSV・判定エンジン定数・台帳分析）から再集計したもの。</div>
+
+<div class="summary">
+  <span class="item">案件<b>643</b>件</span>
+  <span class="item">業者<b>1,020</b>社</span>
+  <span class="item">会社条件<b>8</b>項目</span>
+  <span class="item">課題分類<b>544</b>件</span>
+  <span class="item">承認済<b>2</b>件</span>
+  <span class="item">原文読解<b>5</b>件</span>
+</div>
+
+<h2>4つのデータベース</h2>
+<div class="grid">
+  <div class="card">
+    <h3>DB1 案件詳細データベース</h3>
+    <p class="lead">毎日入ってくる公告案件そのもの。案件名・機関・締切・参加要件・仕様書有無・類似落札価格帯。</p>
+    <dl>
+      <dt>現在の実数</dt><dd><span class="big">643件</span>（取得期間 2026-08-07〜2026-08-20）<br>
+        判定内訳: 候補13／要確認458／問い合わせ4／
+        要再点検82／対象外86<br>
+        承認済 2件・保留 1件・承認待ち 10件（候補13件のうち）<br>
+        第2層（公告PDF原文の読解）: 5件を実読解・PDF 7ファイル取得済み
+        （マスタCSV35列にはまだ列を足していない）</dd>
+      <dt>最終更新</dt><dd>2026-08-20 12:04（案件マスタCSV）／
+        2026-08-17 20:59（読解ビュー）</dd>
+      <dt>更新経路</dt><dd>毎日の自動取得（NJSS新着案件メール→パース→判定）＋
+        資料取得フロー（仕様書が取れない案件を人が取りにいく）＋
+        公告・仕様書PDFの読解（読解ナレッジを毎回参照し、人の訂正で精度が上がる層）</dd>
+    </dl>
+    <div class="links">画面: <a href="承認用判定リスト_20260814.html">承認用判定リスト（全643件）</a>／
+      <a href="承認画面_20260814.html">承認画面</a>／
+      <a href="読解ビュー_20260817.html">読解ビュー（原文とPDF付き）</a><br>
+      ナレッジ: <code>data\knowledge_仕様書読解_v1.md</code>
+      （29,843バイト・2026-08-17 21:31）</div>
+  </div>
+  <div class="card">
+    <h3>DB2 業者データベース</h3>
+    <p class="lead">案件を実際に施工する協力会社。工種・エリア・連絡先・対応可否・履歴。</p>
+    <dl>
+      <dt>現在の実数</dt><dd><span class="big">1,020社</span>（工種10区分）<br>
+        対応可 169／個別対応 7／
+        未確認 844<br>
+        フォーム登録済 1社／連絡実績あり 158社</dd>
+      <dt>最終更新</dt><dd>2026-08-12 01:54（協力会社整理CSV）</dd>
+      <dt>更新経路</dt><dd>Googleフォーム「パートナー企業登録書」からの登録／電話での反応／
+        見積依頼・案件参画の履歴で精緻化</dd>
+    </dl>
+    <div class="links">画面: <a href="業者DB_20260817.html">業者DB</a></div>
+  </div>
+  <div class="card">
+    <h3>DB3 会社条件データベース（東永希工）</h3>
+    <p class="lead">「この条件を持つから受けられる案件はこれ」のマッチング左辺。資格・許可・技術者・エリア・期限。</p>
+    <dl>
+      <dt>現在の実数</dt><dd>データ化済み <span class="big">8項目</span>／
+        未整備 <span class="big">5層</span><br>
+        期限管理対象 4件（うち期限超過 1件）</dd>
+      <dt>最終更新</dt><dd>2026-08-05 16:49（台帳分析md。原本はスプレッドシート）</dd>
+      <dt>更新経路</dt><dd>期限アラーム（90日前／30日前／7日前・超過）→
+        人が更新／AIとの対話で訂正→ナレッジへ反映</dd>
+    </dl>
+    <div class="links">画面: <a href="会社情報_20260817.html">会社情報</a></div>
+  </div>
+  <div class="card">
+    <h3>DB4 課題サマリー</h3>
+    <p class="lead">「受けられなかった案件が、何の条件で落ちたか」。会社の成長指針になるデータ。</p>
+    <dl>
+      <dt>現在の実数</dt><dd>対象外86＋要確認458＝
+        <span class="big">544件</span>を9つの条件軸へ分類<br>
+        未分類（その他）: 0件</dd>
+      <dt>最終更新</dt><dd>2026-08-20（案件マスタから毎回自動集計）</dd>
+      <dt>更新経路</dt><dd>判定結果から自動集計。判定が変われば数字も変わる（人手入力なし）</dd>
+    </dl>
+    <div class="links">画面: <a href="課題サマリー_20260817.html">課題サマリー</a></div>
+  </div>
+</div>
+
+<h2>2つの人間フロー<span class="cnt">機械だけでは閉じない部分</span></h2>
+<div class="grid">
+  <div class="card flow">
+    <h3>人間フロー① 資料取得フロー</h3>
+    <p class="lead">機械では取れない資料を人が取りにいく。取得したPDFはDB1第2層へ合流する。</p>
+    <dl>
+      <dt>対象</dt><dd><span class="big">86件</span>
+        （仕様書の有無が不明＝要再点検 82件／資料が取れない＝問い合わせ 4件）</dd>
+      <dt>手段</dt><dd>電話・メール・窓口。案件／機関／取得手段／期限／担当／取得状況を管理</dd>
+      <dt>状態</dt><dd>リスト作成済み（2026-08-17 21:52時点・159,394バイト）。この86件が対象母数</dd>
+    </dl>
+    <div class="links">画面: <a href="資料取得リスト_20260817.html">資料取得リスト</a>／
+      関連: <a href="課題サマリー_20260817.html">課題サマリー（情報不足の内訳）</a></div>
+  </div>
+  <div class="card flow">
+    <h3>人間フロー② 承認フロー</h3>
+    <p class="lead">AI判定案 → にーやんの○× → 配信ゲート。承認した案件だけが公開ページへ出る。</p>
+    <dl>
+      <dt>現在</dt><dd>承認済 <span class="big">2件</span>／保留 1件／承認待ち 10件／
+        全体の未処理 640件</dd>
+      <dt>承認の意味</dt><dd>①判定の裏取り（省庁別登録・期限・技術者配置）②事業判断 ③配信ゲート</dd>
+      <dt>接続先</dt><dd>承認フラグ（マスタCSVの承認3列）→公開ページ再生成</dd>
+      <dt>読解の反映</dt><dd>公告原文の読解で掲載情報に無い要件が出た案件は、一次判定を変えずに
+        運用判断だけ保留へ落とす（現在 1件）</dd>
+    </dl>
+    <div class="links">画面: <a href="承認画面_20260814.html">承認画面</a>／
+      公開: <a href="https://1031pro.github.io/demos/one-percent/">新着ページ</a>・<a href="https://1031pro.github.io/demos/one-percent/stock.html">蓄積ページ</a></div>
+  </div>
+</div>
+
+<h2>画面一覧</h2>
+<table>
+  <tr><th>画面</th><th>見るもの</th><th>対応DB</th></tr>
+  <tr><td><a href="会社情報_20260817.html">会社情報</a></td>
+      <td>AIが判定根拠にしている会社の条件と、その更新の仕組み</td><td>DB3</td></tr>
+  <tr><td><a href="業者DB_20260817.html">業者DB</a></td>
+      <td>協力会社1,020社の工種×対応可否・到達手段</td><td>DB2</td></tr>
+  <tr><td><a href="課題サマリー_20260817.html">課題サマリー</a></td>
+      <td>受けられなかった理由の条件軸集計と、解決したときの効果</td><td>DB4</td></tr>
+  <tr><td><a href="承認用判定リスト_20260814.html">承認用判定リスト</a></td>
+      <td>全643件の一次判定と理由</td><td>DB1</td></tr>
+  <tr><td><a href="資料取得リスト_20260817.html">資料取得リスト</a></td>
+      <td>資料が取れない86件の取得先・手段・期限・担当</td><td>DB1＋人間フロー①</td></tr>
+  <tr><td><a href="承認画面_20260814.html">承認画面</a></td>
+      <td>候補13件へその場で○×を付ける</td><td>DB1＋人間フロー②</td></tr>
+  <tr><td><a href="読解ビュー_20260817.html">読解ビュー</a></td>
+      <td>公告・仕様書PDFの原文と、そこから抽出した要件の対応（5件・PDF 7ファイル）</td>
+      <td>DB1第2層</td></tr>
+  <tr><td><a href="https://1031pro.github.io/demos/one-percent/">公開ページ（新着）</a></td>
+      <td>協力会社が見る新着案件（外部向け・内部情報なし）</td><td>DB1の承認済み</td></tr>
+  <tr><td><a href="https://1031pro.github.io/demos/one-percent/stock.html">公開ページ（蓄積）</a></td>
+      <td>承認済み案件を締切順に蓄積（期限切れは自動除外）</td><td>DB1の承認済み</td></tr>
+</table>
+
+<h2>データの流れ</h2>
+<div class="note"><span class="lbl">1日の流れ</span>
+NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左辺＝DB3） → 承認（人間フロー②） →
+公開ページ再生成 → 落ちた案件の理由を集計（DB4） → DB3の整備順位が決まる → 判定精度が上がる。<br>
+資料が取れない案件は資料取得フロー（人間フロー①）へ回り、取得後にDB1第2層へ合流する。</div>
+<div class="note"><span class="lbl">仕様書読解は教育で精度が上がる層</span>
+公告・仕様書PDFの読解は一度作って終わりの機能ではない。省庁ごとの公告構造・等級表記・取得手段は
+<code>data\knowledge_仕様書読解_v1.md</code>（読解ナレッジ）に蓄積し、読解のたびに参照する。
+人が「ここは違う」と対話で訂正すればナレッジへ追記され、次回の読解から反映される。
+今回はこの読解で、掲載情報に「実績要件なし・その他要件なし」と出ていた案件から追加要件が見つかり、
+仮承認を保留へ戻した（<a href="読解ビュー_20260817.html">読解ビュー</a>に原文とPDFがある）。</div>
+
+<footer>
+<p><strong>内部資料</strong>／生成 2026-08-20 ／生成スクリプト tools\build_db_screens.py
+（4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
+<p>この画面の数値の出典:</p>
+<ul><li>案件マスタCSV <code>data\案件マスタ_20260807-13_20260814.csv</code>（1,443,760バイト・2026-08-20 12:04）— DB1／DB4の件数</li><li>協力会社CSV <code>data\協力会社整理_可空白_工種別_20260812.csv</code>（168,706バイト・2026-08-12 01:54）— DB2の件数</li><li>台帳分析 <code>data\analysis_東永希工公共工事台帳_20260805.md</code> ＋ 判定エンジン <code>tools\njss_judge.py</code> の定数 — DB3の項目数</li><li>設計正本 <code>data\design_MVP定義_20260814.md</code> §2.5（4DB＋2フローの定義）</li><li>読解件数・PDF数: <code>output\internal\読解ビュー_20260817.html</code>（67,895バイト・2026-08-17 20:59）と <code>output\internal\pdfs\</code> の実ファイルを生成時に数えた値</li><li>読解ナレッジ: <code>data\knowledge_仕様書読解_v1.md</code>（29,843バイト・2026-08-17 21:31）</li><li>公開ページURLは 2026-08-20 に HTTP 200 を実測確認</li></ul>
+</footer>
+</div>
+</body>
+</html>

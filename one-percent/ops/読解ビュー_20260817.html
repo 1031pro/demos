@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>公告・仕様書 読解ビュー（内部用）2026-08-17</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020; --urgent:#c2410c;
+        --navy:#1f4e79; --ink:#1a1a1a; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:var(--ink); line-height:1.65; font-size:14px; }
+.wrap { max-width:1180px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:30px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; }
+
+.summary { display:flex; flex-wrap:wrap; gap:10px; background:#1f2937; color:#fff;
+           padding:12px 14px; border-radius:6px; margin-bottom:14px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:14px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+.summary .item.ok b { color:#6ee7b7; }
+.summary .item.hold b { color:#fcd34d; }
+.summary .item.ng b { color:#fca5a5; }
+
+.notice { background:#eef4fb; border:2px solid var(--navy); border-radius:6px; padding:12px 14px; margin:14px 0 18px; }
+.notice strong { color:var(--navy); }
+.notice p { margin:0 0 8px; }
+.notice p:last-child { margin-bottom:0; }
+
+.profile { background:#fff; border:1px solid var(--line); border-left:6px solid var(--navy);
+           border-radius:6px; padding:14px 16px; margin-bottom:18px; }
+.profile h3 { font-size:15px; margin:0 0 8px; }
+.profile dl { display:grid; grid-template-columns:11em 1fr; gap:5px 12px; margin:0; font-size:13px; }
+.profile dt { color:var(--muted); }
+.profile dd { margin:0; }
+
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid var(--navy);
+        border-radius:6px; padding:14px 16px 18px; margin-bottom:18px; }
+.card.miss { border-left-color:#9a9aa2; background:#fafafa; }
+.card h3 { font-size:17px; margin:6px 0 10px; line-height:1.45; }
+.badge { display:inline-block; color:#fff; border-radius:3px; padding:1px 9px; font-size:12px;
+         font-weight:600; white-space:nowrap; margin-right:6px; }
+.badge.pdf { background:var(--navy); }
+.badge.conf-高 { background:var(--ok); }
+.badge.conf-中 { background:var(--hold); }
+.badge.conf-低 { background:#9a9aa2; }
+.badge.diff { background:var(--urgent); }
+.badge.miss { background:#9a9aa2; }
+.meta { color:var(--muted); font-size:12.5px; }
+
+dl.fields { display:grid; grid-template-columns:8.5em 1fr; gap:5px 12px; margin:0 0 12px; font-size:13px; }
+dl.fields dt { color:var(--muted); }
+dl.fields dd { margin:0; word-break:break-all; }
+
+.files { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px; }
+.filelink { display:inline-block; background:#f0f4f9; border:1px solid #c9d6e5; border-radius:4px;
+            padding:7px 12px; font-size:13px; text-decoration:none; color:var(--navy); font-weight:700; }
+.filelink:hover { background:#e2ebf5; }
+.filelink .fmeta { font-weight:400; color:var(--muted); font-size:12px; margin-left:6px; }
+.filelink.scan { border-style:dashed; }
+
+.tblwrap { overflow-x:auto; margin:0 0 12px; }
+table.map { border-collapse:collapse; width:100%; font-size:13px; table-layout:fixed; }
+table.map th, table.map td { border:1px solid var(--line); padding:8px 10px; vertical-align:top; }
+table.map th { background:#f4f6fa; text-align:left; font-size:12.5px; }
+table.map th.c1, table.map td.c1 { width:20%; }
+table.map th.c2, table.map td.c2 { width:44%; }
+table.map th.c3, table.map td.c3 { width:36%; }
+table.map td.c2 { background:#fcfcfd; font-family:"Yu Mincho","Meiryo",serif; font-size:12.5px; line-height:1.7; }
+.src { display:block; color:var(--muted); font-size:11.5px; margin-top:5px; font-family:"Yu Gothic UI",sans-serif; }
+.j { display:inline-block; border-radius:3px; padding:0 7px; font-size:12px; font-weight:700; color:#fff; margin-right:5px; }
+.j.ok { background:var(--ok); }
+.j.ng { background:var(--ng); }
+.j.na { background:var(--hold); }
+.j.info { background:#5b6b7f; }
+.note { font-size:12.5px; color:#333; margin:5px 0 0; }
+
+.conf { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:12px 0 0; font-size:13px; }
+.conf .lbl { font-weight:700; color:var(--navy); display:block; margin-bottom:3px; }
+
+.diffbox { background:#fff7f0; border:1px solid #f0c9a8; border-radius:4px; padding:10px 12px; margin:12px 0 0; font-size:13px; }
+.diffbox .lbl { font-weight:700; color:var(--urgent); display:block; margin-bottom:4px; }
+.diffbox ul { margin:0; padding-left:20px; }
+.diffbox li { margin-bottom:4px; }
+
+a { color:#1155cc; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px; }
+@media (max-width:760px) {
+  table.map, table.map tbody, table.map tr, table.map td { display:block; width:100%; }
+  table.map thead { display:none; }
+  table.map td { border-top:none; }
+  table.map tr { display:block; border-top:1px solid var(--line); margin-bottom:8px; }
+  table.map td.c1 { font-weight:700; background:#f4f6fa; }
+  dl.fields, .profile dl { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>公告・仕様書 読解ビュー</h1>
+  <p class="sub">発注機関の公式サイトから取得した公告・仕様書PDFの原文と、そこから抽出した要件を並べて確認する画面（内部用）。作成 2026年8月17日（月）／対象は判定「候補」5案件。</p>
+
+  <div class="summary">
+    <span class="item ok">取得した公式PDF<b>7</b></span>
+    <span class="item ok">読解した案件<b>5</b></span>
+    <span class="item hold">仕様書が取れず<b>3</b></span>
+    <span class="item ng">NJSSとの差異<b>19</b></span>
+  </div>
+
+  <div class="notice">
+    <p><strong>読解は教育で精度が上がる層です。</strong>この画面の右側（抽出結果）は、左側の原文をAIが読んで構造化したものです。
+    <strong>誤りに気づいたら対話で指摘してください。指摘はナレッジ（<code>data/knowledge_仕様書読解_v1.md</code>）に反映され、次回以降の読解に効きます。</strong></p>
+    <p>いま分かっている限界: ①防衛省の仕様書はスキャン画像でテキストが取れないため、表は画像として読み取っています（OCRの生テキストは表が崩れるので使っていません）。②仕様書が電子調達システム（GEPS）内にあり公式サイトから取得できない案件があります。③会社側の情報が欠けている項目（統一資格の登録地域・ISO9001の有無など）は「情報不足」として、満たす／満たさないの判定を出していません。</p>
+  </div>
+
+  <div class="profile">
+    <h3>突合に使った東永希工のプロフィール</h3>
+    <dl>
+      <dt>全省庁統一資格</dt><dd>物品販売D ／ 役務の提供等D（有効期間 2025-04-01〜2028-03-31）</dd>
+      <dt>競争参加希望地域</dt><dd><span class="j na">未確認</span>台帳に登録地域の記載なし。地域要件の判定が全件「情報不足」になる原因</dd>
+      <dt>建設業許可</dt><dd>茨城県知事・一般（土木／建築／左官／とび・土工／屋根／タイル・れんが・ブロック／鉄筋／舗装／板金／塗装／防水／内装仕上／建具／解体 の14工種）<br><strong>管工事・電気工事・機械器具設置は含まない</strong></dd>
+      <dt>技術者</dt><dd>1級土木施工管理技士 ／ 1級建築施工管理技士 ／ 監理技術者資格者証</dd>
+      <dt>設備系の資格</dt><dd><span class="j na">未確認</span>電気主任技術者・電気工事士・ボイラー整備士等の保有状況が台帳にない</dd>
+      <dt>ISO9001</dt><dd><span class="j na">未確認</span>認証取得の記録が台帳にない</dd>
+      <dt>電子調達</dt><dd><span class="j na">未確認</span>GEPS（政府電子調達）・JAEA電子入札システムの登録状況が不明</dd>
+    </dl>
+    <p class="note">出典: <code>data/analysis_東永希工公共工事台帳_20260805.md</code> §4（2026-08-05 時点）。今回の5案件はすべて設備点検・清掃の「役務」であり、建設業許可の工種そのものは参加要件になっていない。</p>
+  </div>
+
+  <h2>1. 新山下第1庁舎1階事務室空調機点検整備 <span class="cnt">offer 33805884</span></h2>
+  <div class="card">
+    <div><span class="badge miss">公告PDFは存在しない</span><span class="badge conf-中">確信度 中</span><span class="badge diff">NJSSと日程差異</span><span class="meta">2026-08-09 案件23</span></div>
+    <h3>新山下第1庁舎1階事務室空調機点検整備</h3>
+    <dl class="fields">
+      <dt>発注機関</dt><dd>農林水産省 植物防疫所 横浜植物防疫所（支出負担行為担当官 横浜植物防疫所長 春日井 健司）</dd>
+      <dt>調達案件番号</dt><dd>0000000000000617303（オープンカウンタ（少額）への参加募集情報／公開 令和8年8月7日〜8月19日）</dd>
+      <dt>履行場所</dt><dd>公告は「仕様書のとおり」。NJSS掲載では横浜市中区新山下1-16-10 横浜植物防疫所新山下第1庁舎</dd>
+      <dt>取得元URL</dt><dd><a href="https://www.p-portal.go.jp/pps-web-biz/UAA01/OAA0104?procurementItemInfoId=633468&amp;SyFromFlg=1" target="_blank" rel="noopener noreferrer">https://www.p-portal.go.jp/pps-web-biz/UAA01/OAA0104?procurementItemInfoId=633468&amp;SyFromFlg=1</a><br><span class="meta">実アクセス確認済み: HTTP 200 ／ text/html;charset=UTF-8 ／ 34,917バイト（2026-08-17）</span></dd>
+      <dt>NJSS案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33805884" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33805884</a></dd>
+    </dl>
+    <div class="files">
+      <a class="filelink" href="pdfs/33805884_公告本文.txt" target="_blank">公告本文（テキスト保存）を開く<span class="fmeta">4,799バイト／調達ポータルHTMLから全文保存</span></a>
+    </div>
+    <p class="note"><strong>この案件に公告PDFは存在しません。</strong>オープンカウンター（少額随契）案件のため、農林水産省・植物防疫所の自庁サイトには一切掲載がなく（5植物防疫所すべてを確認）、<strong>調達ポータルのHTMLに公告全文が載る形式</strong>です。そのため上のリンクはPDFではなく、原文を保存したテキストファイルです。仕様書はGEPSの連絡先情報入力またはログインが必要なため未取得。</p>
+
+    <div class="tblwrap">
+    <table class="map">
+      <thead><tr><th class="c1">項目</th><th class="c2">条文の原文（抜粋）</th><th class="c3">抽出した要件と東永希工との突合</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="c1">参加資格<br>（等級・地域）</td>
+          <td class="c2">（３）令和７・８・９年度農林水産省競争参加資格（全省庁統一資格）の「役務の提供等」において、競争参加資格を有する者であること。その他、当該競争参加資格を有していない者にあっては、別途定める随意契約登録者名簿に登録されていること。
+            <span class="src">公告 2項(3)</span></td>
+          <td class="c3">
+            <p><strong>等級要件</strong>: <span class="j ok">指定なし</span>「役務の提供等」の資格を有することのみ。<strong>A〜D等の等級指定が条文にない</strong></p>
+            <p><strong>地域要件</strong>: <span class="j ok">指定なし</span>競争参加地域の指定が条文にない</p>
+            <p><span class="j ok">満たす</span>東永希工は役務の提供等Dを保有。<strong>今回の5案件で唯一、地域要件が条文になく「情報不足」に落ちない案件</strong>。さらに統一資格未保有者でも随意契約登録者名簿への登録で参加できる、最も間口の広い書き方</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">欠格要件</td>
+          <td class="c2">（１）予算決算及び会計令…第70条の規定に該当しない者であること。／（２）予決令第71条の規定に該当しない者であること。／（４）物品の製造契約、物品の購入契約及び役務等契約指名停止等措置要領に基づく指名停止を受けている期間中でないこと。／（５）暴力団員による不当な行為の防止等に関する法律第２条第２号に規定する暴力団…に該当しない者であること。
+            <span class="src">公告 2項(1)(2)(4)(5)</span></td>
+          <td class="c3"><span class="j ok">満たす想定</span>一般的な欠格条項のみ。案件固有の要件はない</td>
+        </tr>
+        <tr>
+          <td class="c1">実績要件</td>
+          <td class="c2">（公告本文に実績・同種経験・技術者に関する条項なし）
+            <span class="src">公告 2項 全体</span></td>
+          <td class="c3"><span class="j ok">要件なし</span>原文を通読しても実績要件・資格者配置要件はない。NJSSの「実績要件: 特になし／その他要件: 特になし」は原文と一致</td>
+        </tr>
+        <tr>
+          <td class="c1">提出期限<br>・提出方法</td>
+          <td class="c2">４．見積書の提出期限および方法<br>
+            （１）提出期限　令和８年８月１８日（火）午後５時００分まで<br>
+            （２）提出方法　電子調達システムにより送信又は、上記３（２）宛て持参（行政機関の休日を除く。）若しくは郵送（封筒の封皮に件名を記載し書留郵便に限る）又は、電子メールにて横浜植物防疫所００４見積メールボックス宛て電子ファイル送信。<br>
+            なお、全省庁統一資格を有する者である場合は、参加資格を証明する書類（競争参加資格証明書の写し）を併せて持参若しくは郵送又は、電子ファイル送信すること。
+            <span class="src">公告 4項</span></td>
+          <td class="c3">
+            <p>見積書提出期限 <strong>2026-08-18（火）17:00</strong>。<span class="j ok">NJSS一致</span>（NJSS「入札日 2026-08-18」＝この提出期限）</p>
+            <p><span class="j ok">重要・有利な条件</span><strong>電子メールでの見積書提出が認められている</strong>。GEPSアカウントがなくても参加できる（水戸案件と対照的）</p>
+            <p>統一資格保有者は<strong>競争参加資格証明書の写しを併せて提出</strong>する必要がある</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">見積合わせ</td>
+          <td class="c2">５．見積合わせの日時及び場所<br>
+            （１）日時　令和８年８月１９日（水）午前１０時００分から<br>
+            （２）場所　上記３（２）に同じ〔横浜市中区北仲通５－５７ 横浜第２合同庁舎３階 横浜植物防疫所総務部会計課 営繕係〕
+            <span class="src">公告 5項</span></td>
+          <td class="c3"><span class="j ng">NJSS未掲載</span>開札にあたる<strong>見積合わせは翌日の2026-08-19（水）10:00</strong>。NJSSの「入札日 2026-08-18」は提出期限であって見積合わせ日ではない</td>
+        </tr>
+        <tr>
+          <td class="c1">仕様書の入手</td>
+          <td class="c2">３．仕様書等の交付場所及び問い合わせ先<br>
+            （１）電子媒体による交付場所　調達ポータルサイト https://www.p-portal.go.jp/<br>
+            （２）紙媒体による交付場所及び問い合わせ先　横浜市中区北仲通５－５７ 横浜第２合同庁舎３階　横浜植物防疫所総務部会計課 営繕係　TEL ０４５－２１１－７１５１
+            <span class="src">公告 3項</span></td>
+          <td class="c3">
+            <p><span class="j na">未取得</span>電子交付は調達ポータル経由だが、添付資料のダウンロードに<strong>連絡先情報の入力またはGEPSログインが必要</strong>なため取得していない。紙媒体は横浜の窓口交付</p>
+            <p>NJSS掲載の機器情報（ダイキン室内機FHCP45FA／室外機RZRP45BFTE、冷却不能・風量調節不可の復旧）は<strong>原文で裏が取れていない</strong></p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">履行期限<br>・履行場所</td>
+          <td class="c2">（２）仕 様 等 ：仕様書のとおり／（３）履行期限 ：仕様書のとおり／（４）履行場所 ：仕様書のとおり
+            <span class="src">公告 1項</span></td>
+          <td class="c3"><span class="j na">原文で確認できず</span>公告は業務内容・期限・場所をすべて仕様書に委任。NJSS掲載の「履行期間＝契約締結日から令和8年8月28日まで」は未確認</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="conf"><span class="lbl">読解の確信度: 中</span>
+      公告本文は調達ポータルの公式ページから全文を取得し、こちらでもHTTP 200と案件名の一致を実測確認したため、<strong>参加資格・日程・提出方法の読解は確信度「高」</strong>。
+      案件全体を「中」としたのは、公告が業務内容・履行期限・履行場所をすべて仕様書に委任しており、<strong>その仕様書が未取得</strong>のため。対象機器・作業範囲・履行期限はNJSS掲載情報のままで原文の裏が取れていない。
+    </div>
+    <div class="diffbox"><span class="lbl">NJSS掲載情報との差異</span>
+      <ul>
+        <li><strong>見積合わせ（開札相当）は2026-08-19</strong>: NJSS未掲載。NJSSの「入札日 2026-08-18」は見積書の提出期限</li>
+        <li><strong>電子メールでの見積書提出が可能</strong>: NJSS未掲載。GEPS未登録でも参加できる重要な条件</li>
+        <li><strong>参加資格に等級・地域の指定がない</strong>: NJSSは「全省庁統一資格 役務の提供系 ランク不明」と記載していたが、原文では等級の指定自体が存在しない（「ランク不明」ではなく「ランク不問」）</li>
+        <li><strong>競争参加資格証明書の写しの添付が必要</strong>: NJSS未掲載</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>2. 自然冷媒ヒートポンプ給湯器点検保守役務（座間駐屯地） <span class="cnt">offer 33804631</span></h2>
+  <div class="card">
+    <div><span class="badge pdf">公告・仕様書 取得済</span><span class="badge conf-高">確信度 高</span><span class="badge diff">NJSSと日程差異</span><span class="meta">2026-08-08 案件102</span></div>
+    <h3>自然冷媒ヒートポンプ給湯器点検保守役務(座間駐屯地)</h3>
+    <dl class="fields">
+      <dt>発注機関</dt><dd>防衛省 陸上自衛隊 東部方面隊 東部方面会計隊（分任契約担当官 陸上自衛隊座間駐屯地 第441会計隊長 佐野 任治）</dd>
+      <dt>公告番号</dt><dd>公告 第B39号（令和8年8月5日）</dd>
+      <dt>履行場所</dt><dd>陸上自衛隊座間駐屯地（神奈川県相模原市南区新戸2958番地）※在日米軍キャンプ座間内</dd>
+      <dt>取得元ページ</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo.html" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo.html</a></dd>
+      <dt>公告PDF URL</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0290.pdf" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0290.pdf</a></dd>
+      <dt>仕様書PDF URL</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0290-1.pdf" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0290-1.pdf</a></dd>
+      <dt>NJSS案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33804631" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33804631</a></dd>
+    </dl>
+    <div class="files">
+      <a class="filelink" href="pdfs/33804631_公告.pdf" target="_blank">公告PDFを開く<span class="fmeta">206,516バイト／1ページ／テキスト層あり</span></a>
+      <a class="filelink scan" href="pdfs/33804631_仕様書.pdf" target="_blank">仕様書PDFを開く<span class="fmeta">4,797,418バイト／19ページ／スキャン画像</span></a>
+    </div>
+
+    <div class="tblwrap">
+    <table class="map">
+      <thead><tr><th class="c1">項目</th><th class="c2">条文の原文（抜粋）</th><th class="c3">抽出した要件と東永希工との突合</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="c1">参加資格<br>（等級・地域）</td>
+          <td class="c2">令和7・8・9年度防衛省競争参加資格 (全省庁統一資格)「役務の提供等」のA，B，C，D等級に格付けされ、競争参加地域が関東・甲信越地域の競争参加資格を有する者であること。
+            <span class="src">公告 2項(1)</span></td>
+          <td class="c3">
+            <p><strong>等級要件</strong>: 役務の提供等 A〜D（全等級可）<br>
+            <span class="j ok">満たす</span>東永希工は役務の提供等D。A〜Dの列挙にDが含まれる</p>
+            <p><strong>地域要件</strong>: 競争参加地域＝関東・甲信越<br>
+            <span class="j na">情報不足</span>会社の所在地（茨城県）ではなく<strong>統一資格の登録時に選んだ希望地域</strong>で判定する条文。台帳に登録地域の記載がなく確認できない</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">欠格要件</td>
+          <td class="c2">(2) 予算決算及び会計令第70条の規定に該当しない者であること。／(3) 同第71条…／(4) …「装備品等及び役務の調達に係る指名停止等の要領」に基づく指名停止の措置を受けている期間中の者でないこと。／(7) 暴力団関係業者でないこと。
+            <span class="src">公告 2項(2)〜(7)</span></td>
+          <td class="c3"><span class="j ok">満たす想定</span>いずれも一般的な欠格条項で、案件固有の要件ではない。指名停止歴がなければ該当しない</td>
+        </tr>
+        <tr>
+          <td class="c1">実績要件</td>
+          <td class="c2">（公告本文に実績・同種経験に関する条項なし）
+            <span class="src">公告 2項 全体</span></td>
+          <td class="c3"><span class="j ok">要件なし</span>原文を通読しても同種実績・施工実績の要求はない。NJSSの「実績要件: 特になし」は原文と一致</td>
+        </tr>
+        <tr>
+          <td class="c1">対象設備<br>（数量・型式）</td>
+          <td class="c2">【表1】対象設備<br>
+            ・7号建物東側屋外／東芝キャリア株式会社／2012年6月／HWH-F461SC／単相200V 50Hz／加熱能力6.0KW／冷媒R744(CO2)／貯湯タンク460L×1基（ステンレス）<br>
+            ・11号建物西側屋外／日本イトミック株式会社／2012年11月／CHP-1500UC-4／3相200V／24.7KW／R744／500L×3基(90℃)＋500L×1基(60℃)（銅）<br>
+            ・14号建物屋上／昭和鉄工株式会社／2011年3月／EWTH-1522T／3相200V／15KW／R744／2,000L×1基（ステンレス）<br>
+            各1基（計3基）
+            <span class="src">仕様書 特記仕様書 1項【表1】（14/19ページ・画像として読解）</span></td>
+          <td class="c3">
+            <p><strong>数量</strong>: 自然冷媒ヒートポンプ給湯器 3基。<span class="j ok">NJSS一致</span></p>
+            <p><strong>読解メモ</strong>: 冷媒はすべて<strong>R744（CO2＝自然冷媒）</strong>。フロン類ではないため、フロン排出抑制法の定期点検義務や充填回収業者登録の対象外。<span class="j info">参入障壁は低い</span></p>
+            <p><strong>製造3社が別々</strong>（東芝キャリア／日本イトミック／昭和鉄工）。1社のメーカー系列では全機種をカバーしにくく、逆に独立系保守業者に向く構成</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">部品交換</td>
+          <td class="c2">【表2】交換部品　対象機器 EWTH-1522T（14号建物）<br>
+            ・マンホールパッキン　No.2300001　φ530×T5　1枚<br>
+            ・ストラブカップリング　GB-25 ESS（25A）　1個<br>
+            ※交換部品は受注者がすべて準備する。
+            <span class="src">仕様書 特記仕様書 1項【表2】（14/19ページ・画像として読解）</span></td>
+          <td class="c3"><span class="j ok">NJSS一致</span>NJSS要約の「マンホールパッキン、ストラブカップリング各1個」は原文どおり。部品費は受注者負担で見積に含める必要がある</td>
+        </tr>
+        <tr>
+          <td class="c1">技術者・配置</td>
+          <td class="c2">業務責任者（現場代理人）を定め施設管理担当者に届け出る。…業務責任者は、業務担当者以上の経験、知識及び技能を有する者とする。…関係法令により作業等を行う者の資格が定められている場合は、当該資格を有する者とする。
+            <span class="src">仕様書 共通仕様書（建築保全業務共通仕様書に準拠）</span></td>
+          <td class="c3">
+            <p><span class="j na">情報不足</span><strong>特定の資格を名指ししていない条件形の書き方</strong>。「資格が定められている場合は当該資格を有する者」とあるだけで、必要資格は対象設備から逆算する必要がある</p>
+            <p>本件はCO2ヒートポンプ・貯湯タンクのため、ボイラー技士・フロン取扱の法定資格は原則不要。ただし電気系統点検を伴うため電気工事士の要否は要確認</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">履行期間</td>
+          <td class="c2">納期：契約日～令和9年3月31日／納地：陸上自衛隊座間駐屯地
+            <span class="src">公告 1項 表</span></td>
+          <td class="c3">契約期間は契約日〜2027-03-31。<span class="j info">注意</span>これは<strong>契約期間であって作業期間ではない</strong>。実作業日の指定は仕様書側にあり、13号建物等の駐屯地内作業は平日09:00〜14:00の時間帯制限がある</td>
+        </tr>
+        <tr>
+          <td class="c1">日程</td>
+          <td class="c2">5 入札実施日時及び場所：<strong>令和8年8月25日(火)11時00分</strong>　陸上自衛隊座間駐屯地 J－13 3F 小会議室<br>
+            10(3) 入札参加希望者は、令和8年8月21日（金）17時00分までに市価調査票の提出をすること。<br>
+            10(4) 郵便による入札は令和8年8月24日（月）17時00分までに下記宛先必着とする。
+            <span class="src">公告 5項・10項</span></td>
+          <td class="c3">
+            <p>市価調査票 <strong>8/21 17:00</strong>／郵便入札必着 <strong>8/24 17:00</strong>／入札実施 <strong>8/25 11:00</strong></p>
+            <p><span class="j ng">NJSS差異</span>NJSSの「入札日 2026-08-24」は<strong>郵便入札の必着期限</strong>であって開札日ではない。実際の入札実施は<strong>8/25</strong></p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">現地の制約</td>
+          <td class="c2">(6) 入門について：米軍基地内に所在するため入門の際にはエスコートが必要となります。（米軍入門パス所持者を除く）当日会場において入札に参加される方は事前連絡のうえ、入札時間30分前までに手続きを実施するので、駐車場に到着後、会計隊に連絡をすること。また身分証明証（運転免許証（暗証番号を控えておくこと）パスポート等）及び車で来られる場合は車検証、任意保険証が必要になります。
+            <span class="src">公告 10項(6)</span></td>
+          <td class="c3"><span class="j info">NJSS未掲載</span>キャンプ座間は在日米軍基地。<strong>入札参加も現地作業も入門手続きとエスコートが必要</strong>。移動時間・手続き時間を見積の工数に織り込む必要がある。茨城県からの距離とあわせて実行体制の論点</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="conf"><span class="lbl">読解の確信度: 高</span>
+      公告PDFはテキスト層があり原文をそのまま取得できた（さらに画像としても照合済み）。仕様書はスキャン画像だが、要件を含む特記仕様書ページを画像として読解し、対象設備表・交換部品表を確定させた。参加資格・日程・数量はいずれも原文で裏が取れている。
+      確信度が下がるのは「技術者・配置」の行のみ（原文が条件形で、必要資格を名指ししていないため）。
+    </div>
+    <div class="diffbox"><span class="lbl">NJSS掲載情報との差異</span>
+      <ul>
+        <li><strong>入札日</strong>: NJSS「2026-08-24」＝郵便入札の必着期限。公告原文の入札実施日時は<strong>2026-08-25（火）11:00</strong></li>
+        <li><strong>米軍基地の入門要件</strong>: NJSS要約に記載なし。公告原文にはエスコート必要・身分証明証必要と明記</li>
+        <li><strong>製造会社</strong>: NJSS要約は型式のみ。原文では3基が東芝キャリア・日本イトミック・昭和鉄工の別メーカー</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3. 温水発生機点検保守役務（座間駐屯地） <span class="cnt">offer 33804545</span></h2>
+  <div class="card">
+    <div><span class="badge pdf">公告・仕様書 取得済</span><span class="badge conf-高">確信度 高</span><span class="badge diff">NJSSと日程差異</span><span class="meta">2026-08-08 案件111</span></div>
+    <h3>温水発生機点検保守役務(座間駐屯地)</h3>
+    <dl class="fields">
+      <dt>発注機関</dt><dd>防衛省 陸上自衛隊 東部方面隊 東部方面会計隊（分任契約担当官 陸上自衛隊座間駐屯地 第441会計隊長 佐野 任治）</dd>
+      <dt>公告番号</dt><dd>公告 第B37号（令和8年8月5日）／仕様書番号 第36号（令和8年8月3日作成）</dd>
+      <dt>履行場所</dt><dd>陸上自衛隊座間駐屯地（神奈川県相模原市南区新戸2958番地）※在日米軍キャンプ座間内</dd>
+      <dt>取得元ページ</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo.html" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo.html</a></dd>
+      <dt>公告PDF URL</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0270.pdf" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0270.pdf</a></dd>
+      <dt>仕様書PDF URL</dt><dd><a href="https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0270-1.pdf" target="_blank" rel="noopener noreferrer">https://www.mod.go.jp/gsdf/eae/kaikei/eafin/koubo/20260825-441A-0270-1.pdf</a></dd>
+      <dt>NJSS案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33804545" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33804545</a></dd>
+    </dl>
+    <div class="files">
+      <a class="filelink" href="pdfs/33804545_公告.pdf" target="_blank">公告PDFを開く<span class="fmeta">204,998バイト／1ページ／テキスト層あり</span></a>
+      <a class="filelink scan" href="pdfs/33804545_仕様書.pdf" target="_blank">仕様書PDFを開く<span class="fmeta">12,674,073バイト／19ページ／スキャン画像</span></a>
+    </div>
+
+    <div class="tblwrap">
+    <table class="map">
+      <thead><tr><th class="c1">項目</th><th class="c2">条文の原文（抜粋）</th><th class="c3">抽出した要件と東永希工との突合</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="c1">参加資格<br>（等級・地域）</td>
+          <td class="c2">令和7・8・9年度防衛省競争参加資格 (全省庁統一資格)「役務の提供等」のA，B，C，D等級に格付けされ、競争参加地域が関東・甲信越地域の競争参加資格を有する者であること。
+            <span class="src">公告 2項(1)</span></td>
+          <td class="c3">
+            <p><strong>等級要件</strong>: 役務の提供等 A〜D（全等級可）<br>
+            <span class="j ok">満たす</span>東永希工は役務の提供等D</p>
+            <p><strong>地域要件</strong>: 競争参加地域＝関東・甲信越<br>
+            <span class="j na">情報不足</span>統一資格の登録希望地域が未確認（会社所在地ではなく登録内容で判定する条文）</p>
+            <p class="note">※ offer 33804631 と完全に同一の条文。同一発注部隊の定型文</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">実績要件</td>
+          <td class="c2">（公告本文に実績・同種経験に関する条項なし）
+            <span class="src">公告 2項 全体</span></td>
+          <td class="c3"><span class="j ok">要件なし</span>原文に同種実績の要求なし。NJSSの記載と一致</td>
+        </tr>
+        <tr>
+          <td class="c1">対象設備<br>（数量・型式）</td>
+          <td class="c2">【表1】対象設備（すべて製造会社＝昭和鉄工株式会社）<br>
+            ・1号建物1階機械室／2014年11月／NEOS-W-3,000G／3相200V 50Hz／ヒーター出力349kW／伝熱面積7.4㎡／水容缶量460L／13A 発熱量46.05MJ/㎥ 低圧1.960kpa／ガス消費量33.7㎥/h／バーナー RG-50／モーター0.4kW<br>
+            ・13号建物地下1階機械室／2012年9月／ECALO-10000G-3／1,163kW／19.5㎡／700L／45.00MJ/㎥／112.2㎥/h／RGLN-160S／2.2kW<br>
+            ・22号建物1階機械室／2018年11月／NEOS-S-R1000MPG／116kW／5.5㎡／260L／45.00MJ/㎥／11.5㎥/h／RGSN-25／0.25kW<br>
+            各1基（計3基）
+            <span class="src">仕様書 特記仕様書 1項【表1】（14/19ページ・画像として読解）</span></td>
+          <td class="c3">
+            <p><strong>数量</strong>: 温水発生機 3基。<span class="j ok">NJSS一致</span>（NJSS要約の型式 NEOS-W-3,000G／ECALO-10000G-3／NEOS-S-R1000MPG は原文どおり）</p>
+            <p><strong>読解メモ</strong>: <strong>3基すべて昭和鉄工製</strong>。NJSS要約にはメーカー名がなく、原文でしか分からない。過去実績が特定業者に固定化している背景の裏付けになる</p>
+            <p>都市ガス13A・低圧。最大機は1,163kW／伝熱面積19.5㎡と大型で、真空式（13号建物のみ真空部品点検あり）</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">部品交換</td>
+          <td class="c2">【表2】交換部品　対象機器 ECALO-10000G-3（13号建物）<br>
+            ・煙箱蓋ボルト　M8×L25 ユニクロ　12本<br>
+            ※交換部品は受注者がすべて準備する。
+            <span class="src">仕様書 特記仕様書 1項【表2】（14/19ページ・画像として読解）</span></td>
+          <td class="c3"><span class="j ok">NJSS一致</span>NJSS要約の「煙箱蓋ボルトM8×L25ユニクロ12本」は原文どおり。部品費は受注者負担</td>
+        </tr>
+        <tr>
+          <td class="c1">作業条件</td>
+          <td class="c2">５　その他<br>
+            （１）　Ｊ－１３号建物駐屯地内作業については、平日０９：００〜１４：００の間に実施する。また急遽官側行事及び訓練等による点検保守日程の変更申入れがあった場合、受注者は監督官と協議し、点検保守日程を変更する。<br>
+            （２）　受注者及び官側の負担の範囲　ア　部品交換に必要な消耗品類は、すべて受注者の負担とする。　イ　試運転調整に最小限必要な電気、ガス、水道等の使用に係る費用は官側負担とする。<br>
+            （７）　役務完了検査合格後に、本点検保守及び部品交換作業欠陥が原因とみられる不具合の発生について受注者は、１年間その責を負う。
+            <span class="src">仕様書 特記仕様書 5項（16/19ページ・画像として読解）</span></td>
+          <td class="c3">
+            <p><span class="j info">NJSS未掲載</span><strong>J－13号建物内の作業は平日09:00〜14:00に限定</strong>（実働5時間）。訓練等で日程変更もあり得る。1日あたりの作業可能量が制約され、稼働計画に直結する</p>
+            <p><strong>瑕疵担保1年</strong>。点検保守の役務としては重めの負担</p>
+            <p class="note">※「J－13号建物」は入札会場（J－13 3F 小会議室）と同じ建物表記。対象設備表の「13号建物」とは別表記のため、どの棟を指すかは現地確認の論点</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">報告書様式</td>
+          <td class="c2">点検保守結果報告書は、各機器毎に「建築保全業務報告書作成の手引き」による様式（各1部）及び製造会社が定める点検様式（各1部）を点検保守終了後に速やかに提出する。<br>
+            次回の点検・保守において交換が必要となる部品等を洗い出し、見積書を添えて報告する。
+            <span class="src">仕様書 特記仕様書 5項</span></td>
+          <td class="c3"><span class="j info">NJSS未掲載</span>国交省官庁営繕部の<strong>「建築保全業務共通仕様書」「建築保全業務報告書作成の手引き」に準拠</strong>した様式が必要。この様式に慣れているかが実務コストを左右する</td>
+        </tr>
+        <tr>
+          <td class="c1">履行期間</td>
+          <td class="c2">納期：契約日～令和9年3月31日／納地：陸上自衛隊座間駐屯地
+            <span class="src">公告 1項 表</span></td>
+          <td class="c3">契約期間は契約日〜2027-03-31（NJSS一致）</td>
+        </tr>
+        <tr>
+          <td class="c1">日程</td>
+          <td class="c2">5 入札実施日時及び場所：<strong>令和8年8月25日(火)10時00分</strong>　陸上自衛隊座間駐屯地 J－13 3F 小会議室<br>
+            10(3) …令和8年8月21日（金）17時00分までに市価調査票の提出をすること。<br>
+            10(4) 郵便による入札は令和8年8月24日（月）17時00分までに…必着とする。<br>
+            なお初度入札で郵便による入札参加者があった場合の再度入札　ア 日時：令和8年8月27日（木）10時00分
+            <span class="src">公告 5項・10項</span></td>
+          <td class="c3">
+            <p>市価調査票 <strong>8/21 17:00</strong>／郵便入札必着 <strong>8/24 17:00</strong>／入札実施 <strong>8/25 10:00</strong>／再度入札 8/27 10:00</p>
+            <p><span class="j ng">NJSS差異</span>NJSS「入札日 2026-08-24」は郵便必着期限。実施は<strong>8/25</strong></p>
+            <p><span class="j info">重要</span>給湯器案件（33804631）と<strong>同日・同会場</strong>で、開始時刻だけが1時間違う（本件10:00／給湯器11:00）。<strong>2件同時応札が現実的</strong>で、1回の移動・1回の入門手続きで両方に参加できる</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="conf"><span class="lbl">読解の確信度: 高</span>
+      公告はテキスト層＋画像の両方で照合済み。仕様書はスキャン画像のため、特記仕様書の14/19ページ（対象設備表・交換部品表）と16/19ページ（その他条件）を画像として読解し、原文どおりに確定した。
+      <strong>OCRだけに頼らず画像で確認したことで誤りを1件修正している</strong>（OCRは「J－13号建物」を「13号建物」と読み違えていた）。これがスキャンPDFをOCR結果のまま信用してはいけない実例。
+    </div>
+    <div class="diffbox"><span class="lbl">NJSS掲載情報との差異</span>
+      <ul>
+        <li><strong>入札日</strong>: NJSS「2026-08-24」＝郵便必着期限。実際の入札実施は<strong>2026-08-25（火）10:00</strong></li>
+        <li><strong>作業時間帯の制限</strong>: 平日09:00〜14:00（NJSS要約に記載なし）</li>
+        <li><strong>製造会社</strong>: 3基すべて昭和鉄工製（NJSS要約は型式のみ）</li>
+        <li><strong>瑕疵担保1年・報告書様式指定</strong>: NJSS要約に記載なし</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>4. 放射線保健室他屋外受変電設備点検作業 <span class="cnt">offer 33809815</span></h2>
+  <div class="card">
+    <div><span class="badge pdf">公告・仕様書 取得済</span><span class="badge conf-高">確信度 高</span><span class="badge diff">要件の取りこぼし発見</span><span class="meta">2026-08-11 案件1</span></div>
+    <h3>放射線保健室他屋外受変電設備点検作業</h3>
+    <dl class="fields">
+      <dt>発注機関</dt><dd>国立研究開発法人 日本原子力研究開発機構 核燃料サイクル工学研究所（財務契約部長 松本 尚也／契約担当 財務契約部事業契約第2課 小坂 佳美）</dd>
+      <dt>契約管理番号</dt><dd>0802C03204（公告日 令和8年8月10日）</dd>
+      <dt>履行場所</dt><dd>茨城県那珂郡東海村大字村松4番地33（納入場所: 技術管理第3棟）</dd>
+      <dt>取得元ページ</dt><dd><a href="https://keiyaku.jaea.go.jp/compe/02.html" target="_blank" rel="noopener noreferrer">https://keiyaku.jaea.go.jp/compe/02.html</a>（一般競争入札・拠点別の「本部」区分）</dd>
+      <dt>公告PDF URL</dt><dd><a href="https://keiyaku.jaea.go.jp/compe/02/pdf/0802C03204.pdf" target="_blank" rel="noopener noreferrer">https://keiyaku.jaea.go.jp/compe/02/pdf/0802C03204.pdf</a></dd>
+      <dt>仕様書PDF URL</dt><dd><a href="https://keiyaku.jaea.go.jp/compe/02/pdf/SP0802C03204.pdf" target="_blank" rel="noopener noreferrer">https://keiyaku.jaea.go.jp/compe/02/pdf/SP0802C03204.pdf</a></dd>
+      <dt>NJSS案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33809815" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33809815</a></dd>
+    </dl>
+    <div class="files">
+      <a class="filelink" href="pdfs/33809815_公告.pdf" target="_blank">公告PDFを開く<span class="fmeta">227,135バイト／2ページ／テキスト層あり</span></a>
+      <a class="filelink" href="pdfs/33809815_仕様書.pdf" target="_blank">仕様書PDFを開く<span class="fmeta">1,079,788バイト／58ページ／テキスト層あり</span></a>
+    </div>
+
+    <div class="tblwrap">
+    <table class="map">
+      <thead><tr><th class="c1">項目</th><th class="c2">条文の原文（抜粋）</th><th class="c3">抽出した要件と東永希工との突合</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="c1">参加資格<br>（等級）</td>
+          <td class="c2">(2) 国の競争参加者資格（全省庁統一資格※）又は国立研究開発法人日本原子力研究開発機構競争参加者資格のいずれかにおいて、当該年度における「役務の提供等」のA、B、C又はD等級に格付けされている者であること。競争参加者資格審査を受けていない者は、開札の前までにその審査を受け、資格を有することが認められていること。
+            <span class="src">公告2ページ目 別紙「入札参加資格要件等」／必要な資格(2)</span></td>
+          <td class="c3">
+            <p><strong>等級要件</strong>: 役務の提供等 A〜D<br>
+            <span class="j ok">満たす</span>東永希工は役務の提供等D。統一資格・機構独自資格のどちらでもよい書き方</p>
+            <p><strong>地域要件</strong>: <span class="j ok">要件なし</span>条文に競争参加地域の指定がない（NJSS記載と一致）。履行場所も東海村で茨城県内</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">技術要件①<br>（同種経験）</td>
+          <td class="c2">・屋外受変電設備（6，600Ｖ）と同等以上または類似設備の点検作業に求められる知見・技術力を有していることが証明できる資料を提出すること。
+            <span class="src">公告2ページ目 別紙「求める技術要件」</span></td>
+          <td class="c3">
+            <p><span class="j ng">NJSS要約が落としていた要件</span>NJSSは「実績要件: なし／その他要件: なし」と記載していたが、<strong>原文では6,600V屋外受変電設備の同等以上の点検経験の証明資料提出が必須</strong></p>
+            <p><span class="j na">情報不足〜満たさない懸念</span>東永希工の建設業許可14工種に<strong>電気工事は含まれず</strong>、台帳にも高圧受変電設備の点検実績・電気主任技術者の記録がない。証明資料を出せるかは現時点で説明できない</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">技術要件②<br>（品質保証体制）</td>
+          <td class="c2">・品質マネジメントシステムの国際規格であるISO9001の認証を取得していること又はISO9001に準じた品質保証体制が整備されていることが証明できる資料を提出すること。
+            <span class="src">公告2ページ目 別紙「求める技術要件」</span></td>
+          <td class="c3">
+            <p><span class="j ng">NJSS要約が落としていた要件</span>同上。<strong>ISO9001認証または準ずる品質保証体制の証明が必須</strong></p>
+            <p><span class="j na">情報不足</span>台帳にISO9001の記録がない。「準じた体制」でも可のため門前払いではないが、体制を文書で示す準備が要る</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">作業内容<br>（数量）</td>
+          <td class="c2">点検作業範囲は以下の受変電設備とする。<br>
+            (1) ENTRY第1試験棟受変電設備 ・・・対象面数 6面<br>
+            (2) 放射線保健室屋外受変電設備 ・・・対象面数 3面<br>
+            (3) モックアップ試験棟B屋外受変電設備 ・・・対象面数 2面<br>
+            (4) 旧本社送り電源切替盤 ・・・対象面数 1面
+            <span class="src">仕様書 3項 技術仕様</span></td>
+          <td class="c3"><span class="j ok">NJSS一致</span>計12面。NJSS要約の面数（6／3／2／1）は原文どおり</td>
+        </tr>
+        <tr>
+          <td class="c1">作業日<br>（停電作業）</td>
+          <td class="c2">2.3 納期　令和9年2月26日（金曜日）　作業予定日：令和8年11月6日～令和8年12月24日（内4日）<br>
+            (1) 作業予定日：令和8年11月6日（金）① ENTRY第1試験棟受変電設備<br>
+            (2) 作業予定日：令和8年12月17日（木）① 放射線保健室屋外受変電設備<br>
+            (3) 作業予定日：令和8年12月18日（金）① モックアップ試験棟B屋外受変電設備<br>
+            (4) 作業予定日：令和8年12月24日（木）① 旧本社送り電源切替盤<br>
+            常用系設備の点検は、非常系給電を確保した上で常用系設備を停電し、必要な措置を施し実施する。
+            <span class="src">仕様書 2.3・2.4項、3項</span></td>
+          <td class="c3">
+            <p><span class="j info">NJSS未掲載</span><strong>作業日が4日、日付まで確定している</strong>（11/6・12/17・12/18・12/24）。稼働の重なりをこの4日で判断できる</p>
+            <p>停電を伴う作業。常用系・非常系を切り替えながらの点検で、原子力施設内の保安規程に従う</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">技術者・体制</td>
+          <td class="c2">4.3 安全教育　受注者は、作業者に対して作業安全に関する教育等を行うとともに、現場責任者、現場分任責任者、安全専任管理者等は、機構の「作業責任者認定制度」に基づく安全教育を受講し、認定を受けること。<br>
+            4.7 有資格者　受注者は、現場作業において法令で定める作業主任者、有資格者等が必要な場合は、資格を有する作業者の中から選任し、…資格者証の確認を受けること。<br>
+            4.9 責任者の常駐　受注者は、現場責任者を現場作業の期間中常駐させること。
+            <span class="src">仕様書 4.3・4.7・4.9項</span></td>
+          <td class="c3">
+            <p><span class="j info">落札後の要件</span>機構独自の「作業責任者認定制度」の安全教育受講・認定が必要。<strong>参加資格ではなく実行体制の論点</strong>として整理する</p>
+            <p><span class="j na">情報不足</span>有資格者の条項は条件形（名指しなし）。ただし高圧受変電設備の停電作業のため電気主任技術者・電気工事士等の手当てが実務上必要</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">計測器の管理</td>
+          <td class="c2">(2) 校正等に用いる計測器については、以下の管理を行うこと。① トレーサビリティ体系図は、使用する計測器の基準器名称及び器番が明記されていること。…④ 本作業に使用する測定器は、実際に使用する時点から遡り、定められた期間内に校正検査を受けたものであること。
+            <span class="src">仕様書 2.13項</span></td>
+          <td class="c3"><span class="j info">NJSS未掲載</span><strong>校正済み計測器とトレーサビリティ体系図の提出が必須</strong>。絶縁抵抗計・接地抵抗計等を校正管理下で用意できる体制が要る。協力会社に出す場合はこの条件を伝える必要がある</td>
+        </tr>
+        <tr>
+          <td class="c1">入札方法・日程</td>
+          <td class="c2">入札方法 (2) 本件は、提出書類、入札を電子入札システムで行う。<br>
+            入札期限及び場所：令和8年10月15日 14時00分　電子入札システムを通じて行う。<br>
+            開札日時及び場所：令和8年10月15日 14時00分　電子入札システムを通じて行う。<br>
+            入札説明書の交付方法：機構ホームページ（入札情報等）又は契約担当に同じ／<strong>交付期限：令和8年9月10日まで</strong>
+            <span class="src">公告1ページ目</span></td>
+          <td class="c3">
+            <p>入札期限＝開札＝<strong>2026-10-15 14:00</strong>（NJSS一致）</p>
+            <p><span class="j ng">NJSS未掲載の期限</span><strong>入札説明書の交付期限が2026-09-10</strong>。入札日の1か月以上前に説明書を取り寄せておかないと参加できない。<strong>実質の第一関門はここ</strong></p>
+            <p><span class="j na">情報不足</span>電子入札システムでの提出が必須。JAEA電子入札システムの登録状況が未確認</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="conf"><span class="lbl">読解の確信度: 高</span>
+      公告・仕様書ともテキスト層があり、原文をそのまま抽出できた。特に技術要件2件は公告2ページ目の別紙に明記されており、原文の文言に解釈の余地はない。
+      突合側で確信度が下がるのは会社情報の欠損（受変電設備の点検実績・ISO9001・電子入札登録）が原因であり、原文の読解精度の問題ではない。
+    </div>
+    <div class="diffbox"><span class="lbl">NJSS掲載情報との差異（本案件がいちばん重い）</span>
+      <ul>
+        <li><strong>技術要件2件をNJSSが落としていた</strong>: NJSS要約「地域要件なし・実績要件なし・その他要件なし」に対し、原文は①6,600V屋外受変電設備の同等以上の点検の知見・技術力の証明資料 ②ISO9001認証または準ずる品質保証体制の証明資料 の提出を要求。<strong>「要件なし」を根拠に候補判定していた前提が崩れる</strong></li>
+        <li><strong>入札説明書の交付期限 2026-09-10</strong>: NJSS未掲載。入札日（10/15）だけ見ていると間に合わない</li>
+        <li><strong>計測器の校正・トレーサビリティ要件</strong>: NJSS未掲載</li>
+        <li><strong>作業日4日の日付指定</strong>（11/6・12/17・12/18・12/24）: NJSS未掲載</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>5. 令和8年度水戸地方法務局ほか8庁定期清掃業務 <span class="cnt">offer 33812433</span></h2>
+  <div class="card">
+    <div><span class="badge pdf">公告のみ取得</span><span class="badge conf-中">確信度 中</span><span class="badge diff">仕様書はGEPS内</span><span class="meta">2026-08-11 案件45</span></div>
+    <h3>令和8年度水戸地方法務局ほか8庁定期清掃業務</h3>
+    <dl class="fields">
+      <dt>発注機関</dt><dd>法務省 水戸地方法務局（支出負担行為担当官 水戸地方法務局長 佐久間 和美）</dd>
+      <dt>公告日</dt><dd>令和8年8月10日</dd>
+      <dt>履行場所</dt><dd>公告では「仕様書による」。NJSS要約では水戸地方法務局ほか8庁（日立・常陸太田・土浦・龍ヶ崎・鹿嶋・下妻の各支局、取手・つくばの各出張所）及び水戸地方検察庁日立支部</dd>
+      <dt>取得元ページ</dt><dd><a href="https://houmukyoku.moj.go.jp/mito/table/nyuusatsu/all.html" target="_blank" rel="noopener noreferrer">https://houmukyoku.moj.go.jp/mito/table/nyuusatsu/all.html</a></dd>
+      <dt>公告PDF URL</dt><dd><a href="https://houmukyoku.moj.go.jp/mito/content/001468137.pdf" target="_blank" rel="noopener noreferrer">https://houmukyoku.moj.go.jp/mito/content/001468137.pdf</a></dd>
+      <dt>NJSS案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33812433" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33812433</a></dd>
+    </dl>
+    <div class="files">
+      <a class="filelink" href="pdfs/33812433_公告.pdf" target="_blank">公告PDFを開く<span class="fmeta">183,381バイト／3ページ／テキスト層あり</span></a>
+    </div>
+    <p class="note"><strong>仕様書・入札説明書・契約書（案）は公式サイトに掲載されていません。</strong>公告4項により、交付は政府電子調達システム（GEPS）からのダウンロードまたは水戸法務総合庁舎2階の窓口交付に限られます。GEPSはログインが必要なため取得していません（本タスクの対象は公開静的PDFのみ）。</p>
+
+    <div class="tblwrap">
+    <table class="map">
+      <thead><tr><th class="c1">項目</th><th class="c2">条文の原文（抜粋）</th><th class="c3">抽出した要件と東永希工との突合</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="c1">参加資格<br>（等級・地域）</td>
+          <td class="c2">(3) 令和07・08・09年度法務省競争参加資格（全省庁統一資格）「役務の提供等」において、「Ｄ」以上の等級に格付けされ、関東・甲信越地域の競争参加資格を有する者であること。
+            <span class="src">公告 2項(3)</span></td>
+          <td class="c3">
+            <p><strong>等級要件</strong>: 役務の提供等「D以上」<br>
+            <span class="j ok">満たす</span>東永希工は役務の提供等D。<strong>「D以上」はDを含む</strong>ため該当（上位等級のみと読み違えないこと）</p>
+            <p><strong>地域要件</strong>: 関東・甲信越<br>
+            <span class="j na">情報不足</span>統一資格の登録希望地域が未確認。会社所在地は茨城県で、履行場所も茨城県内のため実態としては整合的だが、条文は登録地域で判定する</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">その他の資格</td>
+          <td class="c2">(5) 経営の状況又は信用度が極度に悪化していないと認められるなど、適正な契約の履行が確保されている者であること。<br>
+            (6) 入札説明書に記載する条件を満たす者であること。
+            <span class="src">公告 2項(5)(6)</span></td>
+          <td class="c3">
+            <p><span class="j ok">満たす想定</span>(5)は一般的な財務健全性の条項</p>
+            <p><span class="j na">情報不足</span><strong>(6)が実質的な受け皿条項</strong>。入札説明書はGEPS内のため未確認で、追加要件（清掃業の実績・有資格者・作業体制など）が入っている可能性を排除できない</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">実績要件</td>
+          <td class="c2">（公告本文に実績条項なし。ただし2項(6)で入札説明書へ委任）
+            <span class="src">公告 2項 全体</span></td>
+          <td class="c3"><span class="j na">情報不足</span>公告の範囲では実績要件なし。ただし入札説明書側が未確認のため「要件なし」と断定できない。<strong>NJSSの「実績要件なし」も同じ制約の下にある</strong></td>
+        </tr>
+        <tr>
+          <td class="c1">入札方法</td>
+          <td class="c2">(5) 入札方法　本件入札手続は、入札参加申請手続、入札手続等を電子調達システム（政府電子調達（ＧＥＰＳ）（https://www.p-portal.go.jp/pps-web-biz/））により行う。なお、電子調達システムにより難い者は、支出負担行為担当官の承認を得た場合に限り、入札参加申請手続及び入札手続の全てを書面により行うこと（本件入札手続において「紙入札方式」という。）ができる。
+            <span class="src">公告 1項(5)</span></td>
+          <td class="c3">
+            <p><span class="j na">情報不足</span><strong>GEPSでの手続きが原則</strong>。アカウントとICカードが必要。未登録なら紙入札方式の承認申請が別途要る（承認が前提なので、直前に気づくと間に合わない）</p>
+            <p><span class="j info">NJSS未掲載</span>NJSSの案件情報にはこの電子調達要件が出ていない</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">日程</td>
+          <td class="c2">6 質問書の提出期限　令和8年8月24日（月）午後5時00分<br>
+            7 事前提出書類の提出期限　令和8年9月8日（火）午後5時00分<br>
+            8 入札書の提出期限　令和8年9月24日（木）午後5時00分まで<br>
+            9 開札の日時及び場所　令和8年9月25日（金）午後1時30分　水戸地方法務局大会議室又は電子調達システム<br>
+            4 入札説明書等の交付期間　令和8年8月10日（月）から令和8年9月8日（火）まで
+            <span class="src">公告 4・6・7・8・9項</span></td>
+          <td class="c3">
+            <p>質問書 <strong>8/24</strong>／事前提出書類 <strong>9/8</strong>／入札書 <strong>9/24 17:00</strong>／開札 <strong>9/25 13:30</strong></p>
+            <p><span class="j ok">NJSS一致</span>NJSS「資料等提出日 2026-09-08」＝事前提出書類、「入札日 2026-09-24」＝入札書提出期限。どちらも原文と一致</p>
+            <p><span class="j ng">NJSS未掲載</span>①<strong>質問書の提出期限 8/24</strong>（この画面を見た時点で残り7日）②<strong>開札は翌日の9/25</strong>③入札説明書の交付期間も9/8まで</p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">業務内容・数量</td>
+          <td class="c2">(2) 仕様等　入札説明書及び仕様書による。<br>
+            (3) 履行期限　仕様書による。<br>
+            (4) 履行場所　仕様書による。
+            <span class="src">公告 1項(2)(3)(4)</span></td>
+          <td class="c3">
+            <p><span class="j na">原文で確認できず</span>公告は業務内容を一切書かず、すべて仕様書に委任している。<strong>仕様書がGEPS内のため、作業面積約7,784㎡・対象9施設・履行期間（契約日〜令和9年1月29日）はNJSS掲載情報のままで、原文の裏が取れていない</strong></p>
+            <p>採算判断に必要な数量情報が原文で確認できないため、<strong>GEPSからの仕様書取得が次の一手</strong></p>
+          </td>
+        </tr>
+        <tr>
+          <td class="c1">保証金・契約</td>
+          <td class="c2">10 入札保証金及び契約保証金　免除<br>
+            11 電報及びファクシミリによる入札　いずれも不可<br>
+            13 契約書作成の要否　要
+            <span class="src">公告 10・11・13項</span></td>
+          <td class="c3"><span class="j ok">満たす</span>保証金は免除。資金面の障壁なし</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="conf"><span class="lbl">読解の確信度: 中</span>
+      <strong>公告部分の読解は確信度「高」</strong>（テキスト層あり、原文どおり）。ただし<strong>案件全体としては「中」</strong>とする。理由は、公告が業務内容・履行期限・履行場所・追加条件をすべて仕様書と入札説明書に委任しており、その2文書がGEPS内で取得できていないため。
+      参加可否の骨格（等級D以上・関東甲信越・GEPS手続き・日程）は原文で確定したが、<strong>採算判断に必要な数量と、2項(6)の「入札説明書に記載する条件」は未確認</strong>。
+    </div>
+    <div class="diffbox"><span class="lbl">NJSS掲載情報との差異</span>
+      <ul>
+        <li><strong>質問書の提出期限 2026-08-24</strong>: NJSS未掲載。仕様の不明点を聞ける最後の日</li>
+        <li><strong>開札日 2026-09-25</strong>: NJSSの「入札日 2026-09-24」は入札書の提出期限で、開札は翌日</li>
+        <li><strong>GEPS（政府電子調達）での手続きが原則</strong>: NJSS未掲載。未登録の場合は紙入札方式の事前承認が必要</li>
+        <li>NJSS掲載の作業面積約7,784㎡・対象9施設は、<strong>公告原文では確認できない</strong>（仕様書がGEPS内）</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>取得できなかった案件と理由</h2>
+  <div class="card miss">
+    <h3>公式サイトから取得できなかったファイル</h3>
+    <p class="note">推測URLは記載していません。以下はすべて実際にアクセスして確認した結果です。</p>
+    <table class="map" style="table-layout:auto">
+      <thead><tr><th>案件</th><th>取得できなかったもの</th><th>理由（実確認）</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>33805884<br>横浜植物防疫所</td>
+          <td>公告PDF（そもそも存在しない）／仕様書</td>
+          <td><strong>公告PDFは存在しない</strong>。オープンカウンター案件は植物防疫所の自庁サイトに一切掲載されず（横浜・名古屋・神戸・門司・那覇の5所すべてを確認、「オープンカウンター」「見積」の語がHTML中に0件）、調達ポータルのHTMLに公告全文が載る方式。公告本文は取得してテキスト保存済み。<strong>仕様書</strong>は調達資料としてGEPS（<code>biz-contract/UKB06/...</code>）にあり、「ダウンロードをするためには、連絡先情報の入力が必要となります」の画面で止まる（POSTすると401）。見積書提出側もgBizIDログインが必要。認証・フォーム送信が必要なため対象外</td>
+        </tr>
+        <tr>
+          <td>33812433<br>水戸地方法務局</td>
+          <td>仕様書・入札説明書・契約書（案）</td>
+          <td>公告4項により交付は<strong>GEPS（要ログイン）または窓口交付</strong>のみ。水戸地方法務局の入札情報ページには全案件とも「公告」と「開札結果」しか掲載されない運用。認証が必要なため対象外</td>
+        </tr>
+        <tr>
+          <td>33809815<br>JAEA</td>
+          <td>入札説明書</td>
+          <td>一覧の「入札説明書」はPDF直リンクではなくダウンロード管理URL経由で、実体は<strong>メールアドレス等の登録フォーム</strong>。個人情報の入力が必要なため取得せず。仕様書本体は直リンクで取得済み</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>内部用・自己確認画面（noindex）。原文PDFは <code>output/internal/pdfs/</code> に保存。取得日 2026-08-17。</p>
+    <p>読解ナレッジ: <code>data/knowledge_仕様書読解_v1.md</code>／素材: <code>data/raw/njss_新着案件素材_2026080{8,9}.md</code>・<code>..._20260811.md</code>／会社プロフィール: <code>data/analysis_東永希工公共工事台帳_20260805.md</code></p>
+    <p>この画面はPDF原文からの読解結果であり、入札判断そのものではありません。参加可否の最終判断は吉田さんが行います。</p>
+  </footer>
+
+</div>
+</body>
+</html>

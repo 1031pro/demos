@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>案件承認（内部用・デモ）2026-08-20</title>
+<style>
+:root { --line:#e2e2e6; --muted:#666; --ok:#0f6b3f; --hold:#b8860b; --ng:#b32020; --urgent:#c2410c; }
+* { box-sizing: border-box; }
+body { font-family:"Yu Gothic UI","Meiryo",sans-serif; margin:0; padding:24px 16px 48px;
+       background:#f7f7f9; color:#1a1a1a; line-height:1.65; font-size:14px; }
+.wrap { max-width:960px; margin:0 auto; }
+h1 { font-size:22px; margin:0 0 4px; }
+.sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+h2 { font-size:17px; margin:28px 0 10px; padding:8px 12px; background:#fff;
+     border-left:5px solid #444; border-radius:3px; }
+h2 .cnt { font-weight:400; color:var(--muted); font-size:14px; }
+
+.summary { position:sticky; top:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px;
+           background:#1f2937; color:#fff; padding:12px 14px; border-radius:6px; margin-bottom:8px; }
+.summary .item { background:rgba(255,255,255,.12); border-radius:4px; padding:6px 14px; font-size:14px; }
+.summary .item b { font-size:19px; margin-left:6px; font-variant-numeric:tabular-nums; }
+.summary .item.wait b { color:#fbbf24; }
+.summary .item.ok b { color:#6ee7b7; }
+.summary .item.hold b { color:#fcd34d; }
+.summary .item.ng b { color:#fca5a5; }
+
+.notice { background:#fff4f4; border:2px solid #d94a4a; border-radius:6px; padding:12px 14px; margin:14px 0 18px; }
+.notice strong { color:#b32020; }
+
+.card { background:#fff; border:1px solid var(--line); border-left:6px solid #b8860b;
+        border-radius:6px; padding:14px 16px; margin-bottom:14px; }
+.card.state-承認 { border-left-color:var(--ok); background:#f2fbf6; }
+.card.state-保留 { border-left-color:var(--hold); background:#fffdf3; }
+.card.state-否認 { border-left-color:var(--ng); background:#fdf3f3; opacity:.85; }
+.card h3 { font-size:17px; margin:6px 0 10px; line-height:1.45; }
+.badge { display:inline-block; color:#fff; border-radius:3px; padding:1px 9px; font-size:12px;
+         font-weight:600; white-space:nowrap; margin-right:6px; }
+.badge.judge { background:#1b7f4b; }
+.badge.urgent { background:var(--urgent); }
+.badge.state { background:#9a9aa2; }
+.badge.state[data-state="承認"] { background:var(--ok); }
+.badge.state[data-state="保留"] { background:var(--hold); }
+.badge.state[data-state="否認"] { background:var(--ng); }
+.meta { color:var(--muted); font-size:12.5px; }
+
+dl.fields { display:grid; grid-template-columns:7.5em 1fr; gap:5px 12px; margin:0 0 12px; }
+dl.fields dt { color:var(--muted); }
+dl.fields dd { margin:0; }
+.deadline { font-weight:700; }
+.deadline .rest { font-weight:400; color:var(--muted); margin-left:6px; }
+.deadline.urgent { color:var(--urgent); }
+
+.reason { background:#f4f6fa; border-radius:4px; padding:10px 12px; margin:0 0 12px; font-size:13px; }
+.reason .lbl { font-weight:700; color:#1f4e79; display:block; margin-bottom:3px; }
+
+.check { border:1px dashed var(--line); border-radius:4px; padding:10px 12px; margin:0 0 12px; }
+.check .lbl { font-weight:700; font-size:13px; display:block; margin-bottom:6px; }
+.check ul { margin:0; padding-left:20px; font-size:13px; }
+.check li { margin-bottom:3px; }
+
+/* 仕様書読解で判定が更新された案件の注記 */
+.specnote { border:2px solid var(--hold); background:#fffdf3; border-radius:5px;
+            padding:11px 13px; margin:0 0 12px; font-size:13px; }
+.specnote .lbl { font-weight:700; color:#8a6100; display:block; margin-bottom:5px; }
+.specnote .decision { font-weight:700; margin:0 0 8px; }
+.specnote ul { margin:0 0 8px; padding-left:18px; }
+.specnote li { margin-bottom:6px; }
+.specnote .fitem { font-weight:700; }
+.specnote .fnjss { color:var(--ng); font-weight:600; }
+.specnote .fsrc, .specnote .fgap { color:#555; display:block; }
+.specnote .links a { margin-right:12px; }
+
+.actions { display:flex; flex-wrap:wrap; gap:8px; align-items:center; border-top:1px solid var(--line); padding-top:10px; }
+button { font-family:inherit; font-size:14px; font-weight:700; border-radius:4px; padding:8px 18px;
+         border:1px solid transparent; cursor:pointer; }
+button.approve { background:var(--ok); color:#fff; }
+button.hold { background:#fff; color:var(--hold); border-color:var(--hold); }
+button.reject { background:#fff; color:var(--ng); border-color:var(--ng); }
+button.undo { background:#fff; color:#555; border-color:#bbb; font-weight:400; padding:6px 12px; }
+button[aria-pressed="true"] { outline:3px solid #1f2937; outline-offset:1px; }
+.decided { font-size:13px; color:var(--muted); }
+
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; }
+button.tool { background:#1f4e79; color:#fff; }
+button.tool.ghost { background:#fff; color:#1f4e79; border-color:#1f4e79; }
+pre.export { background:#111827; color:#e5e7eb; padding:14px; border-radius:6px; font-size:13px;
+             white-space:pre-wrap; word-break:break-all; display:none; }
+pre.export.show { display:block; }
+a { color:#1155cc; }
+footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:12.5px; }
+@media (max-width:600px) {
+  dl.fields { grid-template-columns:1fr; }
+  dl.fields dt { font-size:12px; }
+  .summary { position:static; }
+  button { flex:1 1 auto; }
+}
+</style>
+</head>
+<body data-today="2026-08-20">
+<div class="wrap">
+  <h1>案件承認</h1>
+  <p class="sub">AIの一次判定を確認して○×を付ける画面（内部用）。表示日 2026年8月20日（木）／
+  対象は判定「候補」のみ。全313件の一次判定は
+  <a href="承認用判定リスト_20260814.html">承認用判定リスト_20260814.html</a>。</p>
+
+  <div class="summary">
+    <span class="item wait">承認待ち<b id="cnt-wait">0</b></span>
+    <span class="item ok">承認済み<b id="cnt-ok">0</b></span>
+    <span class="item hold">保留<b id="cnt-hold">0</b></span>
+    <span class="item ng">否認<b id="cnt-ng">0</b></span>
+  </div>
+
+  <div class="notice">
+    <strong>この画面はデモです。</strong>AIの一次判定は素材（公告の掲載情報）だけを根拠にした機械判定です。
+    承認は「①判定の裏取り ②事業判断 ③配信ゲート」の3つを兼ね、承認した案件だけが協力会社向けの公開ページへ出ます。<br>
+    このうち 5件は公式サイトから公告・仕様書PDF（7ファイル）を実取得して原文を読解済みで、
+    掲載情報に無い要件が見つかった案件は運用判断を変更しています（該当カードに注記あり）。
+    原文と抽出データの対応は <a href="読解ビュー_20260817.html">読解ビュー</a> で確認できます。
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="tool" id="btn-export">結果を書き出す</button>
+    <button type="button" class="tool ghost" id="btn-reset">この画面の操作をリセット</button>
+  </div>
+  <pre class="export" id="export"></pre>
+
+  <h2>承認待ちキュー <span class="cnt">11件（うち保留 1件）</span></h2>
+  <div class="card state-未処理" data-offer-id="33805884">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge urgent">至急</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-09 案件23／offer_id 33805884</span></div>
+  <h3>新山下第1庁舎1階事務室空調機点検整備</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>農林水産省(MAFF) 植物防疫所 横浜植物防疫所（所在地: 神奈川県）</dd><dt>履行場所</dt><dd>横浜市中区新山下１－１６－１０ 横浜植物防疫所新山下第１庁舎</dd><dt>見積期限</dt><dd><span class="deadline urgent">入札日 2026年8月18日（火）<span class="rest">期限を過ぎています。</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33805884" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33805884</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級指定なし）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件ともになし。空調機の点検整備・修繕という設備工事系の役務で、東永希工の建設業許可（とび土工・管工事等含む14工種）との整合性は業種次第で要確認。締切が入札日2026-08-18（残り4日）と極めて短い。履行場所は横浜市。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>農林水産省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格 役務の提供系 ランク不明）</li><li>履行場所（横浜市中区新山下１－１６－１０ 横浜植物防疫所新山下第１庁舎）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年8月18日（火）（残り-2日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約74万円〜1,860万円（官公庁・自衛隊施設の空調設備保守点検・修繕の過去実績、神奈川県中心））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33804631">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge urgent">至急</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-08 案件102／offer_id 33804631</span></div>
+  <h3>自然冷媒ヒートポンプ給湯器点検保守役務(座間駐屯地)</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>防衛省(MOD) 陸上自衛隊 東部方面隊 東部方面会計隊（所在地: 東京都）</dd><dt>履行場所</dt><dd>陸上自衛隊座間駐屯地</dd><dt>見積期限</dt><dd><span class="deadline urgent">資料等提出 2026年8月21日（金）／入札日 2026年8月24日（月）<span class="rest">本日から残り4日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33804631" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33804631</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=対応エリア内・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件は関東・甲信越地域、実績要件は特になし。給湯設備の定期点検保守という小規模な役務。過去実績はすべて株式会社住機が受注。等級A・B・C・D。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>防衛省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系 A・B・C・D））</li><li>競争参加希望地域の登録が要件を満たすか（公告: 競争参加地域が関東・甲信越地域であること）</li><li>履行場所（陸上自衛隊座間駐屯地）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年8月24日（月）（残り4日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約100万円〜1,208万円（座間駐屯地の同種給湯器・空調機点検保守の過去実績多数））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33822366">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge urgent">至急</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-15 案件22／offer_id 33822366</span></div>
+  <h3>防災庁のガバメントソリューションサービスへの移行に係るネットワーク環境構築及び保守</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>デジタル庁（所在地：東京都）</dd><dt>履行場所</dt><dd>公告に記載なし（発注機関所在地：東京都）</dd><dt>見積期限</dt><dd><span class="deadline urgent">（参考日程）資料等提出 2026年8月24日（月）<span class="rest">本案件は入札日が公告時点で未定のため、参考日程です。</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33822366" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33822366</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし ｜ 【重複疑い】2026-08-18分の新着に載った 33829621 と同一業務の別掲載の可能性が高い（判定は変更していない。人間の確認対象）</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件はいずれも「特になし」。必要資格は全省庁統一資格「役務の提供等」でA〜Dいずれも可。ただし省庁横断のGSS移行ネットワーク構築案件で、過去の同種案件は数十億円規模、落札はKDDI・NTT東日本・NECなど大手通信事業者に限られる。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>デジタル庁への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>履行場所（公告に記載なし（発注機関所在地：東京都））へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年8月24日（月）（残り4日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約7,774,000円〜11,000,000,000円（GSS移行関連全般。府省単位のネットワーク環境構築・保守に絞ると約1,282,000,000円〜11,000,000,000円））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33829621">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge urgent">至急</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-18 案件36／offer_id 33829621</span></div>
+  <h3>防災庁のガバメントソリューションサービスへの移行に係るネットワーク環境構築及び保守</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>デジタル庁（所在地：東京都）</dd><dt>履行場所</dt><dd>公告に記載なし（発注機関所在地：東京都）</dd><dt>見積期限</dt><dd><span class="deadline urgent">（参考日程）資料等提出 2026年8月24日（月）<span class="rest">本案件は入札日が公告時点で未定のため、参考日程です。</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33829621" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33829621</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件のいずれも「特になし」で、等級もA〜Dいずれも可。ただし省庁全体のネットワーク基盤構築・4年超の保守を伴う大規模案件で、同種案件の落札はすべてNTT東日本・KDDI・NECフィールディング・日本コムシス等の大手通信・システムインテグレータ。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>デジタル庁への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>履行場所（公告に記載なし（発注機関所在地：東京都））へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年8月24日（月）（残り4日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約1,267,136,350円〜9,452,500,000円（各府省庁のGSS移行ネットワーク環境構築及び保守の過去実績））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33824976">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-16 案件4／offer_id 33824976</span></div>
+  <h3>【本省】令和8年度技術開発調査等推進事業(フィジカルAIを活用した歩行型ロボットの社会実装に資するルール形成等に関する調査)</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>経済産業省(METI)（所在地：東京都）</dd><dt>履行場所</dt><dd>・住所は「---」、施設名「経済産業省 商務情報政策局情報処理システム開発・ロボット課AIロボティクス室</dd><dt>見積期限</dt><dd><span class="deadline">資料等提出 2026年8月26日（水）／入札日 2026年9月3日（木）<span class="rest">本日から残り14日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33824976" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33824976</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件いずれも「特になし」。必要な入札資格は全省庁統一資格「役務の提供等」でランクA〜Dいずれも可（等級指定なし）。制度調査・国際標準化動向調査・WG運営を伴う政策調査委託で、評価項目一覧（xlsx）による技術審査あり。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>経済産業省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>履行場所（・住所は「---」、施設名「経済産業省 商務情報政策局情報処理システム開発・ロボット課AIロボティクス室）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年9月3日（木）（残り14日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約1,562,000円〜185,955,662円（ロボット関連の制度・標準化調査委託の過去実績。経済産業省本省の同種ルール形成調査は約660万円〜2,420万円が中心で、落札企業はPwCコンサルティング・三菱総合研究所等のコンサルティング会社に集中））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33839304">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-19 案件29／offer_id 33839304</span></div>
+  <h3>令和8年度国立公園における登山道の持続的な管理のあり方検討調査業務</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>環境省(MOE)（所在地：東京都）</dd><dt>履行場所</dt><dd>東京都 東京都千代田区霞が関１－２－２ 環境省</dd><dt>見積期限</dt><dd><span class="deadline">資料等提出 2026年9月14日（月）／入札日 2026年9月24日（木）<span class="rest">本日から残り35日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33839304" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33839304</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=対応エリア内</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件いずれも「特になし」。必要資格は全省庁統一資格「役務の提供等」A〜Dいずれも可（等級指定なし）。調査研究・検討会運営のコンサルティング業務で、過去の落札は環境コンサル・調査研究法人が中心。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>環境省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>履行場所（東京都 東京都千代田区霞が関１－２－２ 環境省）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年9月24日（木）（残り35日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約1,425,000円〜8,964,000円（環境省の国立公園における利用あり方検討・山小屋等検討業務。直近実績は約4,900,000円〜7,260,000円程度））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33846522">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-20 案件119／offer_id 33846522</span></div>
+  <h3>飯岡支所オーバースライダー修繕作業</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>防衛省(MOD) 防衛装備庁 新世代装備研究所（所在地：東京都）</dd><dt>履行場所</dt><dd>防衛装備庁新世代装備研究所飯岡支所</dd><dt>見積期限</dt><dd><span class="deadline">入札日 2026年9月30日（水）<span class="rest">本日から残り41日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33846522" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33846522</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級指定なし）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件いずれも「特になし」。入札資格は全省庁統一資格（役務の提供系）で等級指定なし。シャッター1基のワイヤーロープ・ローラー交換という小規模修繕。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>防衛省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・ランク不明））</li><li>履行場所（防衛装備庁新世代装備研究所飯岡支所）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年9月30日（水）（残り41日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約700,000円〜8,724,100円（防衛省関連のオーバースライダー・自動扉の修理／部品交換実績。オーバースライダー修理に絞ると約700,000円〜3,572,800円））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33846531">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-20 案件121／offer_id 33846531</span></div>
+  <h3>飯岡支所消防設備修繕作業</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>防衛省(MOD) 防衛装備庁 新世代装備研究所（所在地：東京都）</dd><dt>履行場所</dt><dd>防衛装備庁新世代装備研究所飯岡支所</dd><dt>見積期限</dt><dd><span class="deadline">入札日 2026年9月30日（水）<span class="rest">本日から残り41日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33846531" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33846531</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級指定なし）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件・その他要件いずれも「特になし」。入札資格は全省庁統一資格（役務の提供系）で等級指定なし。熱感知器1個の交換という極小規模の修繕。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>防衛省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・ランク不明））</li><li>履行場所（防衛装備庁新世代装備研究所飯岡支所）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年9月30日（水）（残り41日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約92,340円〜28,017,000円（官公庁の消防設備点検・修繕の過去実績。感知器交換等の小規模修繕に近いものは約92,340円〜2,079,000円程度））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33823594">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-15 案件35／offer_id 33823594</span></div>
+  <h3>【海上保安庁 特総26028】業務用自動車32台借入保守</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>国土交通省(MLIT)（所在地：東京都）</dd><dt>履行場所</dt><dd>小樽海上保安部ほか30箇所</dd><dt>見積期限</dt><dd><span class="deadline">資料等提出 2026年9月14日（月）／入札日 2026年10月7日（水）<span class="rest">本日から残り48日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33823594" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33823594</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=対応エリア内・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件は関東・甲信越の競争参加資格。全省庁統一資格「役務の提供等」でA〜Dいずれも可、実績要件なし。ただし業務用自動車32台のリース（借入）＋全国31箇所での保守体制が必要で、オートリース事業者向けの案件。過去はほぼ三菱オートリースが継続受注。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>国土交通省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>競争参加希望地域の登録が要件を満たすか（公告: 関東・甲信越地域の競争参加資格を有する者）</li><li>履行場所（小樽海上保安部ほか30箇所）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年10月7日（水）（残り48日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約3,051,000円〜137,115,000円（海上保安庁の業務用自動車借入保守。30台前後の案件に絞ると約102,102,000円〜137,115,000円））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-未処理" data-offer-id="33820782">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="未処理">承認待ち</span><span class="meta">2026-08-15 案件1／offer_id 33820782</span></div>
+  <h3>改良9Cr-1Mo鋼の亀裂進展データの取得</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>日本原子力研究開発機構(JAEA)（所在地：茨城県）</dd><dt>履行場所</dt><dd>受注者側施設</dd><dt>見積期限</dt><dd><span class="deadline">入札日 2026年10月9日（金）<span class="rest">本日から残り50日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33820782" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33820782</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件ともに「特になし」。必要資格は全省庁統一資格「役務の提供等」でランクはA〜Dいずれも可（等級指定なし）。ただし作業は受注者側施設での高温材料試験（ASTM E647／JSMS準拠）であり、試験設備の保有が前提となる。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>日本原子力研究開発機構への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格（役務の提供系・A/B/C/Dいずれも可））</li><li>履行場所（受注者側施設）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年10月9日（金）（残り50日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約2,200,000円〜75,600,000円（原子力材料の破壊力学・材料試験系全般。同機関の亀裂進展・破壊力学パラメータ取得に近いものは約9,350,000円〜12,320,000円））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-保留" data-offer-id="33809815">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="保留">保留</span><span class="meta">2026-08-11 案件1／offer_id 33809815</span></div>
+  <h3>放射線保健室他屋外受変電設備点検作業</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>日本原子力研究開発機構(JAEA)（所在地: 茨城県）</dd><dt>履行場所</dt><dd>茨城県那珂郡東海村大字村松4番地33 機構 工務技術部 運転課 指定場所</dd><dt>見積期限</dt><dd><span class="deadline">入札日 2026年10月15日（木）<span class="rest">本日から残り56日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33809815" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33809815</a></dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=なし・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=対応エリア内</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件・実績要件ともになし。全省庁統一資格「役務の提供系」A〜D等級の記載のみで具体的な要求等級の記載なし。</p>
+  <div class="specnote"><span class="lbl">仕様書読解で判定が更新されました（読解日 2026-08-17）</span><p class="decision">一次判定は「候補」のまま／運用判断を「保留」へ変更 — 仕様書読解で追加要件2件を検出（6,600V実績証明・ISO9001）。裏取りが必要なため保留。入札説明書の交付期限 2026-09-10 に注意</p><ul><li><span class="fitem">技術要件①（同種経験）</span>: 屋外受変電設備（6,600V）と同等以上または類似設備の点検作業に求められる知見・技術力を証明する資料の提出<span class="fsrc">原文の出所: 公告2ページ目 別紙「求める技術要件」／<span class="fnjss">NJSS掲載は「実績要件: なし」</span></span><span class="fgap">会社側の状態: 建設業許可14工種に電気工事が無く、高圧受変電設備の点検実績・電気主任技術者の記録も台帳にない。証明資料を出せるか未確認</span></li><li><span class="fitem">技術要件②（品質保証体制）</span>: ISO9001の認証取得、またはISO9001に準じた品質保証体制の整備を証明する資料の提出<span class="fsrc">原文の出所: 公告2ページ目 別紙「求める技術要件」／<span class="fnjss">NJSS掲載は「その他要件: なし」</span></span><span class="fgap">会社側の状態: 台帳にISO9001の記録がない。「準じた体制」でも可のため門前払いではないが、体制を文書で示す準備が要る</span></li><li><span class="fitem">入札説明書の交付期限</span>: 令和8年9月10日（2026-09-10）まで<span class="fsrc">原文の出所: 公告1ページ目／<span class="fnjss">NJSS未掲載</span></span><span class="fgap">会社側の状態: 入札日 2026-10-15 の1か月以上前。取り寄せを逃すと参加できない実質の第一関門</span></li></ul><div class="links"><a href="読解ビュー_20260817.html">読解ビューで原文と抽出の対応を見る</a><a href="pdfs/33809815_公告.pdf" target="_blank">公告PDF</a><a href="pdfs/33809815_仕様書.pdf" target="_blank">仕様書PDF</a></div></div>
+  <div class="check"><span class="lbl">承認前の裏取りチェック（公告原文は読解済み。残るのは会社側の裏取り）</span><ul><li>日本原子力研究開発機構への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格 役務の提供系 ランク不明（A/B/C/D表示のみ））</li><li>履行場所（茨城県那珂郡東海村大字村松4番地33 機構 工務技術部 運転課 指定場所）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年10月15日（木）（残り56日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約120万円〜2,508万円（屋外受変電設備点検・整備、JAEA茨城県内の過去実績十数件））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+
+  <h2>承認済み（デモ仮承認） <span class="cnt">2件</span></h2>
+  <div class="card state-承認" data-offer-id="33804545">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="承認">承認（デモ）</span><span class="meta">2026-08-08 案件111／offer_id 33804545</span></div>
+  <h3>温水発生機点検保守役務(座間駐屯地)</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>防衛省(MOD) 陸上自衛隊 東部方面隊 東部方面会計隊（所在地: 東京都。履行場所は神奈川県座間駐屯地）</dd><dt>履行場所</dt><dd>陸上自衛隊座間駐屯地</dd><dt>見積期限</dt><dd><span class="deadline urgent">資料等提出 2026年8月21日（金）／入札日 2026年8月24日（月）<span class="rest">本日から残り4日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33804545" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33804545</a></dd><dt>承認記録</dt><dd>2026-08-14／デモ（仮承認）</dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=対応エリア内・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>地域要件は関東・甲信越（東永希工は該当）。実績要件・その他要件ともになし。ボイラー・温水発生機専門の点検保守役務で、機器メーカー系業者向けの可能性があるが参加要件上のハードルは低い。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>防衛省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格 役務の提供系（A/B/C/D））</li><li>競争参加希望地域の登録が要件を満たすか（公告: 競争参加地域が関東・甲信越地域であること）</li><li>履行場所（陸上自衛隊座間駐屯地）へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年8月24日（月）（残り4日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約107万円〜1,260万円（同種温水発生機・ボイラー点検保守／修理の過去実績、多くは100万円台〜300万円台））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+<div class="card state-承認" data-offer-id="33812433">
+  <div><span class="badge judge">AI判定: 候補</span><span class="badge state" data-state="承認">承認（デモ）</span><span class="meta">2026-08-11 案件45／offer_id 33812433</span></div>
+  <h3>令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告。内容がより詳細）</h3>
+  <dl class="fields"><dt>発注機関</dt><dd>法務省(MOJ) 水戸地方法務局（所在地: 茨城県）</dd><dt>履行場所</dt><dd>公告に記載なし（発注機関所在地：茨城県）</dd><dt>見積期限</dt><dd><span class="deadline">資料等提出 2026年9月8日（火）／入札日 2026年9月24日（木）<span class="rest">本日から残り35日</span></span></dd><dt>仕様書／公示書</dt><dd>仕様書=あり／公示書=あり</dd><dt>案件ページ</dt><dd><a href="https://www2.njss.info/offers/view/33812433" target="_blank" rel="noopener noreferrer">https://www2.njss.info/offers/view/33812433</a></dd><dt>承認記録</dt><dd>2026-08-14／デモ（仮承認）</dd></dl>
+  <p class="reason"><span class="lbl">AIの判定理由（なぜこの判定になったか）</span>参加要件は全省庁統一資格（役務／等級A・B・C・D）のみ。地域要件=対応エリア内・実績要件なし・その他要件なし。仕様書あり。AI要約の信頼性フラグなし。履行場所=記載なし ｜ 【重複組の正】本件を正として残し、2026-08-11 案件44（33812007） を重複・除外にした（素材の記述: 令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告））</p>
+  <p class="reason"><span class="lbl">素材から拾った判断材料</span>案件44と同一業務・同一公示日・同一締切日で、本件の方が仕様書・入札説明書・契約書案まで揃った詳細版。地域要件は関東・甲信越地域の資格保有者（茨城県拠点の東永希工は該当可能性が高い）、実績要件なし。対象9施設（水戸地方法務局本局＋支局8か所）の床清掃で作業面積約7,784㎡。</p>
+  
+  <div class="check"><span class="lbl">承認前の裏取りチェック（この画面の判定は公告原文未確認）</span><ul><li>法務省への競争参加資格（省庁別登録）が有効期限内か</li><li>全省庁統一資格の要件を満たすか（公告: 全省庁統一資格 役務の提供系 A/B/C/Dランク）</li><li>競争参加希望地域の登録が要件を満たすか（公告: 関東・甲信越地域の競争参加資格を有する者）</li><li>履行場所（公告に記載なし（発注機関所在地：茨城県））へ人員・車両を配置できるか</li><li>仕様書が求める有資格者・技術者を配置できるか</li><li>見積期限 2026年9月24日（木）（残り35日）までに現地確認と見積を作成できるか</li><li>想定価格帯で採算が取れるか（参考: 約231万円〜約1,052万円（水戸地方法務局・検察庁・財務事務所の庁舎清掃業務、過去実績十数件））</li><li>仕様書PDFの記載要件（数量・作業回数・履行期間）を確認したか</li><li>同時期の他案件と稼働が重ならないか</li></ul></div>
+  <div class="actions"><button type="button" class="approve" data-action="承認" aria-pressed="false">承認する</button><button type="button" class="hold" data-action="保留" aria-pressed="false">保留</button><button type="button" class="reject" data-action="否認" aria-pressed="false">否認</button><button type="button" class="undo" data-action="未処理" aria-pressed="false">未処理に戻す</button><span class="decided" data-today="2026-08-20"></span></div>
+</div>
+
+  <footer>
+    本画面はデモです。承認結果は運用パイプラインへ反映されます。<br>
+    操作結果はこのブラウザのlocalStorageにのみ保存され、外部へ送信されません。
+    マスタCSVへの反映は「結果を書き出す」で表示されるコマンドを tools フォルダで実行してください
+    （反映後に build_public_pages.py で公開ページを再生成します）。
+  </footer>
+</div>
+<script>
+window.__SEED_STATES__ = {"33805884": "未処理", "33804631": "未処理", "33822366": "未処理", "33829621": "未処理", "33824976": "未処理", "33839304": "未処理", "33846522": "未処理", "33846531": "未処理", "33823594": "未処理", "33820782": "未処理", "33809815": "保留", "33804545": "承認", "33812433": "承認"};
+</script>
+<script>
+(function () {
+  "use strict";
+  var STORAGE_KEY = "one-percent-approval-demo-20260814";
+  var SEED = window.__SEED_STATES__ || {};
+
+  function loadStates() {
+    var saved = {};
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) { saved = JSON.parse(raw) || {}; }
+    } catch (e) { saved = {}; }
+    var states = {};
+    Object.keys(SEED).forEach(function (id) { states[id] = SEED[id]; });
+    Object.keys(saved).forEach(function (id) { states[id] = saved[id]; });
+    return states;
+  }
+
+  function saveStates(states) {
+    var diff = {};
+    Object.keys(states).forEach(function (id) {
+      if (SEED[id] !== states[id]) { diff[id] = states[id]; }
+    });
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(diff)); } catch (e) { /* file://等で不可でも画面は動く */ }
+  }
+
+  var states = loadStates();
+
+  function render() {
+    var counts = { 未処理: 0, 承認: 0, 保留: 0, 否認: 0 };
+    document.querySelectorAll(".card[data-offer-id]").forEach(function (card) {
+      var id = card.getAttribute("data-offer-id");
+      var state = states[id] || "未処理";
+      counts[state] = (counts[state] || 0) + 1;
+      card.className = card.className.replace(/state-\S+/g, "").trim() + " state-" + state;
+      var badge = card.querySelector(".badge.state");
+      if (badge) {
+        badge.setAttribute("data-state", state);
+        var seeded = SEED[id] === state && state === "承認";
+        badge.textContent = state === "未処理" ? "承認待ち" : (seeded ? "承認（デモ）" : state);
+      }
+      card.querySelectorAll("button[data-action]").forEach(function (btn) {
+        btn.setAttribute("aria-pressed", String(btn.getAttribute("data-action") === state));
+      });
+      var decided = card.querySelector(".decided");
+      if (decided) {
+        decided.textContent = state === "未処理"
+          ? "未処理（この画面で○×を付けてください）"
+          : "この画面での操作: " + state + "（" + decided.getAttribute("data-today") + "）";
+      }
+    });
+    document.getElementById("cnt-wait").textContent = counts["未処理"];
+    document.getElementById("cnt-ok").textContent = counts["承認"];
+    document.getElementById("cnt-hold").textContent = counts["保留"];
+    document.getElementById("cnt-ng").textContent = counts["否認"];
+  }
+
+  document.addEventListener("click", function (ev) {
+    var btn = ev.target.closest("button[data-action]");
+    if (!btn) { return; }
+    var card = btn.closest(".card[data-offer-id]");
+    if (!card) { return; }
+    var id = card.getAttribute("data-offer-id");
+    states[id] = btn.getAttribute("data-action");
+    saveStates(states);
+    render();
+  });
+
+  document.getElementById("btn-export").addEventListener("click", function () {
+    var lines = ["# 承認結果（" + document.body.getAttribute("data-today") + " 時点・デモ画面）"];
+    var cmds = ["# マスタCSVへの反映コマンド（tools フォルダで実行）"];
+    document.querySelectorAll(".card[data-offer-id]").forEach(function (card) {
+      var id = card.getAttribute("data-offer-id");
+      var state = states[id] || "未処理";
+      var title = card.querySelector("h3").textContent.trim();
+      lines.push(id + ": " + state + "  # " + title);
+      if (state !== "未処理") {
+        cmds.push('python approval_store.py set ' + id + ' ' + state + ' '
+                  + document.body.getAttribute("data-today") + ' "デモ（仮承認）"');
+      }
+    });
+    var out = document.getElementById("export");
+    out.textContent = lines.join("\n") + "\n\n" + cmds.join("\n");
+    out.classList.add("show");
+  });
+
+  document.getElementById("btn-reset").addEventListener("click", function () {
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) { /* noop */ }
+    states = loadStates();
+    document.getElementById("export").classList.remove("show");
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
