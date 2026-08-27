@@ -37,13 +37,23 @@ h1 { margin:0 0 4px; font-size:24px; }
                         opacity:0; transition:opacity .15s ease; }
 .scroll-shell.is-scrolled::before { opacity:1; }
 .scroll-shell.at-scroll-end::after, .scroll-shell.no-horizontal-overflow::after { opacity:0; }
-.scroll-pane { overflow:auto; scrollbar-gutter:stable; scrollbar-width:auto;
-               scrollbar-color:var(--head) #e6ebf2; }
-.scroll-pane::-webkit-scrollbar { width:14px; height:14px; background:#e6ebf2; }
-.scroll-pane::-webkit-scrollbar-track { background:#e6ebf2; }
-.scroll-pane::-webkit-scrollbar-thumb { background:var(--head); border:2px solid #e6ebf2; border-radius:8px; }
-.scroll-pane::-webkit-scrollbar-thumb:hover { background:#0f2440; }
-.scroll-pane::-webkit-scrollbar-corner { background:#e6ebf2; }
+.scroll-pane { overflow:auto; scrollbar-gutter:stable; }
+/* scrollbar-colorを指定するとChromeが::-webkit-scrollbarを無視して自動で隠れる
+   オーバーレイバーへ戻るため、Firefoxだけに限定して指定する。 */
+@supports (-moz-appearance:none) {
+  .scroll-pane, .scroll-strip { scrollbar-width:auto; scrollbar-color:var(--head) #d5dde8; }
+}
+.scroll-pane::-webkit-scrollbar, .scroll-strip::-webkit-scrollbar {
+  width:16px; height:16px; background:#d5dde8; }
+.scroll-pane::-webkit-scrollbar-track, .scroll-strip::-webkit-scrollbar-track { background:#d5dde8; }
+.scroll-pane::-webkit-scrollbar-thumb, .scroll-strip::-webkit-scrollbar-thumb {
+  background:var(--head); border:3px solid #d5dde8; border-radius:9px; }
+.scroll-pane::-webkit-scrollbar-thumb:hover, .scroll-strip::-webkit-scrollbar-thumb:hover {
+  background:#0f2440; }
+.scroll-pane::-webkit-scrollbar-corner, .scroll-strip::-webkit-scrollbar-corner { background:#d5dde8; }
+.scroll-strip { overflow-x:scroll; overflow-y:hidden; border-bottom:1px solid var(--line);
+                background:#d5dde8; }
+.scroll-strip-spacer { height:1px; }
 .table-wrap { max-height:78vh; background:#fff; }
 table { width:100%; min-width:2300px; border-collapse:separate; border-spacing:0; }
 th, td { border-right:1px solid var(--line); border-bottom:1px solid var(--line);
@@ -114,7 +124,7 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
 @media print {
   body { padding:0; background:#fff; font-size:8pt; }
   .scroll-shell { border:0; }
-  .scroll-shell::after, .scroll-shell::before { display:none; }
+  .scroll-shell::after, .scroll-shell::before, .scroll-strip { display:none; }
   .table-wrap { overflow:visible; max-height:none; }
   table { min-width:0; }
   thead th { position:static; }
@@ -140,6 +150,7 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
 
   <p class="data-gap-note"><strong>進捗管理:</strong> 見積依頼の記録データが未整備のため、連絡数・見積依頼済・依頼済み会社・見込み会社・見積数は空欄です。</p>
   <div class="scroll-shell table-shell" data-scroll-shell="table">
+    <div class="scroll-strip" data-scroll-strip aria-hidden="true"><div class="scroll-strip-spacer"></div></div>
     <div class="table-wrap scroll-pane" data-scroll-pane="table" tabindex="0" aria-label="スケジュール付き案件別タスク一覧（横スクロール）">
       <table>
       <thead>
@@ -310,7 +321,25 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
   document.querySelectorAll("[data-scroll-shell]").forEach(function (shell) {
     var pane = shell.querySelector("[data-scroll-pane]");
     if (!pane) { return; }
-    pane.addEventListener("scroll", function () { updateScrollCue(shell); }, {passive:true});
+    var strip = shell.querySelector("[data-scroll-strip]");
+    var spacer = strip ? strip.querySelector(".scroll-strip-spacer") : null;
+    var syncing = false;
+    function syncStripWidth() {
+      if (spacer) { spacer.style.width = pane.scrollWidth + "px"; }
+    }
+    if (strip) {
+      syncStripWidth();
+      window.addEventListener("resize", syncStripWidth);
+      window.addEventListener("load", syncStripWidth);
+      strip.addEventListener("scroll", function () {
+        if (syncing) { return; }
+        syncing = true; pane.scrollLeft = strip.scrollLeft; syncing = false;
+      }, {passive:true});
+    }
+    pane.addEventListener("scroll", function () {
+      if (strip && !syncing) { syncing = true; strip.scrollLeft = pane.scrollLeft; syncing = false; }
+      updateScrollCue(shell);
+    }, {passive:true});
     updateScrollCue(shell);
   });
   window.addEventListener("load", refreshScrollCues);
