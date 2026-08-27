@@ -89,14 +89,14 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 </head>
 <body>
 <div class="wrap">
-<nav class="nav"><a href="データ基盤_20260817.html" class="here">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+<nav class="nav"><a href="データ基盤_20260817.html" class="here">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="業者DBランキング_20260827.html">ランキング仮バージョン</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
 
 <h1>データ基盤</h1>
 <p class="sub">4つのデータベース（案件・業者・会社条件・課題）の上でパイプラインが回る。
 どんなDBがあり、いま何件入っていて、どう更新され、どの画面で見るかの一覧。</p>
 
 <div class="internal"><strong>内部資料。</strong>実名・データ源名・内部件数を含む。協力会社・外部には出さない。
-数値は 2026-08-20 時点で元データ（案件マスタCSV・協力会社CSV・判定エンジン定数・台帳分析）から再集計したもの。</div>
+数値は 2026-08-25 時点で元データ（案件マスタCSV・協力会社CSV・判定エンジン定数・台帳分析）から再集計したもの。</div>
 
 <div class="summary">
   <span class="item">案件<b>643</b>件</span>
@@ -118,8 +118,8 @@ footer ul { margin:6px 0 0; padding-left:20px; }
         要再点検82／対象外86<br>
         承認済 2件・保留 1件・承認待ち 10件（候補13件のうち）<br>
         第2層（公告PDF原文の読解）: 5件を実読解・PDF 7ファイル取得済み
-        （マスタCSV35列にはまだ列を足していない）</dd>
-      <dt>最終更新</dt><dd>2026-08-20 12:04（案件マスタCSV）／
+        （マスタCSV36列にはまだ列を足していない）</dd>
+      <dt>最終更新</dt><dd>2026-08-25 05:05（案件マスタCSV）／
         2026-08-17 20:59（読解ビュー）</dd>
       <dt>更新経路</dt><dd>毎日の自動取得（NJSS新着案件メール→パース→判定）＋
         資料取得フロー（仕様書が取れない案件を人が取りにいく）＋
@@ -165,7 +165,7 @@ footer ul { margin:6px 0 0; padding-left:20px; }
       <dt>現在の実数</dt><dd>対象外86＋要確認458＝
         <span class="big">544件</span>を9つの条件軸へ分類<br>
         未分類（その他）: 0件</dd>
-      <dt>最終更新</dt><dd>2026-08-20（案件マスタから毎回自動集計）</dd>
+      <dt>最終更新</dt><dd>2026-08-25（案件マスタから毎回自動集計）</dd>
       <dt>更新経路</dt><dd>判定結果から自動集計。判定が変われば数字も変わる（人手入力なし）</dd>
     </dl>
     <div class="links">画面: <a href="課題サマリー_20260817.html">課題サマリー</a></div>
@@ -239,10 +239,10 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 仮承認を保留へ戻した（<a href="読解ビュー_20260817.html">読解ビュー</a>に原文とPDFがある）。</div>
 
 <footer>
-<p><strong>内部資料</strong>／生成 2026-08-20 ／生成スクリプト tools\build_db_screens.py
+<p><strong>内部資料</strong>／生成 2026-08-25 ／生成スクリプト tools\build_db_screens.py
 （4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
 <p>この画面の数値の出典:</p>
-<ul><li>案件マスタCSV <code>data\案件マスタ_20260807-13_20260814.csv</code>（1,443,760バイト・2026-08-20 12:04）— DB1／DB4の件数</li><li>協力会社CSV <code>data\協力会社整理_可空白_工種別_20260812.csv</code>（168,706バイト・2026-08-12 01:54）— DB2の件数</li><li>台帳分析 <code>data\analysis_東永希工公共工事台帳_20260805.md</code> ＋ 判定エンジン <code>tools\njss_judge.py</code> の定数 — DB3の項目数</li><li>設計正本 <code>data\design_MVP定義_20260814.md</code> §2.5（4DB＋2フローの定義）</li><li>読解件数・PDF数: <code>output\internal\読解ビュー_20260817.html</code>（67,895バイト・2026-08-17 20:59）と <code>output\internal\pdfs\</code> の実ファイルを生成時に数えた値</li><li>読解ナレッジ: <code>data\knowledge_仕様書読解_v1.md</code>（29,843バイト・2026-08-17 21:31）</li><li>公開ページURLは 2026-08-20 に HTTP 200 を実測確認</li></ul>
+<ul><li>案件マスタCSV <code>data\案件マスタ_20260807-13_20260814.csv</code>（1,444,422バイト・2026-08-25 05:05）— DB1／DB4の件数</li><li>協力会社CSV <code>data\協力会社整理_可空白_工種別_20260812.csv</code>（168,706バイト・2026-08-12 01:54）— DB2の件数</li><li>台帳分析 <code>data\analysis_東永希工公共工事台帳_20260805.md</code> ＋ 判定エンジン <code>tools\njss_judge.py</code> の定数 — DB3の項目数</li><li>設計正本 <code>data\design_MVP定義_20260814.md</code> §2.5（4DB＋2フローの定義）</li><li>読解件数・PDF数: <code>output\internal\読解ビュー_20260817.html</code>（67,895バイト・2026-08-17 20:59）と <code>output\internal\pdfs\</code> の実ファイルを生成時に数えた値</li><li>読解ナレッジ: <code>data\knowledge_仕様書読解_v1.md</code>（29,843バイト・2026-08-17 21:31）</li><li>公開ページURLは 2026-08-25 に HTTP 200 を実測確認</li></ul>
 </footer>
 </div>
 </body>

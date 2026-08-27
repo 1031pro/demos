@@ -20,7 +20,7 @@ Projects/Demos/案件名/
 ### 2. push する
 
 ```powershell
-cd D:\OneDrive\Antigravity\Projects\Demos
+cd D:\Antigravity\Projects\Demos
 git add -A; git commit -m "案件名 デモ追加"; git push
 ```
 
