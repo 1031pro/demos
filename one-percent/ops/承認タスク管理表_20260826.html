@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>承認タスク管理表 2026-08-25</title>
+<title>承認タスク管理表 2026-08-27</title>
 <style>
 :root {
   --ink:#172033; --muted:#667085; --line:#cfd5df; --head:#17365d;
@@ -22,7 +22,27 @@ h1 { margin:0 0 4px; font-size:24px; }
 .summary { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
 .summary span { min-width:130px; padding:8px 12px; border-radius:4px; background:var(--head); color:#fff; }
 .summary b { margin-left:8px; font-size:18px; font-variant-numeric:tabular-nums; }
-.table-wrap { overflow:auto; max-height:72vh; border:1px solid var(--line); background:#fff; }
+.section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+                   margin:18px 0 8px; }
+.section-heading h2 { margin:0; font-size:18px; }
+.section-heading p { margin:0; color:var(--muted); font-size:12px; }
+.scroll-shell { position:relative; border:1px solid var(--line); background:#fff; }
+.scroll-shell::after { content:""; position:absolute; z-index:12; top:0; right:0; bottom:16px;
+                       width:54px; pointer-events:none;
+                       background:linear-gradient(to right, rgba(255,255,255,0), rgba(23,54,93,.26));
+                       opacity:1; transition:opacity .15s ease; }
+.scroll-shell.at-scroll-end::after, .scroll-shell.no-horizontal-overflow::after { opacity:0; }
+.scroll-pane { overflow:auto; scrollbar-gutter:stable; scrollbar-width:auto;
+               scrollbar-color:#667085 #dce6f1; }
+.scroll-pane::-webkit-scrollbar { width:16px; height:16px; background:#dce6f1; }
+.scroll-pane::-webkit-scrollbar-track { background:#dce6f1; border-top:1px solid #b8c6d9; }
+.scroll-pane::-webkit-scrollbar-thumb { background:#667085; border:3px solid #dce6f1; border-radius:9px; }
+.scroll-pane::-webkit-scrollbar-corner { background:#dce6f1; }
+.scroll-hint { position:relative; z-index:13; display:flex; justify-content:space-between; gap:12px;
+               padding:7px 11px; border-bottom:1px solid var(--line); background:#eef3f8;
+               color:var(--head); font-weight:700; }
+.scroll-hint .arrow { letter-spacing:.08em; }
+.table-wrap { max-height:72vh; background:#fff; }
 table { width:100%; min-width:2300px; border-collapse:separate; border-spacing:0; }
 th, td { border-right:1px solid var(--line); border-bottom:1px solid var(--line);
          padding:7px 8px; vertical-align:top; background:#fff; }
@@ -44,6 +64,44 @@ td.note { min-width:230px; }
 .progress-label { display:block; margin:4px 0 0 26px; color:var(--muted); font-size:11px; }
 .deadline-note { display:block; margin-top:3px; color:var(--muted); font-size:11px; white-space:normal; }
 .deadline-note.overdue { color:var(--overdue); font-weight:700; }
+.data-gap-note { margin:8px 0 0; padding:8px 11px; border:1px dashed #98a2b3;
+                 background:#fff; color:var(--muted); }
+.gantt-shell { margin-bottom:14px; }
+.gantt-wrap { max-height:56vh; }
+.gantt-chart { min-width:max-content; background:#fff; }
+.gantt-header-row { display:flex; min-height:30px; border-bottom:1px solid var(--line); }
+.gantt-corner, .gantt-label { position:sticky; left:0; z-index:9; flex:0 0 340px; width:340px;
+                              border-right:2px solid #94a3b8; background:#f8fafc; }
+.gantt-corner { padding:5px 10px; color:var(--head); font-weight:700; }
+.gantt-corner-week { font-size:11px; color:var(--muted); }
+.gantt-header-track { position:relative; flex:none; height:30px; background:#e9eff6; }
+.gantt-period { position:absolute; top:0; bottom:0; padding:5px 7px; overflow:hidden;
+                 border-right:1px solid #94a3b8; white-space:nowrap; font-weight:700; }
+.gantt-week-track { background:#f8fafc; }
+.gantt-week { padding:6px 5px; font-size:11px; color:var(--muted); font-weight:600; }
+.gantt-body { position:relative; min-width:max-content; }
+.gantt-row { display:flex; min-height:42px; border-bottom:1px solid #e4e7ec; }
+.gantt-label { display:flex; align-items:center; gap:8px; padding:6px 10px; overflow:hidden; }
+.gantt-label strong { flex:none; color:var(--head); }
+.gantt-label span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gantt-track { position:relative; flex:none; min-height:42px;
+               background:repeating-linear-gradient(to right, transparent 0, transparent 29px, #eef2f6 29px, #eef2f6 30px); }
+.gantt-week-grid { position:absolute; z-index:1; top:0; bottom:0; border-left:1px solid #98a2b3; }
+.gantt-bar { position:absolute; z-index:3; top:10px; height:22px; min-width:8px; overflow:hidden;
+              border:1px solid #24588f; border-radius:4px; padding:0 6px; background:#4f8fc9;
+              color:#fff; font-size:11px; line-height:20px; text-align:left; white-space:nowrap; cursor:pointer; }
+.gantt-bar:hover, .gantt-bar:focus { z-index:6; outline:3px solid rgba(36,88,143,.25); }
+.gantt-bar.is-overdue { border-color:var(--overdue); background:var(--overdue); }
+.gantt-milestone { position:absolute; z-index:5; top:7px; width:10px; height:28px;
+                    margin-left:-5px; border:2px solid #fff; border-radius:50%; background:#f79009;
+                    box-shadow:0 0 0 1px #7a2e0e; }
+.milestone-bid, .milestone-opening { border-radius:1px; transform:rotate(45deg); background:#7f56d9; }
+.gantt-today-line { position:absolute; z-index:8; top:0; bottom:0; width:0; margin-left:340px;
+                     border-left:3px solid #d92d20; pointer-events:none; }
+.gantt-today-line::before { content:"本日"; position:absolute; top:2px; left:3px; padding:1px 4px;
+                            border-radius:3px; background:#d92d20; color:#fff; font-size:10px; }
+.gantt-no-date { position:absolute; top:10px; left:8px; color:var(--muted); }
+.gantt-empty { padding:26px; color:var(--muted); text-align:center; }
 .empty { padding:36px 16px; text-align:center; color:var(--muted); }
 .actions { margin-top:12px; }
 button { border:1px solid var(--head); border-radius:4px; padding:7px 13px; background:#fff;
@@ -53,13 +111,18 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
   body { padding:14px 10px 32px; }
   h1 { font-size:20px; }
   .table-wrap { max-height:none; }
+  .gantt-label, .gantt-corner { flex-basis:250px; width:250px; }
+  .gantt-today-line { margin-left:250px; }
 }
 @page { size:A3 landscape; margin:10mm; }
 @media print {
   body { padding:0; background:#fff; font-size:8pt; }
-  .table-wrap { overflow:visible; max-height:none; border:0; }
+  .scroll-shell { border:0; }
+  .scroll-shell::after, .scroll-hint { display:none; }
+  .table-wrap, .gantt-wrap { overflow:visible; max-height:none; }
   table { min-width:0; }
   thead th { position:static; }
+  .gantt-corner, .gantt-label { position:static; }
   .actions, footer { display:none; }
 }
 </style>
@@ -67,7 +130,7 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
 <body>
 <div class="wrap">
   <h1>承認タスク管理表</h1>
-  <p class="sub">承認済み案件を入札日・締切日の昇順で表示（内部用／生成日 2026-08-25）</p>
+  <p class="sub">承認済み案件を入札日・締切日の昇順で表示（内部用／生成日 2026-08-27）</p>
 
   <div class="notice">
     <span><strong>担当者:</strong> 担当者マスタ未整備のため、この画面では未設定です。</span>
@@ -79,8 +142,60 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
     <span>対応済み<b id="count-complete">0</b></span>
   </div>
 
-  <div class="table-wrap">
-    <table>
+  <div class="section-heading">
+    <h2>期限ガントチャート</h2>
+    <p>公示日から入札日・見積期限まで／◆ 入札・開札　● 資料提出・見積期限</p>
+  </div>
+  <div class="scroll-shell gantt-shell" data-scroll-shell="gantt">
+    <div class="scroll-hint"><span>日付軸は横スクロールできます</span><span class="arrow">右にも日付があります →</span></div>
+    <div class="gantt-wrap scroll-pane" data-scroll-pane="gantt" tabindex="0" aria-label="期限ガントチャート（横スクロール）">
+<div class="gantt-chart" data-range-start="2026-08-05" data-range-end="2026-09-24" data-day-width="30">
+  <div class="gantt-header-row"><div class="gantt-corner">案件</div><div class="gantt-header-track" style="width:1530px"><div class="gantt-period gantt-month" style="left:0px;width:810px">2026年8月</div><div class="gantt-period gantt-month" style="left:810px;width:720px">2026年9月</div></div></div>
+  <div class="gantt-header-row"><div class="gantt-corner gantt-corner-week">月・週</div><div class="gantt-header-track gantt-week-track" style="width:1530px"><div class="gantt-period gantt-week" style="left:0px;width:150px">8月 1W</div><div class="gantt-period gantt-week" style="left:150px;width:210px">8月 2W</div><div class="gantt-period gantt-week" style="left:360px;width:210px">8月 3W</div><div class="gantt-period gantt-week" style="left:570px;width:210px">8月 4W</div><div class="gantt-period gantt-week" style="left:780px;width:210px">8月 5W</div><div class="gantt-period gantt-week" style="left:990px;width:210px">9月 1W</div><div class="gantt-period gantt-week" style="left:1200px;width:210px">9月 2W</div><div class="gantt-period gantt-week" style="left:1410px;width:120px">9月 3W</div></div></div>
+  <div class="gantt-body" style="width:1870px"><span class="gantt-today-line" data-date="2026-08-27" data-left="660" style="left:660px" title="本日 2026-08-27" aria-label="本日 2026-08-27"></span><div class="gantt-row" data-offer-id="33804545">
+  <div class="gantt-label" title="温水発生機点検保守役務(座間駐屯地)"><strong>111</strong><span>温水発生機点検保守役務(座間駐屯地)</span></div>
+  <div class="gantt-track" style="width:1530px"><span class="gantt-week-grid" style="left:0px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:150px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:360px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:570px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:780px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:990px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:1200px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:1410px" aria-hidden="true"></span><button type="button" class="gantt-bar is-overdue" data-start-date="2026-08-05" data-end-date="2026-08-24" data-left="0" data-width="600" style="left:0px;width:600px" title="温水発生機点検保守役務(座間駐屯地)
+防衛省(MOD) 陸上自衛隊 東部方面隊 東部方面会計隊（所在地: 東京都。履行場所は神奈川県座間駐屯地）
+公示日: 2026-08-05
+資料提出日: 2026-08-21
+入札日: 2026-08-24
+開札日: 未登録
+見積期限: 未登録" aria-label="温水発生機点検保守役務(座間駐屯地)
+防衛省(MOD) 陸上自衛隊 東部方面隊 東部方面会計隊（所在地: 東京都。履行場所は神奈川県座間駐屯地）
+公示日: 2026-08-05
+資料提出日: 2026-08-21
+入札日: 2026-08-24
+開札日: 未登録
+見積期限: 未登録"><span>111</span></button><span class="gantt-milestone milestone-document" data-kind="document" data-date="2026-08-21" data-left="480" style="left:480px" title="資料提出: 2026-08-21" aria-label="資料提出 2026-08-21"></span><span class="gantt-milestone milestone-bid" data-kind="bid" data-date="2026-08-24" data-left="570" style="left:570px" title="入札: 2026-08-24" aria-label="入札 2026-08-24"></span></div>
+</div><div class="gantt-row" data-offer-id="33812433">
+  <div class="gantt-label" title="令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告。内容がより詳細）"><strong>45</strong><span>令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告。内容がより詳細）</span></div>
+  <div class="gantt-track" style="width:1530px"><span class="gantt-week-grid" style="left:0px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:150px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:360px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:570px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:780px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:990px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:1200px" aria-hidden="true"></span><span class="gantt-week-grid" style="left:1410px" aria-hidden="true"></span><button type="button" class="gantt-bar" data-start-date="2026-08-10" data-end-date="2026-09-24" data-left="150" data-width="1380" style="left:150px;width:1380px" title="令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告。内容がより詳細）
+法務省(MOJ) 水戸地方法務局（所在地: 茨城県）
+公示日: 2026-08-10
+資料提出日: 2026-09-08
+入札日: 2026-09-24
+開札日: 未登録
+見積期限: 未登録" aria-label="令和8年度水戸地方法務局ほか8庁定期清掃業務（案件44と同名の別ID公告。内容がより詳細）
+法務省(MOJ) 水戸地方法務局（所在地: 茨城県）
+公示日: 2026-08-10
+資料提出日: 2026-09-08
+入札日: 2026-09-24
+開札日: 未登録
+見積期限: 未登録"><span>45</span></button><span class="gantt-milestone milestone-document" data-kind="document" data-date="2026-09-08" data-left="1020" style="left:1020px" title="資料提出: 2026-09-08" aria-label="資料提出 2026-09-08"></span><span class="gantt-milestone milestone-bid" data-kind="bid" data-date="2026-09-24" data-left="1500" style="left:1500px" title="入札: 2026-09-24" aria-label="入札 2026-09-24"></span></div>
+</div></div>
+</div>
+    </div>
+  </div>
+
+  <div class="section-heading">
+    <h2>案件別タスク一覧</h2>
+    <p>全22列（進捗管理まで横スクロールで表示）</p>
+  </div>
+  <p class="data-gap-note"><strong>進捗管理:</strong> 見積依頼の記録データが未整備のため、連絡数・見積依頼済・依頼済み会社・見込み会社・見積数は空欄です。</p>
+  <div class="scroll-shell table-shell" data-scroll-shell="table">
+    <div class="scroll-hint"><span>全22列（進捗管理まで横スクロールで表示）</span><span class="arrow">まだ列が続きます →</span></div>
+    <div class="table-wrap scroll-pane" data-scroll-pane="table" tabindex="0" aria-label="全22列の案件別タスク一覧（横スクロール）">
+      <table>
       <thead>
         <tr class="group">
           <th colspan="6">案件基本情報</th>
@@ -130,7 +245,7 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
   <td class="date" data-col="現調"></td>
   <td class="date" data-col="参考見積内訳書等"></td>
   <td class="date" data-col="資料提出">2026-09-08</td>
-  <td class="date" data-col="入札">2026-09-24<span class="deadline-note">本日から残り30日</span></td>
+  <td class="date" data-col="入札">2026-09-24<span class="deadline-note">本日から残り28日</span></td>
   <td class="date" data-col="開札"></td>
   <td class="date" data-col="見積期限"></td>
   <td class="progress"></td>
@@ -143,7 +258,8 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
   <td class="note">承認完了日: 2026-08-14</td>
 </tr>
       </tbody>
-    </table>
+      </table>
+    </div>
   </div>
 
   <div class="actions"><button type="button" id="reset-progress">チェック状態をリセット</button></div>
@@ -197,6 +313,32 @@ footer { margin-top:16px; color:var(--muted); font-size:12px; }
     try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) { /* noop */ }
     render();
   });
+
+  function updateScrollCue(shell) {
+    var pane = shell.querySelector("[data-scroll-pane]");
+    if (!pane) { return; }
+    var hasOverflow = pane.scrollWidth > pane.clientWidth + 2;
+    // scrollbar-gutter分はscrollWidthと最大scrollLeftの差へ残るため余裕を持たせる。
+    var endTolerance = Math.max(20, pane.offsetWidth - pane.clientWidth + 2);
+    var atEnd = !hasOverflow ||
+      pane.scrollLeft + pane.clientWidth >= pane.scrollWidth - endTolerance;
+    shell.classList.toggle("no-horizontal-overflow", !hasOverflow);
+    shell.classList.toggle("at-scroll-end", atEnd);
+  }
+
+  function refreshScrollCues() {
+    document.querySelectorAll("[data-scroll-shell]").forEach(updateScrollCue);
+  }
+
+  document.querySelectorAll("[data-scroll-shell]").forEach(function (shell) {
+    var pane = shell.querySelector("[data-scroll-pane]");
+    if (!pane) { return; }
+    pane.addEventListener("scroll", function () { updateScrollCue(shell); }, {passive:true});
+    updateScrollCue(shell);
+  });
+  window.addEventListener("load", refreshScrollCues);
+  window.addEventListener("resize", refreshScrollCues);
+  window.requestAnimationFrame(refreshScrollCues);
 
   render();
 })();
