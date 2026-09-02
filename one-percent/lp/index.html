@@ -29,275 +29,289 @@
   });
 </script>
 <style>
-  /* システムフォントのみを使う（外部リソースを一切読み込まない） */
+  /* システムフォントのみ。外部リソースは一切読み込まない。 */
   :root {
+    --navy: #17365d;
+    --accent: #b5541f;
+    --accent-deep: #9a4519;
     --ink: #1b2330;
     --muted: #5d6979;
     --line: #dfe4ea;
-    --accent: #1f5fa8;
-    --bg: #f4f6f9;
+    --cream: #f6f2ea;
+    --white: #ffffff;
   }
   * { box-sizing: border-box; }
-  html, body {
-    margin: 0;
-    padding: 0;
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  html, body { margin: 0; padding: 0; max-width: 100%; overflow-x: hidden; }
   body {
-    background: var(--bg);
+    background: var(--white);
     color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
-      "Yu Gothic", "Meiryo", sans-serif;
-    line-height: 1.75;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+      "Yu Gothic UI", "Yu Gothic", "Meiryo", sans-serif;
     font-size: 16px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
   }
-  /* スマホ優先の1カラム。PCでは中央に幅700pxで収める。 */
-  .container {
-    width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 0 20px 48px;
-  }
-  section {
-    padding: 28px 0;
-    border-bottom: 1px solid var(--line);
-  }
-  section:last-of-type { border-bottom: none; }
-  h1 {
-    font-size: 26px;
-    line-height: 1.5;
-    margin: 0 0 16px;
-    letter-spacing: 0.01em;
-  }
-  h2 {
-    font-size: 20px;
-    margin: 0 0 16px;
-  }
-  h3 {
-    font-size: 16px;
-    margin: 0 0 6px;
-  }
-  p { margin: 0 0 14px; }
-  .lead {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 22px;
-  }
-  .note {
-    font-size: 13px;
-    color: var(--muted);
-  }
-  /* CTAブロック */
-  .cta-block {
-    text-align: center;
-    padding: 8px 0 4px;
-  }
-  .cta-button {
-    display: block;
-    width: 100%;
-    padding: 18px 16px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 19px;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 10px;
-  }
-  .cta-notice {
-    display: none;
-    margin-top: 10px;
-    font-size: 14px;
-    color: #a33;
-  }
-  .cta-notice.show { display: block; }
-  /* 証拠ブロック：スマホ画面の枠風に大きく見せる */
-  .phone-frame {
-    max-width: 320px;
-    margin: 0 auto 20px;
-    border: 10px solid #23282f;
-    border-radius: 28px;
-    overflow: hidden;
-    background: #23282f;
-  }
-  .phone-frame img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  .proof-points {
-    list-style: none;
-    margin: 0 0 24px;
-    padding: 0;
-  }
-  .proof-points li {
-    position: relative;
-    padding-left: 20px;
-    margin-bottom: 10px;
-  }
-  .proof-points li::before {
+
+  /* 本文は幅700pxの1カラム。生成りの帯だけを画面幅いっぱいに広げる。 */
+  #page-container { width: 100%; max-width: 700px; margin: 0 auto; }
+
+  section { padding: 0 20px; }
+  .block { padding-top: 56px; padding-bottom: 56px; }
+
+  /* 帯（生成り）は疑似要素を画面幅いっぱいに敷いて表現する。CとEの2箇所だけ。 */
+  .band { position: relative; }
+  .band::before {
     content: "";
     position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    background: var(--cream);
+  }
+  .band > * { position: relative; }
+
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--navy);
+  }
+  /* 見出し中のキーワードだけにアクセント色の下線を引く。 */
+  h1 .ul {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 2px;
+  }
+  h2 {
+    margin: 0 0 20px;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--navy);
+  }
+  h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--navy);
+  }
+  p { margin: 0; }
+  .lead { margin-top: 16px; font-size: 16px; color: var(--ink); }
+  .note { margin-top: 20px; font-size: 13px; line-height: 1.7; color: var(--muted); }
+
+  /* A ファーストビュー */
+  .hero { padding-top: 40px; padding-bottom: 48px; }
+  .hero .cta-block { margin-top: 24px; }
+
+  /* CTAボタン */
+  .cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 58px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--white);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+  .cta:hover { background: var(--accent-deep); }
+  .cta-notice { display: none; margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .cta-notice.show { display: block; }
+
+  /* 画像は薄い枠と影だけ。切らずに全高を出す。 */
+  .shot { display: block; width: 100%; height: auto; }
+  .shot-mobile {
+    width: 300px;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(23, 54, 93, .14);
+  }
+  .shot-desktop {
+    margin: 32px auto 0;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(23, 54, 93, .14);
+  }
+  .caption { margin-top: 12px; font-size: 13px; line-height: 1.7; color: var(--muted); text-align: center; }
+
+  /* B 実物の画面: 仕様の3行。番号は装飾なので疑似要素で描く。 */
+  .points {
+    counter-reset: point;
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+  .points li {
+    position: relative;
+    counter-increment: point;
+    margin-top: 12px;
+    padding-left: 34px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .points li:first-child { margin-top: 0; }
+  .points li::before {
+    content: counter(point);
+    position: absolute;
     left: 0;
-    top: 11px;
-    width: 8px;
-    height: 8px;
+    top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* C/D 共通のカード */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 18px;
+  }
+  .card p { font-size: 15px; line-height: 1.7; color: var(--muted); }
+  .cards { display: flex; flex-direction: column; gap: 14px; }
+
+  /* C 3ステップ: 番号の丸は装飾なので疑似要素で描く。 */
+  .steps .cards { counter-reset: step; }
+  .step { counter-increment: step; }
+  .step::before {
+    content: counter(step);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-bottom: 12px;
     border-radius: 50%;
     background: var(--accent);
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
   }
-  figure {
-    margin: 0 0 20px;
-  }
-  figure img {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-  }
-  figcaption {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--muted);
-    text-align: center;
-  }
-  /* 3ステップ：スマホは縦、PCは横並び */
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  .step {
+  .step .shot {
+    margin-top: 16px;
     border: 1px solid var(--line);
     border-radius: 8px;
-    padding: 16px;
-    background: #fbfcfd;
   }
-  .step-no {
-    display: inline-block;
-    min-width: 26px;
-    height: 26px;
-    line-height: 26px;
-    text-align: center;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-  .step img {
-    display: block;
-    width: 100%;
-    max-width: 160px;
-    height: auto;
-    margin-top: 12px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-  }
-  .scope dt {
-    font-weight: bold;
-    margin-top: 12px;
-  }
-  .scope dd {
-    margin: 4px 0 0;
-  }
-  footer {
-    padding: 24px 0 0;
-    font-size: 14px;
+
+  /* E もう一度CTA */
+  .cta-band { padding-top: 40px; padding-bottom: 40px; }
+
+  /* F 運営 */
+  .owner {
+    padding: 24px 20px 40px;
+    font-size: 13px;
+    line-height: 1.9;
     color: var(--muted);
   }
-  @media (min-width: 700px) {
-    h1 { font-size: 30px; }
-    .steps { flex-direction: row; }
-    .step { flex: 1 1 0; }
+
+  @media (min-width: 768px) {
+    section { padding-left: 24px; padding-right: 24px; }
+    .block { padding-top: 72px; padding-bottom: 72px; }
+    .hero { padding-top: 64px; padding-bottom: 48px; }
+    h1 { font-size: 34px; }
+    h1 .l2 { display: block; }
+    h2 { font-size: 30px; }
+    .cta { max-width: 420px; margin: 0 auto; }
+    .cta-notice { text-align: center; }
+    .shot-mobile { width: 320px; }
+    .shot-desktop { max-width: 620px; }
+    .cards { flex-direction: row; gap: 16px; }
+    .cards > .card { flex: 1 1 0; }
+    .cta-band { padding-top: 40px; padding-bottom: 40px; }
+    .owner { padding: 24px 24px 40px; }
   }
 </style>
 </head>
 <body>
-<div class="container" id="page-container">
+<div id="page-container">
 
-  <!-- 4.1 ヒーロー -->
-  <section id="hero">
-    <h1>案件は、実はいくらでもある。選ぶ側に回りませんか。</h1>
+  <!-- A ファーストビュー -->
+  <section class="hero">
+    <h1>案件は、実は<span class="ul">いくらでもある</span>。<span class="l2">選ぶ側に回りませんか。</span></h1>
     <p class="lead">あなたの会社が施工できるエリアと工種に合った案件だけを、無料でお届けします。営業も、入札の手続きも不要。</p>
     <div class="cta-block">
-      <a class="cta-button" href="#" data-cta="apply">申込受付はこちら</a>
+      <a class="cta" href="#" data-cta="apply">申込受付はこちら</a>
       <p class="cta-notice" data-cta-notice>申込フォームは準備中です</p>
     </div>
   </section>
 
-  <!-- 4.2 証拠ブロック（動画の代わり） -->
-  <section id="proof">
+  <!-- B 実物の画面 -->
+  <section class="block">
     <h2>届くのは、こういう画面です。</h2>
-    <div class="phone-frame">
-      <img src="assets/shot_new_mobile.png" alt="スマホに届く新着案件リストの画面">
-    </div>
-    <ul class="proof-points">
+    <img class="shot shot-mobile" src="assets/shot_new_mobile_top.png" width="780" height="2360" alt="">
+    <ol class="points">
       <li>公示されたばかりの案件が、発注機関・履行場所・見積期限つきで届く</li>
       <li>概算規模の目安つき（過去の同種案件から）</li>
       <li>「この案件を検討する」を押すだけで担当につながる</li>
-    </ul>
-    <figure>
-      <img src="assets/shot_new_desktop.png" alt="同じ新着案件リストのパソコン表示">
-      <figcaption>パソコンで開いたときの表示</figcaption>
-    </figure>
-    <figure>
-      <img src="assets/shot_stock_desktop.png" alt="受付中の案件一覧">
-      <figcaption>受付中の案件は一覧で溜まっていきます</figcaption>
-    </figure>
+    </ol>
+    <img class="shot shot-desktop" src="assets/shot_stock_desktop.png" alt="">
+    <p class="caption">受付中の案件は一覧で溜まっていきます</p>
   </section>
 
-  <!-- 4.3 仕組みの3ステップ -->
-  <section id="steps">
+  <!-- C 仕組みの3ステップ -->
+  <section class="block band steps">
     <h2>仕組みは3ステップ</h2>
-    <div class="steps">
-      <div class="step">
-        <span class="step-no">1</span>
+    <div class="cards">
+      <div class="card step">
         <h3>登録</h3>
         <p>施工できるエリアと工種を教えてください</p>
-        <img src="assets/shot_register_mobile.png" alt="詳細登録ページの画面">
+        <img class="shot" src="assets/shot_register_top.png" width="780" height="900" alt="">
       </div>
-      <div class="step">
-        <span class="step-no">2</span>
+      <div class="card step">
         <h3>届く</h3>
         <p>合う案件だけがLINEで届きます</p>
       </div>
-      <div class="step">
-        <span class="step-no">3</span>
+      <div class="card step">
         <h3>返す</h3>
         <p>「やりたい」を返信。あとは担当が段取りします</p>
       </div>
     </div>
   </section>
 
-  <!-- 4.4 対象と無料の範囲 -->
-  <section id="scope">
+  <!-- D 対象と無料の範囲 -->
+  <section class="block">
     <h2>対象と無料の範囲</h2>
-    <dl class="scope">
-      <dt>対象</dt>
-      <dd>関東1都6県・福島県で施工できる建設・設備・造園・電気・管工事などの会社</dd>
-      <dt>無料の範囲</dt>
-      <dd>案件リストのお届けは無料。いまはモニター期間のため、システム利用料もかかりません</dd>
-    </dl>
+    <div class="cards">
+      <div class="card">
+        <h3>対象</h3>
+        <p>関東1都6県・福島県で施工できる建設・設備・造園・電気・管工事などの会社</p>
+      </div>
+      <div class="card">
+        <h3>無料の範囲</h3>
+        <p>案件リストのお届けは無料。いまはモニター期間のため、システム利用料もかかりません</p>
+      </div>
+    </div>
     <p class="note">受注の可否は案件ごとに担当が確認します</p>
   </section>
 
-  <!-- 4.5 二次CTA -->
-  <section id="cta-bottom">
+  <!-- E もう一度CTA -->
+  <section class="band cta-band">
     <div class="cta-block">
-      <a class="cta-button" href="#" data-cta="apply">申込受付はこちら</a>
+      <a class="cta" href="#" data-cta="apply">申込受付はこちら</a>
       <p class="cta-notice" data-cta-notice>申込フォームは準備中です</p>
     </div>
   </section>
 
-  <!-- 4.6 運営者 -->
-  <footer>
+  <!-- F 運営 -->
+  <section class="owner">
     <p>運営: ◯◯◯◯</p>
     <p>お問い合わせ: ◯◯◯◯</p>
-  </footer>
+  </section>
 
 </div>
 </body>
