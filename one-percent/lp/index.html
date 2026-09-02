@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>案件は、実はいくらでもある。</title>
+<script>
+  // 申込フォームのURL。確定したらこの1箇所だけを書き換える（空文字のあいだは準備中を表示する）。
+  const APPLY_FORM_URL = "";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const ctaButtons = document.querySelectorAll('[data-cta="apply"]');
+    ctaButtons.forEach(function (button) {
+      button.addEventListener("click", function (event) {
+        if (APPLY_FORM_URL) {
+          // URLが入っていればそのまま遷移する。
+          button.setAttribute("href", APPLY_FORM_URL);
+          return;
+        }
+        // 未設定のあいだは遷移させず、ボタンの直下にインラインで知らせる。
+        event.preventDefault();
+        const notice = button.parentElement.querySelector('[data-cta-notice]');
+        if (notice) {
+          notice.classList.add("show");
+        }
+      });
+    });
+  });
+</script>
+<style>
+  /* システムフォントのみを使う（外部リソースを一切読み込まない） */
+  :root {
+    --ink: #1b2330;
+    --muted: #5d6979;
+    --line: #dfe4ea;
+    --accent: #1f5fa8;
+    --bg: #f4f6f9;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN",
+      "Yu Gothic", "Meiryo", sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+  }
+  /* スマホ優先の1カラム。PCでは中央に幅700pxで収める。 */
+  .container {
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 0 20px 48px;
+  }
+  section {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-of-type { border-bottom: none; }
+  h1 {
+    font-size: 26px;
+    line-height: 1.5;
+    margin: 0 0 16px;
+    letter-spacing: 0.01em;
+  }
+  h2 {
+    font-size: 20px;
+    margin: 0 0 16px;
+  }
+  h3 {
+    font-size: 16px;
+    margin: 0 0 6px;
+  }
+  p { margin: 0 0 14px; }
+  .lead {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  /* CTAブロック */
+  .cta-block {
+    text-align: center;
+    padding: 8px 0 4px;
+  }
+  .cta-button {
+    display: block;
+    width: 100%;
+    padding: 18px 16px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 19px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 10px;
+  }
+  .cta-notice {
+    display: none;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #a33;
+  }
+  .cta-notice.show { display: block; }
+  /* 証拠ブロック：スマホ画面の枠風に大きく見せる */
+  .phone-frame {
+    max-width: 320px;
+    margin: 0 auto 20px;
+    border: 10px solid #23282f;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #23282f;
+  }
+  .phone-frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .proof-points {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+  }
+  .proof-points li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 10px;
+  }
+  .proof-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  figure {
+    margin: 0 0 20px;
+  }
+  figure img {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  figcaption {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  /* 3ステップ：スマホは縦、PCは横並び */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .step {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    background: #fbfcfd;
+  }
+  .step-no {
+    display: inline-block;
+    min-width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .step img {
+    display: block;
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+    margin-top: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .scope dt {
+    font-weight: bold;
+    margin-top: 12px;
+  }
+  .scope dd {
+    margin: 4px 0 0;
+  }
+  footer {
+    padding: 24px 0 0;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  @media (min-width: 700px) {
+    h1 { font-size: 30px; }
+    .steps { flex-direction: row; }
+    .step { flex: 1 1 0; }
+  }
+</style>
+</head>
+<body>
+<div class="container" id="page-container">
+
+  <!-- 4.1 ヒーロー -->
+  <section id="hero">
+    <h1>案件は、実はいくらでもある。選ぶ側に回りませんか。</h1>
+    <p class="lead">あなたの会社が施工できるエリアと工種に合った案件だけを、無料でお届けします。営業も、入札の手続きも不要。</p>
+    <div class="cta-block">
+      <a class="cta-button" href="#" data-cta="apply">申込受付はこちら</a>
+      <p class="cta-notice" data-cta-notice>申込フォームは準備中です</p>
+    </div>
+  </section>
+
+  <!-- 4.2 証拠ブロック（動画の代わり） -->
+  <section id="proof">
+    <h2>届くのは、こういう画面です。</h2>
+    <div class="phone-frame">
+      <img src="assets/shot_new_mobile.png" alt="スマホに届く新着案件リストの画面">
+    </div>
+    <ul class="proof-points">
+      <li>公示されたばかりの案件が、発注機関・履行場所・見積期限つきで届く</li>
+      <li>概算規模の目安つき（過去の同種案件から）</li>
+      <li>「この案件を検討する」を押すだけで担当につながる</li>
+    </ul>
+    <figure>
+      <img src="assets/shot_new_desktop.png" alt="同じ新着案件リストのパソコン表示">
+      <figcaption>パソコンで開いたときの表示</figcaption>
+    </figure>
+    <figure>
+      <img src="assets/shot_stock_desktop.png" alt="受付中の案件一覧">
+      <figcaption>受付中の案件は一覧で溜まっていきます</figcaption>
+    </figure>
+  </section>
+
+  <!-- 4.3 仕組みの3ステップ -->
+  <section id="steps">
+    <h2>仕組みは3ステップ</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-no">1</span>
+        <h3>登録</h3>
+        <p>施工できるエリアと工種を教えてください</p>
+        <img src="assets/shot_register_mobile.png" alt="詳細登録ページの画面">
+      </div>
+      <div class="step">
+        <span class="step-no">2</span>
+        <h3>届く</h3>
+        <p>合う案件だけがLINEで届きます</p>
+      </div>
+      <div class="step">
+        <span class="step-no">3</span>
+        <h3>返す</h3>
+        <p>「やりたい」を返信。あとは担当が段取りします</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.4 対象と無料の範囲 -->
+  <section id="scope">
+    <h2>対象と無料の範囲</h2>
+    <dl class="scope">
+      <dt>対象</dt>
+      <dd>関東1都6県・福島県で施工できる建設・設備・造園・電気・管工事などの会社</dd>
+      <dt>無料の範囲</dt>
+      <dd>案件リストのお届けは無料。いまはモニター期間のため、システム利用料もかかりません</dd>
+    </dl>
+    <p class="note">受注の可否は案件ごとに担当が確認します</p>
+  </section>
+
+  <!-- 4.5 二次CTA -->
+  <section id="cta-bottom">
+    <div class="cta-block">
+      <a class="cta-button" href="#" data-cta="apply">申込受付はこちら</a>
+      <p class="cta-notice" data-cta-notice>申込フォームは準備中です</p>
+    </div>
+  </section>
+
+  <!-- 4.6 運営者 -->
+  <footer>
+    <p>運営: ◯◯◯◯</p>
+    <p>お問い合わせ: ◯◯◯◯</p>
+  </footer>
+
+</div>
+</body>
+</html>
