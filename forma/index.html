@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#07080c"><title>FORMA — Matter in motion</title>
+<style>
+:root{--ink:#eeeef3;--muted:#9d9daa;--line:#ffffff24;--accent:#cec4fb}*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden}body{background:#07080c;color:var(--ink);font-family:"Segoe UI","Yu Gothic UI",sans-serif;-webkit-font-smoothing:antialiased}button,input{font:inherit}button{color:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #e3d9ff;outline-offset:5px}button{-webkit-tap-highlight-color:transparent}::selection{background:#7666aa}canvas{display:block;width:100%;height:100%;position:fixed;inset:0;cursor:grab;touch-action:none}canvas:active{cursor:grabbing}.top{position:fixed;inset:0 0 auto;padding:32px 44px;display:flex;justify-content:space-between;align-items:center;z-index:3;pointer-events:none}.top>*{pointer-events:auto}.brand{display:flex;align-items:center;gap:15px}.brand svg{width:35px;height:35px}.wordmark{font-size:22px;font-weight:500;letter-spacing:.32em}.edition{font:9px/1.8 Consolas,monospace;letter-spacing:.13em;color:#a1a0ad;margin-left:25px;padding-left:25px;border-left:1px solid var(--line)}.top-right{display:flex;align-items:center;gap:25px}.live{display:flex;gap:9px;align-items:center;font:9px Consolas,monospace;letter-spacing:.14em;color:#bdbcca}.live i{width:5px;height:5px;border-radius:50%;background:#c8b9ef;box-shadow:0 0 12px #c8b9ef}.icon{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:#ffffff04;color:#d3d1df;font-size:16px;transition:background .25s}.icon:hover{background:#ffffff15}.intro{position:fixed;left:6.2%;top:50%;transform:translateY(-57%);z-index:2;pointer-events:none;transition:opacity .6s,transform .8s}.eyebrow{font:9px Consolas,monospace;letter-spacing:.2em;display:flex;align-items:center;gap:12px;color:#bbb8cc}.eyebrow:before{content:"";width:22px;height:1px;background:#9185b2}.intro h1{font:400 clamp(65px,6.8vw,118px)/.94 Georgia,serif;letter-spacing:-.07em;margin:30px 0 32px}.intro h1 em{font-weight:400;background:linear-gradient(100deg,#eee5fd,#a999c9 65%,#6c7896);background-clip:text;-webkit-background-clip:text;color:transparent}.intro p{font-size:11px;line-height:2.2;letter-spacing:.1em;color:#a5a3b4;max-width:280px;margin:0}.gesture{display:flex;gap:12px;align-items:center;margin-top:35px;font:8px Consolas,monospace;letter-spacing:.13em;color:#92909f}.gesture svg{width:20px;height:20px}.vertical{position:fixed;right:37px;top:40%;writing-mode:vertical-rl;font:8px Consolas,monospace;letter-spacing:.22em;color:#787789;pointer-events:none;z-index:2}.bottom{position:fixed;left:44px;right:44px;bottom:28px;z-index:3}.status{display:flex;justify-content:space-between;align-items:end;padding-bottom:25px;gap:30px;pointer-events:none}.status-number{font:italic 38px Georgia,serif;color:#79738a;display:inline-block;margin-right:13px}.status-name{font:9px/1.7 Consolas,monospace;letter-spacing:.15em;display:inline-block;color:#c0bace}.status-name small{display:block;font:9px/1.8 "Yu Gothic UI",sans-serif;letter-spacing:.13em;color:#8d899c}.hint{font:9px Consolas,monospace;letter-spacing:.1em;color:#9d97ac;text-align:right}.hint b{font-weight:400;color:#ddd3ef}.controlbar{display:grid;grid-template-columns:1.25fr 1fr 1fr auto;gap:32px;align-items:center;border-top:1px solid var(--line);padding-top:22px}.group-label{font:8px Consolas,monospace;letter-spacing:.13em;color:#898492;margin-bottom:11px}.forms{display:flex;align-items:center;gap:6px}.form{background:transparent;border:1px solid transparent;border-radius:30px;font:10px Consolas,monospace;letter-spacing:.06em;padding:12px 17px;display:flex;gap:10px;align-items:center;transition:background .3s,border-color .3s}.form[aria-pressed=true]{border-color:#d2c7e64a;background:#ddd3ff0c;color:#eee8fb}.form:hover{background:#ffffff0d}.form i{font:italic 15px Georgia,serif;color:#9790a8}.range-label{display:flex;justify-content:space-between;font:8px Consolas,monospace;letter-spacing:.1em;color:#928b9d;margin-bottom:7px}.range-label output{color:#c6bbd7}.fluid input{width:100%;height:20px;display:block;appearance:none;-webkit-appearance:none;background:none;cursor:ew-resize;margin:0}.fluid input::-webkit-slider-runnable-track{height:2px;background:#5e556d}.fluid input::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:#dfc9f5;margin-top:-4px;box-shadow:0 0 15px #d4b4fc44}.fluid input::-moz-range-track{height:2px;background:#5e556d}.fluid input::-moz-range-thumb{border:0;width:10px;height:10px;border-radius:50%;background:#dfc9f5}.colors{display:flex;gap:8px;align-items:center}.color{width:30px;height:30px;border-radius:50%;padding:5px;background:none;border:1px solid transparent;transition:border-color .3s}.color span{display:block;border-radius:50%;width:100%;height:100%;background:var(--swatch)}.color[aria-pressed=true]{border-color:#e1d3f5}.color:hover{border-color:#ffffff60}.color-name{font:8px Consolas,monospace;letter-spacing:.08em;margin-left:8px;color:#a69bae}.actions{display:flex;gap:9px}.actions .icon{width:38px;height:38px;font-size:13px}.tooltip{position:fixed;left:50%;top:95px;transform:translate(-50%,-10px);padding:12px 20px;background:#e1d9ec;color:#271f35;border-radius:30px;z-index:10;font-size:11px;letter-spacing:.05em;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}.tooltip.show{opacity:1;transform:translate(-50%,0)}.hold-ring{position:fixed;width:62px;height:62px;border:1px solid #e2d1fb88;border-radius:50%;transform:translate(-50%,-50%) scale(.6);pointer-events:none;opacity:0;z-index:3;transition:opacity .3s,transform .4s}.hold-ring:before{content:"";position:absolute;inset:6px;border:1px dashed #c9b8e055;border-radius:50%}.hold-ring span{position:absolute;top:78px;left:50%;transform:translateX(-50%);white-space:nowrap;font:8px Consolas,monospace;letter-spacing:.2em;color:#ded1f5}.holding .hold-ring{opacity:1;transform:translate(-50%,-50%) scale(1)}.holding .intro{opacity:.17;transform:translateY(-57%) translateX(-10px)}body.focus .intro,body.focus .vertical{opacity:0;pointer-events:none}body.focus .status{opacity:.5}.top,.bottom{transition:opacity .4s}.help{position:fixed;inset:auto 44px 175px auto;width:280px;padding:25px;background:#18151ed9;border:1px solid #ffffff24;backdrop-filter:blur(20px);color:#d9cfeb;font-size:11px;line-height:2.1;letter-spacing:.05em;z-index:5;box-shadow:0 15px 50px #0004}.help[hidden]{display:none}.help h2{font:italic 27px Georgia,serif;margin:0 0 15px}.help dl{display:grid;grid-template-columns:90px 1fr;gap:8px 12px;margin:0}.help dt{color:#8f859f}.help dd{margin:0}.help p{font-size:9px;color:#8b8298;border-top:1px solid var(--line);padding-top:13px;margin:18px 0 0}.loading{position:fixed;inset:0;display:grid;place-items:center;z-index:8;background:#07080c;transition:opacity .6s;pointer-events:none}.loading span{font:italic 27px Georgia,serif;color:#b5a8cd;letter-spacing:.02em}.ready .loading{opacity:0}.reduced-note{font-size:9px}.keyboard{font:9px Consolas,monospace}
+@media(max-width:1100px){.top{padding:24px 30px}.edition{display:none}.bottom{left:30px;right:30px}.controlbar{gap:22px;grid-template-columns:1.3fr 1fr 1fr auto}.intro{left:5.5%}.intro h1{font-size:78px}.form{padding:11px 12px}.color-name{display:none}.vertical{right:24px}.fluid{min-width:120px}.help{right:30px}}
+@media(max-height:720px){.intro h1{font-size:77px;margin:24px 0}.intro p{font-size:10px}.gesture{margin-top:25px}.status{padding-bottom:15px}.bottom{bottom:20px}.controlbar{padding-top:15px}.intro{transform:translateY(-53%)}.holding .intro{transform:translateY(-53%) translateX(-10px)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+</style></head>
+<body>
+<canvas id="stage" aria-label="動き続ける光沢の立体。ドラッグで回転し、押し続けると形がほどけます。" tabindex="0"></canvas>
+<div class="loading" aria-hidden="true"><span>Finding a form…</span></div>
+<header class="top"><div class="brand"><svg viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3 36 30H4L20 3Z" stroke="#cdc5e0" stroke-width=".8"/><ellipse cx="20" cy="22" rx="16" ry="9" stroke="#8f80aa" stroke-width=".8" transform="rotate(-40 20 22)"/></svg><span class="wordmark">FORMA</span><span class="edition">EXPERIMENTS IN PERCEPTION<br>VOL. 01 — LIVING MATTER</span></div><div class="top-right"><span class="live"><i></i><span id="live-label">IN MOTION</span></span><button class="icon" id="fullscreen" aria-label="全画面表示を切り替え" title="全画面表示">⛶</button></div></header>
+<section class="intro"><div class="eyebrow">NOTHING STAYS THE SAME</div><h1>Touch<br>the<br><em>impossible.</em></h1><p>かたちは、触れるたびに生まれ変わる。<br>光の、その先へ。</p><div class="gesture"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 13V5a2 2 0 0 1 4 0v6m0-2a2 2 0 0 1 4 0v3m0-1a2 2 0 0 1 4 0v6c0 3-3 5-6 5h-2c-2 0-3-1-4-3l-5-6a2 2 0 0 1 3-2l2 2Z" stroke="currentColor" stroke-width="1"/></svg>DRAG TO TURN · HOLD TO UNRAVEL</div></section>
+<div class="vertical">AN EXPLORATION OF LIGHT, FORM & FEELING</div>
+<div class="bottom"><div class="status"><div><span class="status-number" id="number">01</span><span class="status-name"><span id="form-name">THE ENDLESS KNOT</span><small id="form-caption">はじまりも、終わりもない。</small></span></div><span class="hint" id="hint"><b>押し続ける</b> と、形がほどける。<br><span class="keyboard">SCROLL TO ZOOM · SPACE TO PAUSE</span></span></div><div class="controlbar"><div><div class="group-label">CHOOSE A FORM</div><div class="forms" role="group" aria-label="立体の形"><button class="form" data-form="0" aria-pressed="true"><i>01</i>Knot</button><button class="form" data-form="1" aria-pressed="false"><i>02</i>Bloom</button><button class="form" data-form="2" aria-pressed="false"><i>03</i>Orbit</button></div></div><div class="fluid"><label class="range-label" for="fluid"><span>FLUIDITY</span><output id="fluid-output" for="fluid">45%</output></label><input id="fluid" type="range" min="0" max="100" value="45" aria-label="流動性"></div><div><div class="group-label">LIGHT & MATERIAL</div><div class="colors" role="group" aria-label="光と材質"><button class="color" data-color="0" style="--swatch:conic-gradient(#f1b9c7,#9bc7f0,#c3a0ef,#f5c08c,#f1b9c7)" aria-pressed="true" aria-label="Prism 虹色"><span></span></button><button class="color" data-color="1" style="--swatch:linear-gradient(130deg,#f3f5fd,#535d73,#becbe0)" aria-pressed="false" aria-label="Chrome 銀"><span></span></button><button class="color" data-color="2" style="--swatch:linear-gradient(130deg,#f4e3bc,#cc6537,#f4bf75)" aria-pressed="false" aria-label="Solar 金"><span></span></button><span class="color-name" id="color-name">PRISM</span></div></div><div class="actions"><button class="icon" id="pause" aria-label="動きを止める" aria-pressed="false" title="動きを止める（Space）">Ⅱ</button><button class="icon" id="focus" aria-label="立体に集中する" aria-pressed="false" title="立体に集中（F）">◎</button><button class="icon" id="help-toggle" aria-label="操作ガイド" aria-expanded="false" aria-controls="help" title="操作ガイド">?</button></div></div></div>
+<aside class="help" id="help" hidden><h2>Follow your curiosity.</h2><dl><dt>ドラッグ</dt><dd>立体を回転</dd><dt>押し続ける</dt><dd>形をほどく</dd><dt>ホイール</dt><dd>近づく・離れる</dd><dt>1 / 2 / 3</dt><dd>形を切り替える</dd><dt>Space</dt><dd>動きを止める・再開</dd><dt>F</dt><dd>立体に集中する</dd><dt>R</dt><dd>視点を戻す</dd></dl><p>流動性を上げると、表面がより大きく揺らぎます。</p></aside><div class="hold-ring" id="hold-ring" aria-hidden="true"><span>LET IT GO.</span></div><div class="tooltip" id="toast" role="status" aria-live="polite"></div>
+<script id="vertex" type="x-shader/x-vertex">
+attribute vec2 position;
+varying vec2 vUv;
+void main(){vUv=position*.5+.5;gl_Position=vec4(position,0.,1.);}
+</script>
+<script id="scene-fragment" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;
+uniform vec2 uResolution;
+uniform float uTime;
+uniform vec2 uRotation;
+uniform vec3 uShape;
+uniform vec3 uMaterial;
+uniform float uFluid;
+uniform float uBurst;
+uniform float uZoom;
+uniform float uFocus;
+#define PI 3.14159265359
+mat2 rotate(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+float smoothMin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+vec3 objectPoint(vec3 p){p.xz=rotate(uTime*.16+uRotation.x)*p.xz;p.yz=rotate(.35+uRotation.y+sin(uTime*.17)*.18)*p.yz;return p;}
+float sculpture(vec3 point){
+ vec3 p=objectPoint(point);
+ float a=atan(p.z,p.x),rad=length(p.xz),t=uTime;
+ float form=0.;
+ if(uShape.x>.00001){
+  vec2 q=vec2(rad-1.04,p.y);q=rotate(a*1.5)*q;q.x=abs(q.x)-.38;
+  form+=(length(q)-.235)*uShape.x;
+ }
+ if(uShape.y>.00001){
+  float petalRadius=1.04+.24*cos(a*5.+sin(t*.3)*.4);
+  vec2 q=vec2(rad-petalRadius,p.y-.24*sin(a*3.+t*.35));
+  form+=(length(q)-(.24+.045*sin(a*5.-t*.6)))*uShape.y;
+ }
+ float orbit=0.;
+ if(uShape.z>.00001||uBurst>.00001){
+  orbit=length(p)-.56;
+  for(int i=0;i<6;i++){
+   float fi=float(i),ang=fi*PI/3.+t*.18;
+   vec3 center=vec3(cos(ang),sin(ang*2.+t*.5)*.35,sin(ang))*(1.04+uBurst*.78);
+   float sphere=length(p-center)-(.39+.045*sin(t+fi));
+   orbit=smoothMin(orbit,sphere,mix(.40,.09,uBurst));
+  }
+  form+=orbit*uShape.z;
+ }
+ float wobble=.06*uFluid*sin(p.x*4.+t)*sin(p.y*4.6-t*.7)*sin(p.z*4.2+t*.6);
+ return (mix(form,orbit,uBurst)+wobble)*.35;
+}vec3 normalAt(vec3 p){vec2 e=vec2(.0014,0.);return normalize(vec3(sculpture(p+e.xyy)-sculpture(p-e.xyy),sculpture(p+e.yxy)-sculpture(p-e.yxy),sculpture(p+e.yyx)-sculpture(p-e.yyx)));}
+vec3 spectral(float t){return .54+.46*cos(6.2831853*(vec3(.02,.33,.65)+t));}
+vec3 environment(vec3 d){
+ vec3 base=mix(vec3(.025,.035,.067),vec3(.35,.39,.47),smoothstep(-.5,1.,d.y));
+ float boxA=pow(max(dot(d,normalize(vec3(-1.,1.7,1.5))),0.),22.);
+ float boxB=pow(max(dot(d,normalize(vec3(1.4,.25,-1.))),0.),15.);
+ float boxC=pow(max(dot(d,normalize(vec3(.15,-.9,1.))),0.),28.);
+ float strip=pow(1.-abs(dot(d,normalize(vec3(.7,.3,-.25)))),55.);
+ float slim=pow(1.-abs(dot(d,normalize(vec3(-.4,.8,.3)))),100.);
+ vec3 warm=mix(vec3(3.8,1.8,1.15),vec3(4.2,2.9,1.3),uMaterial.z);
+ base+=boxA*vec3(4.8,4.5,4.2)+boxB*vec3(.75,2.0,4.5)+boxC*warm;
+ base+=strip*vec3(2.5,2.7,3.2)+slim*vec3(1.4,.52,.31);
+ return base;
+}
+float ambientOcclusion(vec3 p,vec3 n){float ao=0.,weight=1.;for(int i=1;i<=4;i++){float h=.075*float(i);ao+=(h-sculpture(p+n*h))*weight;weight*=.62;}return clamp(1.-ao*1.8,.25,1.);}
+float trace(vec3 ro,vec3 rd){float b=dot(ro,rd),c=dot(ro,ro)-7.84,h=b*b-c;if(h<0.)return 10.;float t=max(0.,-b-sqrt(h));for(int i=0;i<140;i++){float d=sculpture(ro+rd*t);if(d<.0008)return t;if(t>10.)return 10.;t+=max(d,.00035);}return 10.;}
+vec3 shade(vec3 p,vec3 rd){
+ vec3 n=normalAt(p),reflection=reflect(rd,n),eye=-rd;
+ float fresnel=pow(1.-max(dot(n,eye),0.),3.);
+ float film=dot(n,eye)*.82+p.y*.11+sin(uTime*.15)*.08;
+ vec3 prism=mix(vec3(.35,.42,.7),spectral(film),.76);
+ vec3 metal=vec3(.77,.85,.96)*uMaterial.y+vec3(.95,.52,.19)*uMaterial.z+prism*uMaterial.x;
+ vec3 color=environment(reflection)*mix(metal,vec3(.94,.92,.99),fresnel*.72);
+ float ao=ambientOcclusion(p,n);
+ float key=max(dot(n,normalize(vec3(-3.,4.,5.))),0.);
+ color=color*ao+metal*key*.085;
+ color+=pow(fresnel,2.)*vec3(.17,.13,.3)*uMaterial.x;
+ return color;
+}
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+void main(){
+ vec2 uv=(gl_FragCoord.xy-.5*uResolution)/uResolution.y;
+ uv.x-=.22*(1.-uFocus);
+ vec3 ro=vec3(0.,.12,uZoom);
+ vec3 rd=normalize(vec3(uv*1.85,-3.0));
+ vec3 bg=vec3(.0015,.0018,.003);
+ float halo=exp(-dot(uv-vec2(.05,-.08),uv-vec2(.05,-.08))*3.7);
+ bg+=vec3(.007,.005,.014)*halo;
+ float lower=exp(-pow((uv.y+.57)*7.,2.)-pow(uv.x*1.5,2.));
+ bg+=mix(vec3(.018,.008,.025),vec3(.025,.012,.005),uMaterial.z)*lower;
+ float t=trace(ro,rd);
+ vec3 color=bg;
+ if(t<10.){vec3 p=ro+rd*t;color=shade(p,rd);}
+ // 造形の下に薄い光の軌道を描き、空間の奥行きを作る。
+ if(rd.y<-.015){float floorT=(-1.95-ro.y)/rd.y;vec3 floorP=ro+rd*floorT;
+  if(floorT<t&&floorT>0.){
+   float r=length(floorP.xz),ring=exp(-abs(r-2.15)*75.)*.055+exp(-abs(r-2.3)*100.)*.018;
+   color=bg+ring*vec3(.6,.44,.95)*exp(-floorT*.07);
+   color+=vec3(.05,.022,.072)*exp(-r*r*.42);
+  }
+ }
+ color+=hash(gl_FragCoord.xy)*.0018;
+ gl_FragColor=vec4(color,1.);
+}
+</script>
+<script id="post-fragment" type="x-shader/x-fragment">
+precision highp float;
+varying vec2 vUv;uniform sampler2D uScene;uniform vec2 uTexel;uniform vec2 uScreen;
+vec3 sampleBright(vec2 p){vec3 c=texture2D(uScene,p).rgb;return max(c-.6,0.);}
+vec3 aces(vec3 x){return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14),0.,1.);}
+void main(){
+ vec2 radial=vUv-.5;
+ vec3 c=texture2D(uScene,vUv).rgb;
+ c.r=texture2D(uScene,vUv+radial*.0011).r;c.b=texture2D(uScene,vUv-radial*.0011).b;
+ vec3 glow=vec3(0.);
+ for(int i=0;i<8;i++){float a=float(i)*.785398;vec2 offset=vec2(cos(a),sin(a))*uTexel*7.;glow+=sampleBright(vUv+offset);glow+=sampleBright(vUv+offset*2.3)*.5;}
+ c+=glow*.035;c=aces(c*1.1);c=pow(c,vec3(.4545));
+ c*=1.-.25*dot(radial,radial);
+ gl_FragColor=vec4(c,1.);
+}
+</script><script>
+(() => {
+ 'use strict';
+ const $=selector=>document.querySelector(selector), $$=selector=>[...document.querySelectorAll(selector)];
+ let canvas=$('#stage');
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const titles=['THE ENDLESS KNOT','A FLOWER WITHOUT SEASONS','EVERYTHING IN ORBIT'];
+ const captions=['はじまりも、終わりもない。','咲き続ける、その一瞬を。','離れて、惹かれて、また出会う。'];
+ let gl=null, sceneProgram=null, postProgram=null, buffer=null, texture=null, framebuffer=null;
+ let textureType=null, sceneUniforms={}, postUniforms={}, fallbackContext=null;
+ let sceneWidth=1, sceneHeight=1, renderWidth=1, renderHeight=1, renderer='webgl';
+ let time=.8, previous=0, frame=0, frames=0, paused=reduced.matches;
+ let form=0, color=0, shape=[1,0,0], material=[1,0,0], fluid=.45, fluidTarget=.45;
+ let burst=0, focused=false, focusValue=0, zoom=6.4, zoomTarget=6.4;
+ let rotation=[-.28,.18], rotationTarget=[-.28,.18];
+ let pointerDown=false, pointerId=null, pointerOrigin=[0,0], pointerLast=[0,0], pointerMoved=false, holdStarted=0;
+ let toastTimer=0, lastQualityCheck=0, qualityTime=0, qualityFrames=0, quality=.78;
+ const maxPixels=1150000;
+ function notify(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').classList.add('show');toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),2800);}
+ function compile(type,source){const shader=gl.createShader(type);gl.shaderSource(shader,source);gl.compileShader(shader);if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS)){const message=gl.getShaderInfoLog(shader);gl.deleteShader(shader);throw Error(message);}return shader;}
+ function program(fragment){const result=gl.createProgram();const vertex=compile(gl.VERTEX_SHADER,$('#vertex').textContent),pixel=compile(gl.FRAGMENT_SHADER,fragment);gl.attachShader(result,vertex);gl.attachShader(result,pixel);gl.linkProgram(result);gl.deleteShader(vertex);gl.deleteShader(pixel);if(!gl.getProgramParameter(result,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(result));return result;}
+ function setupWebGL(){
+  gl=canvas.getContext('webgl',{alpha:false,antialias:false,depth:false,stencil:false,powerPreference:'high-performance',preserveDrawingBuffer:true});
+  if(!gl)throw Error('WebGL unavailable');
+  sceneProgram=program($('#scene-fragment').textContent);postProgram=program($('#post-fragment').textContent);
+  buffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  for(const name of ['uResolution','uTime','uRotation','uShape','uMaterial','uFluid','uBurst','uZoom','uFocus'])sceneUniforms[name]=gl.getUniformLocation(sceneProgram,name);
+  for(const name of ['uScene','uTexel','uScreen'])postUniforms[name]=gl.getUniformLocation(postProgram,name);
+  texture=gl.createTexture();framebuffer=gl.createFramebuffer();
+  const half=gl.getExtension('OES_texture_half_float');
+  gl.getExtension('EXT_color_buffer_half_float');
+  const linear=gl.getExtension('OES_texture_half_float_linear');
+  textureType=half&&linear?half.HALF_FLOAT_OES:gl.UNSIGNED_BYTE;
+  gl.bindTexture(gl.TEXTURE_2D,texture);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+ }
+ function setupFallback(){
+  renderer='canvas';const replacement=canvas.cloneNode();canvas.replaceWith(replacement);canvas=replacement;fallbackContext=canvas.getContext('2d');
+  if(!fallbackContext){$('#live-label').textContent='描画できません';$('.loading span').textContent='このブラウザでは描画できません。別のPCブラウザで開いてください。';return;}
+  canvas.dataset.renderer='canvas';
+ }
+ try{setupWebGL();canvas.dataset.renderer='webgl';}catch(error){console.warn('WebGL初期化失敗。点群描画へ切り替えます。',error.message);setupFallback();}
+ function resize(){
+  const ratio=Math.min(devicePixelRatio||1,1.5);renderWidth=Math.round(innerWidth*ratio);renderHeight=Math.round(innerHeight*ratio);
+  canvas.width=renderWidth;canvas.height=renderHeight;
+  if(renderer==='webgl'){
+   const scale=Math.min(quality,Math.sqrt(maxPixels/(renderWidth*renderHeight)));
+   sceneWidth=Math.max(1,Math.round(renderWidth*scale));sceneHeight=Math.max(1,Math.round(renderHeight*scale));
+   gl.bindTexture(gl.TEXTURE_2D,texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,sceneWidth,sceneHeight,0,gl.RGBA,textureType,null);
+   gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffer);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,texture,0);
+   if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE){textureType=gl.UNSIGNED_BYTE;gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,sceneWidth,sceneHeight,0,gl.RGBA,textureType,null);}
+   gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+  }
+  requestRender();
+ }
+ function bindQuad(target){gl.useProgram(target);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);const position=gl.getAttribLocation(target,'position');gl.enableVertexAttribArray(position);gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);}
+ function drawWebGL(){
+  gl.bindFramebuffer(gl.FRAMEBUFFER,framebuffer);gl.viewport(0,0,sceneWidth,sceneHeight);bindQuad(sceneProgram);
+  gl.uniform2f(sceneUniforms.uResolution,sceneWidth,sceneHeight);gl.uniform1f(sceneUniforms.uTime,time);gl.uniform2f(sceneUniforms.uRotation,...rotation);
+  gl.uniform3f(sceneUniforms.uShape,...shape);gl.uniform3f(sceneUniforms.uMaterial,...material);gl.uniform1f(sceneUniforms.uFluid,fluid);gl.uniform1f(sceneUniforms.uBurst,burst);gl.uniform1f(sceneUniforms.uZoom,zoom+burst*.9);gl.uniform1f(sceneUniforms.uFocus,focusValue);
+  gl.drawArrays(gl.TRIANGLES,0,6);
+  gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,renderWidth,renderHeight);bindQuad(postProgram);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);
+  gl.uniform1i(postUniforms.uScene,0);gl.uniform2f(postUniforms.uTexel,1/sceneWidth,1/sceneHeight);gl.uniform2f(postUniforms.uScreen,renderWidth,renderHeight);gl.drawArrays(gl.TRIANGLES,0,6);
+ }
+ // GPUが利用できない環境でも、同じ操作で動く立体の点群を描画する。
+ function drawFallback(){
+  const c=fallbackContext;if(!c)return;c.fillStyle='#07080c';c.fillRect(0,0,renderWidth,renderHeight);
+  const cx=renderWidth*.5+renderHeight*.22*(1-focusValue),cy=renderHeight*.5,scale=renderHeight*1.35/zoom;
+  const points=[];const ry=time*.16+rotation[0],rx=rotation[1]+.35;
+  for(let i=0;i<155;i++)for(let j=0;j<30;j++){
+   const a=i/155*Math.PI*2,b=j/30*Math.PI*2;
+   let radius=1.04+.38*Math.cos(1.5*a),y=.38*Math.sin(1.5*a);
+   if(form===1){radius=1.04+.24*Math.cos(a*5);y=.24*Math.sin(a*3+time*.35);}
+   if(form===2){radius=1+.35*Math.sin(a*3+time);y=.3*Math.cos(a*2-time);}
+   radius+=.22*Math.cos(b);y+=.22*Math.sin(b);radius+=burst*.6*Math.sin(a*6+time);y+=burst*.5*Math.cos(a*5-time);
+   let x=radius*Math.cos(a),z=radius*Math.sin(a);const px=x*Math.cos(ry)+z*Math.sin(ry);z=-x*Math.sin(ry)+z*Math.cos(ry);x=px;
+   const py=y*Math.cos(rx)-z*Math.sin(rx);z=y*Math.sin(rx)+z*Math.cos(rx);y=py;
+   const depth=3/(3-z*.35);points.push({x:cx+x*scale*depth,y:cy-y*scale*depth,z,h:a*57.3+b*15});
+  }
+  points.sort((a,b)=>a.z-b.z);
+  for(const p of points){const l=40+(p.z+1.5)*15;c.fillStyle=color===1?`hsl(220 18% ${l}%)`:color===2?`hsl(${25+p.z*10} 78% ${l}%)`:`hsl(${p.h+time*4} 65% ${l}%)`;c.beginPath();c.arc(p.x,p.y,1+(p.z+1.5)*.5,0,Math.PI*2);c.fill();}
+ }
+ function render(now){
+  frame=0;if(document.hidden)return;
+  const rawDelta=previous?(now-previous)/1000:.016;const delta=Math.min(rawDelta,.065);previous=now;
+  const ease=paused?1:1-Math.exp(-delta*5.5);
+  if(!paused)time+=delta;
+  for(let i=0;i<3;i++){shape[i]+=((i===form?1:0)-shape[i])*ease;material[i]+=((i===color?1:0)-material[i])*ease;}
+  fluid+=(fluidTarget-fluid)*ease;zoom+=(zoomTarget-zoom)*ease;focusValue+=((focused?1:(pointerDown&&!pointerMoved&&!paused?.85:0))-focusValue)*ease;
+  rotation[0]+=(rotationTarget[0]-rotation[0])*ease;rotation[1]+=(rotationTarget[1]-rotation[1])*ease;
+  const unravel=pointerDown&&!pointerMoved&&now-holdStarted>160&&!paused?1:0;
+  burst+=(unravel-burst)*(paused?1:1-Math.exp(-delta*(unravel?1.9:3.4)));
+  if(renderer==='webgl')drawWebGL();else drawFallback();
+  frames++;canvas.dataset.frames=String(frames);canvas.dataset.activeForm=String(form);canvas.dataset.burst=burst.toFixed(3);
+  document.body.classList.add('ready');
+  if(!paused){
+   qualityTime+=rawDelta;qualityFrames++;
+   if(qualityFrames>=35&&now-lastQualityCheck>1500){const average=qualityTime/qualityFrames;if(average>.048&&quality>.38){quality=Math.max(.38,quality*.82);resize();}qualityTime=0;qualityFrames=0;lastQualityCheck=now;}
+   requestRender();
+  }
+ }
+ function requestRender(){if(!frame&&!document.hidden)frame=requestAnimationFrame(render);}
+ function setForm(index){form=index;$$('[data-form]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.form)===form)));$('#number').textContent=String(form+1).padStart(2,'0');$('#form-name').textContent=titles[form];$('#form-caption').textContent=captions[form];requestRender();}
+ function setColor(index){color=index;$$('[data-color]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.color)===color)));$('#color-name').textContent=['PRISM','CHROME','SOLAR'][color];requestRender();}
+ function syncPause(){
+  $('#pause').setAttribute('aria-pressed',String(paused));$('#pause').setAttribute('aria-label',paused?'動きを再開':'動きを止める');$('#pause').textContent=paused?'▷':'Ⅱ';$('#live-label').textContent=paused?'STILL MOMENT':'IN MOTION';
+  previous=0;requestRender();
+ }
+ function toggleFocus(){focused=!focused;document.body.classList.toggle('focus',focused);$('#focus').setAttribute('aria-pressed',String(focused));$('#focus').setAttribute('aria-label',focused?'文字を表示する':'立体に集中する');requestRender();}
+ $$('[data-form]').forEach(button=>button.addEventListener('click',()=>setForm(Number(button.dataset.form))));
+ $$('[data-color]').forEach(button=>button.addEventListener('click',()=>setColor(Number(button.dataset.color))));
+ $('#fluid').addEventListener('input',event=>{fluidTarget=Number(event.target.value)/100;$('#fluid-output').textContent=`${event.target.value}%`;requestRender();});
+ $('#pause').addEventListener('click',()=>{paused=!paused;syncPause();});$('#focus').addEventListener('click',toggleFocus);
+ $('#help-toggle').addEventListener('click',()=>{const open=$('#help').hidden;$('#help').hidden=!open;$('#help-toggle').setAttribute('aria-expanded',String(open));});
+ $('#fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen();}catch{notify('ブラウザのF11キーでも全画面表示にできます。');}});
+ canvas.addEventListener('pointerdown',event=>{
+  if(event.button!==0)return;canvas.focus({preventScroll:true});pointerDown=true;pointerMoved=false;pointerId=event.pointerId;pointerOrigin=[event.clientX,event.clientY];pointerLast=[...pointerOrigin];holdStarted=performance.now();canvas.setPointerCapture(pointerId);
+  $('#hold-ring').style.left=`${event.clientX}px`;$('#hold-ring').style.top=`${event.clientY}px`;if(!paused)document.body.classList.add('holding');requestRender();
+ });
+ canvas.addEventListener('pointermove',event=>{
+  if(!pointerDown||event.pointerId!==pointerId)return;
+  const dx=event.clientX-pointerLast[0],dy=event.clientY-pointerLast[1];
+  if(Math.hypot(event.clientX-pointerOrigin[0],event.clientY-pointerOrigin[1])>7){pointerMoved=true;document.body.classList.remove('holding');}
+  rotationTarget[0]+=dx*.008;rotationTarget[1]=Math.max(-2.2,Math.min(2.2,rotationTarget[1]+dy*.007));pointerLast=[event.clientX,event.clientY];requestRender();
+ });
+ function release(){pointerDown=false;pointerId=null;document.body.classList.remove('holding');requestRender();}
+ canvas.addEventListener('pointerup',release);canvas.addEventListener('pointercancel',release);canvas.addEventListener('lostpointercapture',release);
+ canvas.addEventListener('wheel',event=>{event.preventDefault();zoomTarget=Math.max(4.3,Math.min(8.8,zoomTarget+event.deltaY*.003));requestRender();},{passive:false});
+ document.addEventListener('keydown',event=>{
+  if(event.target.closest('input,button'))return;
+  if(event.code==='Space'){event.preventDefault();paused=!paused;syncPause();}
+  if(['1','2','3'].includes(event.key))setForm(Number(event.key)-1);
+  if(event.key.toLowerCase()==='f')toggleFocus();
+  if(event.key.toLowerCase()==='r'){rotationTarget=[-.28,.18];zoomTarget=6.4;requestRender();}
+  if(event.key==='Escape'){$('#help').hidden=true;$('#help-toggle').setAttribute('aria-expanded','false');if(focused)toggleFocus();}
+ });
+ reduced.addEventListener('change',event=>{paused=event.matches;syncPause();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;pointerDown=false;document.body.classList.remove('holding');}else{previous=0;requestRender();}});
+ canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();cancelAnimationFrame(frame);frame=0;$('#live-label').textContent='RECONNECTING';notify('描画の接続を復元しています。');});
+ canvas.addEventListener('webglcontextrestored',()=>{try{setupWebGL();resize();syncPause();}catch{notify('再読み込みすると描画を再開できます。');}});
+ addEventListener('resize',resize);resize();syncPause();
+})();
+</script></body></html>
