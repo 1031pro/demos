@@ -89,11 +89,11 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 </head>
 <body>
 <div class="wrap">
-<nav class="nav"><a href="データ基盤_20260817.html">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="業者DBランキング_20260827.html">ランキング仮バージョン</a><a href="課題サマリー_20260817.html" class="here">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全643件）</a></nav>
+<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="データ基盤_20260817.html">データ基盤（ポータル）</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="業者DBランキング_20260827.html">ランキング仮バージョン</a><a href="課題サマリー_20260817.html" class="here">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全1,517件）</a></nav>
 
 <h1>課題サマリー（DB4）</h1>
 <p class="sub">受けられなかった案件が「何の条件で」落ちたかの集計。
-対象は判定が対象外・要確認の 544件（全643件のうち）。</p>
+対象は判定が対象外・要確認の 1,051件（全1,517件のうち）。</p>
 
 <div class="internal"><strong>内部資料。</strong>判定理由・条件名・件数を含む。外部には出さない。</div>
 
@@ -104,8 +104,8 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 判定エンジンが理由を必ず書き残しているため、集計は毎日自動で更新できる。</div>
 
 <div class="summary">
-  <span class="item">全案件<b>643</b></span>
-  <span class="item">分類対象<b>544</b></span>
+  <span class="item">全案件<b>1,517</b></span>
+  <span class="item">分類対象<b>1,051</b></span>
   <span class="item">条件軸<b>9</b></span>
   <span class="item">その他（未分類）<b>0</b></span>
 </div>
@@ -113,24 +113,24 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 <h2>まず全体の判定内訳</h2>
 <table>
   <tr><th>判定</th><th class="num">件数</th><th class="num">構成比</th></tr>
-  <tr><td>候補</td><td class="num">13</td><td class="num">2.0%</td></tr><tr><td>要確認</td><td class="num">458</td><td class="num">71.2%</td></tr><tr><td>問い合わせ</td><td class="num">4</td><td class="num">0.6%</td></tr><tr><td>要再点検</td><td class="num">82</td><td class="num">12.8%</td></tr><tr><td>対象外</td><td class="num">86</td><td class="num">13.4%</td></tr>
-  <tr class="total"><td>合計</td><td class="num">643</td><td class="num">100.0%</td></tr>
+  <tr><td>候補</td><td class="num">13</td><td class="num">0.9%</td></tr><tr><td>要確認</td><td class="num">945</td><td class="num">62.3%</td></tr><tr><td>問い合わせ</td><td class="num">4</td><td class="num">0.3%</td></tr><tr><td>要再点検</td><td class="num">449</td><td class="num">29.6%</td></tr><tr><td>対象外</td><td class="num">106</td><td class="num">7.0%</td></tr>
+  <tr class="total"><td>合計</td><td class="num">1,517</td><td class="num">100.0%</td></tr>
 </table>
 <p class="src">取得期間 2026-08-07〜
-2026-08-20／
-仕様書 あり180・なし362・
-不明101／AI要約の信頼性フラグあり 120件。</p>
+2026-09-10／
+仕様書 あり360・なし679・
+不明478／AI要約の信頼性フラグあり 120件。</p>
 
-<h2>条件軸別の集計<span class="cnt">対象外86＋要確認458＝544件</span></h2>
+<h2>条件軸別の集計<span class="cnt">対象外106＋要確認945＝1051件</span></h2>
 <p>1件が複数の条件で止まっていることが多いため、2通りの数え方を並べる。
 <strong>該当件数</strong>はその条件に言及している案件数（重複あり）。
-<strong>主要因</strong>は優先順位で1件を1軸に割り当てた数（合計が544件に一致）。
+<strong>主要因</strong>は優先順位で1件を1軸に割り当てた数（合計が1051件に一致）。
 <strong>単独要因</strong>は他の条件軸を併せ持たない案件数＝その条件を潰せば直接前に進む案件数
 （最終行の「素材の情報不足」だけは条件軸ではないため、条件軸をひとつも持たない案件数を入れている）。</p>
 <table>
   <tr><th>条件軸</th><th class="num">該当件数</th><th class="num">構成比</th>
       <th class="num">主要因</th><th class="num">単独要因</th></tr>
-  <tr><td>重複・除外（同一案件の別掲載）</td><td class="num">20</td><td class="num">3.7%</td><td class="num">20</td><td class="num">20</td></tr><tr><td>指定認定・指定機関</td><td class="num">1</td><td class="num">0.2%</td><td class="num">1</td><td class="num">1</td></tr><tr><td>地域要件・履行場所</td><td class="num">116</td><td class="num">21.3%</td><td class="num">116</td><td class="num">63</td></tr><tr><td>業種不整合（建設業と合わない）</td><td class="num">62</td><td class="num">11.4%</td><td class="num">56</td><td class="num">15</td></tr><tr><td>省庁別の入札参加登録</td><td class="num">271</td><td class="num">49.8%</td><td class="num">209</td><td class="num">18</td></tr><tr><td>資格の種類・等級（ランク）</td><td class="num">212</td><td class="num">39.0%</td><td class="num">19</td><td class="num">9</td></tr><tr><td>実績要件</td><td class="num">136</td><td class="num">25.0%</td><td class="num">28</td><td class="num">9</td></tr><tr><td>その他要件（免許・技術者・個別条件）</td><td class="num">263</td><td class="num">48.3%</td><td class="num">62</td><td class="num">62</td></tr><tr><td>素材の情報不足（仕様書なし・AI要約フラグ等）</td><td class="num">337</td><td class="num">61.9%</td><td class="num">33</td><td class="num">33</td></tr><tr class="total"><td>その他（上のどれにも当たらない）</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td></tr><tr class="total"><td>主要因の合計</td><td class="num">—</td><td class="num">—</td><td class="num">544</td><td class="num">—</td></tr>
+  <tr><td>重複・除外（同一案件の別掲載）</td><td class="num">20</td><td class="num">1.9%</td><td class="num">20</td><td class="num">20</td></tr><tr><td>指定認定・指定機関</td><td class="num">2</td><td class="num">0.2%</td><td class="num">2</td><td class="num">2</td></tr><tr><td>地域要件・履行場所</td><td class="num">144</td><td class="num">13.7%</td><td class="num">144</td><td class="num">82</td></tr><tr><td>業種不整合（建設業と合わない）</td><td class="num">62</td><td class="num">5.9%</td><td class="num">56</td><td class="num">15</td></tr><tr><td>省庁別の入札参加登録</td><td class="num">758</td><td class="num">72.1%</td><td class="num">687</td><td class="num">65</td></tr><tr><td>資格の種類・等級（ランク）</td><td class="num">635</td><td class="num">60.4%</td><td class="num">19</td><td class="num">9</td></tr><tr><td>実績要件</td><td class="num">173</td><td class="num">16.5%</td><td class="num">28</td><td class="num">9</td></tr><tr><td>その他要件（免許・技術者・個別条件）</td><td class="num">374</td><td class="num">35.6%</td><td class="num">62</td><td class="num">62</td></tr><tr><td>素材の情報不足（仕様書なし・AI要約フラグ等）</td><td class="num">664</td><td class="num">63.2%</td><td class="num">33</td><td class="num">33</td></tr><tr class="total"><td>その他（上のどれにも当たらない）</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td class="num">—</td></tr><tr class="total"><td>主要因の合計</td><td class="num">—</td><td class="num">—</td><td class="num">1,051</td><td class="num">—</td></tr>
 </table>
 <p class="src">分類は判定理由テキストの文字列パターンで機械的に行っている。
 どのパターンにも当たらなかった案件は「その他」に入れる — 今回は <strong>0件
@@ -146,22 +146,22 @@ footer ul { margin:6px 0 0; padding-left:20px; }
   
   <tr>
     <td>省庁別登録のデータ化（DB3）</td>
-    <td class="num">271</td>
-    <td class="num">18</td>
-    <td>登録要件だけで止まっている18件が自動判定へ進める。
+    <td class="num">758</td>
+    <td class="num">65</td>
+    <td>登録要件だけで止まっている65件が自動判定へ進める。
         残りは他の条件も併せ持つため、登録が入っても人の確認が残る</td>
   </tr>
   <tr>
     <td>資料取得フローを回す（DB1第2層）</td>
-    <td class="num">337</td>
+    <td class="num">664</td>
     <td class="num">33</td>
     <td>公告原文が読めれば、素材の欠落だけで要確認になっている33件が判定可能になる。
-        別枠の要再点検82件＋問い合わせ4件
-        （計86件）も同じ手当てで解ける</td>
+        別枠の要再点検449件＋問い合わせ4件
+        （計453件）も同じ手当てで解ける</td>
   </tr>
   <tr>
     <td>実績台帳の整備（DB3）</td>
-    <td class="num">136</td>
+    <td class="num">173</td>
     <td class="num">9</td>
     <td>「過去◯年以内の元請完成実績」を機械照合できる。実績要件だけで止まっている9件が対象</td>
   </tr>
@@ -174,25 +174,25 @@ footer ul { margin:6px 0 0; padding-left:20px; }
   </tr>
   <tr>
     <td>地域要件（対応エリア）</td>
-    <td class="num">116</td>
-    <td class="num">63</td>
+    <td class="num">144</td>
+    <td class="num">82</td>
     <td>データ整備では解けない。営業所の設置か、エリア外を最初から取らない検索条件かの事業判断になる</td>
   </tr>
 </table>
 
-<h2>どの省庁の登録を先に取るか<span class="cnt">登録要件が絡む271件の発注機関内訳</span></h2>
+<h2>どの省庁の登録を先に取るか<span class="cnt">登録要件が絡む758件の発注機関内訳</span></h2>
 <table>
   <tr><th>発注機関</th><th class="num">件数</th></tr>
-  <tr><td>防衛省</td><td class="num">43</td></tr><tr><td>日本郵政グループ〈郵便局/日本郵便/ゆうちょ銀行/かんぽ生命〉</td><td class="num">43</td></tr><tr><td>農林水産省</td><td class="num">23</td></tr><tr><td>国土交通省</td><td class="num">20</td></tr><tr><td>産業技術総合研究所</td><td class="num">14</td></tr><tr><td>日本年金機構</td><td class="num">13</td></tr><tr><td>情報通信研究機構</td><td class="num">12</td></tr><tr><td>農業・食品産業技術総合研究機構</td><td class="num">10</td></tr><tr><td>東京学芸大学</td><td class="num">8</td></tr><tr><td>内閣府</td><td class="num">7</td></tr>
+  <tr><td>日本銀行</td><td class="num">150</td></tr><tr><td>防衛省</td><td class="num">101</td></tr><tr><td>国土交通省</td><td class="num">47</td></tr><tr><td>茨城県庁</td><td class="num">44</td></tr><tr><td>日本郵政グループ〈郵便局/日本郵便/ゆうちょ銀行/かんぽ生命〉</td><td class="num">43</td></tr><tr><td>日本原子力研究開発機構</td><td class="num">33</td></tr><tr><td>農林水産省</td><td class="num">29</td></tr><tr><td>法務省</td><td class="num">25</td></tr><tr><td>内閣府</td><td class="num">24</td></tr><tr><td>量子科学技術研究開発機構</td><td class="num">16</td></tr>
 </table>
 <p class="src">「省庁固有の競争参加資格を併記」「全省庁統一資格の記載なし（省庁固有資格のみ）」で
 要確認・対象外になった案件を、発注機関名の先頭で数えた実測値（上位10）。
 この順は「1〜2ヶ月で効く最速の改善」（8/13協議）の候補順そのものになる。</p>
 
-<h2>地域要件の内訳<span class="cnt">116件</span></h2>
+<h2>地域要件の内訳<span class="cnt">144件</span></h2>
 <table>
   <tr><th>内訳</th><th class="num">件数</th></tr>
-  <tr><td>関東圏内だが茨城県を含まない指定</td><td class="num">40</td></tr><tr><td>対応エリア外（東北）</td><td class="num">12</td></tr><tr><td>地域の個別条件（営業所所在・距離条件など）</td><td class="num">12</td></tr><tr><td>対応エリア外（東海・北陸）</td><td class="num">8</td></tr><tr><td>履行場所が圏外（北海道）</td><td class="num">6</td></tr><tr><td>対応エリア外（北海道）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（新潟県）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（宮城県）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（青森県）</td><td class="num">3</td></tr><tr><td>遠隔離島（行政区画上は東京都）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（山口県）</td><td class="num">2</td></tr><tr><td>対応エリア外（九州・沖縄）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（長野県）</td><td class="num">2</td></tr><tr><td>対応エリア外（中国・四国）</td><td class="num">1</td></tr><tr><td>対応エリア外（大阪府）</td><td class="num">1</td></tr><tr><td>対応エリア外（四国）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛媛県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（沖縄県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（石川県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（山形県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（鹿児島県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（高知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（大阪府）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（熊本県）</td><td class="num">1</td></tr>
+  <tr><td>関東圏内だが茨城県を含まない指定</td><td class="num">43</td></tr><tr><td>対応エリア外（東北）</td><td class="num">18</td></tr><tr><td>地域の個別条件（営業所所在・距離条件など）</td><td class="num">17</td></tr><tr><td>対応エリア外（東海・北陸）</td><td class="num">16</td></tr><tr><td>対応エリア外（北海道）</td><td class="num">9</td></tr><tr><td>履行場所が圏外（北海道）</td><td class="num">6</td></tr><tr><td>履行場所が圏外（新潟県）</td><td class="num">5</td></tr><tr><td>履行場所が圏外（宮城県）</td><td class="num">5</td></tr><tr><td>遠隔離島（行政区画上は東京都）</td><td class="num">3</td></tr><tr><td>履行場所が圏外（青森県）</td><td class="num">3</td></tr><tr><td>履行場所が圏外（山口県）</td><td class="num">2</td></tr><tr><td>対応エリア外（九州・沖縄）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（長野県）</td><td class="num">2</td></tr><tr><td>履行場所が圏外（大阪府）</td><td class="num">2</td></tr><tr><td>対応エリア外（中国・四国）</td><td class="num">1</td></tr><tr><td>対応エリア外（大阪府）</td><td class="num">1</td></tr><tr><td>対応エリア外（四国）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛媛県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（沖縄県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（石川県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（山形県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（愛知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（鹿児島県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（高知県）</td><td class="num">1</td></tr><tr><td>履行場所が圏外（熊本県）</td><td class="num">1</td></tr>
 </table>
 <p class="src">対応エリア外は会社データを整備しても解けない。
 一方「関東圏内だが茨城県を含まない指定」「地域の個別条件」は営業所の所在確認で判断が変わりうる層で、
@@ -200,19 +200,19 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 
 <h2>資料が足りなくて判定できない案件</h2>
 <p>条件で落ちたのではなく、材料が無くて判定に進めない案件が別枠である。
-要再点検 82件（仕様書の有無がそもそも素材に書かれていない）＋
+要再点検 449件（仕様書の有無がそもそも素材に書かれていない）＋
 問い合わせ 4件（公示書・仕様書のリンクが無く取得手段がない）＝
-<strong>86件</strong>。これが資料取得フロー（人間フロー①）の対象母数になる。
+<strong>453件</strong>。これが資料取得フロー（人間フロー①）の対象母数になる。
 ここを潰すと分類対象そのものが増え、上の集計の精度も上がる。</p>
 
 <p><a href="データ基盤_20260817.html">← データ基盤（ポータル）へ戻る</a>／
 <a href="会社情報_20260817.html">会社情報（DB3）で整備状況を見る</a></p>
 
 <footer>
-<p><strong>内部資料</strong>／生成 2026-08-25 ／生成スクリプト tools\build_db_screens.py
+<p><strong>内部資料</strong>／生成 2026-09-10 ／生成スクリプト tools\build_db_screens.py
 （4画面まとめて再生成できる。数値は実行のたびに元データから再集計される）</p>
 <p>この画面の数値の出典:</p>
-<ul><li>判定内訳・条件軸分類・機関別内訳: <code>data\案件マスタ_20260807-13_20260814.csv</code>（1,444,422バイト・2026-08-25 05:05・643行）の判定・判定理由列をこの画面の生成時に機械集計</li><li>分類パターンの定義: <code>tools\build_db_screens.py</code> の AXES（条件軸9種・優先順位つき）</li><li>サマリタブ思想の出典: <code>data\analysis_協議書き起こし_20260813.md</code>／<code>data\design_MVP定義_20260814.md</code> §2.5 DB4</li></ul>
+<ul><li>判定内訳・条件軸分類・機関別内訳: <code>data\案件マスタ_20260807-13_20260814.csv</code>（3,118,470バイト・2026-09-10 11:10・1,517行）の判定・判定理由列をこの画面の生成時に機械集計</li><li>分類パターンの定義: <code>tools\build_db_screens.py</code> の AXES（条件軸9種・優先順位つき）</li><li>サマリタブ思想の出典: <code>data\analysis_協議書き起こし_20260813.md</code>／<code>data\design_MVP定義_20260814.md</code> §2.5 DB4</li></ul>
 </footer>
 </div>
 </body>
