@@ -36,10 +36,10 @@ try {
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { $('storage-warning').hidden = false; } }
 // 将来のフォーム連携から受け取る状態。現時点では取得・更新処理を実装しない。
 const applied = c => c.application_status === 'submitted';
-const visible = c => applied(c) || !c.hide_on || today < c.hide_on;
+const visible = c => applied(c) || ((!due(c) || today <= due(c)) && (!c.hide_on || today < c.hide_on));
 const due = c => c.dates.deadline || '';
 const chosen = () => DATA.filter(c => visible(c) && state.selected[c.id] === true);
-function status(c) { return applied(c) ? '申込み済み' : !due(c) ? '応募締切日未登録' : today > due(c) ? '応募受付終了' : `応募締切まで ${day(due(c)) - day(today)}日`; }
+function status(c) { return applied(c) ? '申込み済み' : !due(c) ? '応募締切日未登録' : `応募締切まで ${day(due(c)) - day(today)}日`; }
 function updateCounts() { $('selected-count').textContent = chosen().length; $('nav-count').textContent = chosen().length; }
 function renderCases() {
   const q = $('query').value.trim().toLowerCase(), cat = $('category').value.trim().toLowerCase();
