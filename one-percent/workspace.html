@@ -39,7 +39,6 @@ const applied = c => c.application_status === 'submitted';
 const visible = c => applied(c) || !c.hide_on || today < c.hide_on;
 const due = c => c.dates.deadline || '';
 const visitLabel = c => c.dates.site_visit || '―（要確認）';
-const sampleTag = (c, label) => (c.sample_fields||[]).includes(label) ? ' <small class="sample-tag">サンプル</small>' : '';
 const chosen = () => DATA.filter(c => visible(c) && state.selected[c.id] === true);
 function status(c) { return applied(c) ? '申込み済み' : !due(c) ? '見積提出締切日未登録' : today > due(c) ? '見積提出締切を経過' : `見積提出締切まで ${day(due(c)) - day(today)}日`; }
 function updateCounts() { $('selected-count').textContent = chosen().length; $('nav-count').textContent = chosen().length; }
@@ -52,7 +51,7 @@ function renderCases() {
   $('cards').innerHTML = all.slice(0,limit).map(c => `<article class="card ${state.selected[c.id]?'selected':''}" data-id="${c.id}">
     <button class="detail-title" data-detail="${c.id}" aria-label="${esc(c.title)}の詳細を見る">${esc(c.title)}</button>
     <label class="choice"><input type="checkbox" data-select="${c.id}" ${state.selected[c.id]?'checked':''}><span>この案件を選択</span></label>
-    <p class="meta">工事場所：${esc(c.place||'要確認')}<br>工種：${esc(c.category||'要確認')}<br>工期：${esc(c.details['工期']||'要確認')}${sampleTag(c,'工期')}</p>
+    <p class="meta">工事場所：${esc(c.place||'要確認')}<br>工種：${esc(c.category||'要確認')}<br>工期：${esc(c.details['工期']||'要確認')}</p>
     <div class="dates"><div>登録日<strong>${esc(c.dates.registered||'未登録')}</strong></div><div>見積提出締切日<strong>${esc(due(c)||'未登録')}</strong></div><div>現調最終日<strong>${esc(visitLabel(c))}</strong></div></div>
     <span class="status ${!applied(c)&&due(c)&&due(c)<today?'expired':''}">${status(c)}</span>
     <p><button class="secondary" data-detail="${c.id}">詳細を確認${applied(c)?'':'して申し込む'}</button></p></article>`).join('');
@@ -63,7 +62,7 @@ function openDetail(id) {
   if (!c || !visible(c)) { if ($('case-detail').open) $('case-detail').close(); return; }
   detailId = id; $('detail-title').textContent = c.title;
   const fields = {'工事内容・作業範囲':c.details['工事内容・作業範囲'],'施工場所':c.place,'工期':c.details['工期'],'数量・規模':c.details['数量・規模'],'工種':c.category,'登録日':c.dates.registered,'見積提出締切日':due(c),'現調最終日':visitLabel(c)};
-  $('detail-body').innerHTML = ((c.sample_fields||[]).length ? '<p class="muted sample-notice">「サンプル」の項目は公開後の画面を示すための例です。この案件の確定情報ではありません。</p>' : '') + '<dl>'+Object.entries(fields).map(([k,v]) => `<dt>${esc(k)}${sampleTag(c,k)}</dt><dd>${esc(v||'情報未登録')}</dd>`).join('')+'</dl>';
+  $('detail-body').innerHTML = '<dl>'+Object.entries(fields).map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v||'情報未登録')}</dd>`).join('')+'</dl>';
   $('detail-select').textContent = state.selected[id] ? '選択を外す' : 'この案件を選択';
   $('detail-apply').textContent = applied(c) ? '申込み済み' : '申込みフォーム準備中';
   $('detail-apply').disabled = true;
