@@ -1,0 +1,12 @@
+<!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>⑤ 文字演出5案</title><style>body{margin:0;background:#f2efea;color:#242220;font:16px system-ui}main{max-width:1400px;margin:auto;padding:24px}section{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}figure{margin:0}canvas{width:100%;display:block}figcaption{font-weight:700;margin-bottom:8px}@media(max-width:700px){section{grid-template-columns:1fr}}</style><main><h1>⑤ 文字演出5案</h1><section></section></main><script src="geometry.js"></script><script>
+const names=['A　語りかける','B　言葉を重ねる','C　つながりを照らす','D　余韻をつくる','E　問いかけと答え'];
+const boards=names.map(n=>{const f=document.createElement('figure'),c=document.createElement('canvas'),a=document.createElement('figcaption');c.width=c.height=840;a.textContent=n;f.append(a,c);document.querySelector('section').append(f);return c.getContext('2d')});
+function load(url){return new Promise((resolve,reject)=>{let i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=url})}
+const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v)};
+Promise.all(['base-5.webp','glow-5.png','type-5-1.png','type-5-2.png','type-5-3.png'].map(load)).then(([base,mask,...type])=>{
+const shine=document.createElement('canvas');shine.width=shine.height=840;const g=shine.getContext('2d'),start=performance.now();
+function tick(now){let t=(now-start)/1000%10;g.clearRect(0,0,840,840);let ph=t%5;if(ph<2.4){let x=(-.3+ph/2.4*1.6)*840,grad=g.createLinearGradient(x-65,0,x+65,0);grad.addColorStop(0,'transparent');grad.addColorStop(.5,'rgba(255,255,255,.27)');grad.addColorStop(1,'transparent');g.fillStyle=grad;g.fillRect(0,0,840,840);g.globalCompositeOperation='destination-in';g.drawImage(mask,0,0,840,840);g.globalCompositeOperation='source-over'}
+boards.forEach((c,mode)=>{c.setTransform(840/1254,0,0,840/1254,0,0);c.drawImage(base,0,0,1254,1254);
+geometry[5].forEach((a,j)=>{let delays=[[.1,.1,1.25],[.1,.38,1.1],[.05,.12,.75],[.05,.05,.85],[.1,.1,1.55]][mode];let p=smooth((t-delays[j])/[.85,.58,.85,1.15,.8][mode]);let reset=smooth((t-9.35)/.6);c.save();c.globalAlpha=p*(1-reset);let dy=mode===1?18*(1-p):mode===3?12*(1-p):0;let scale=mode===2&&j===2?1+.06*(1-p):1;c.translate(a.x+a.w/2,a.y+a.h/2+dy);c.scale(scale,scale);c.drawImage(type[j],-a.w/2,-a.h/2);c.restore()});c.drawImage(shine,0,0,1254,1254)});requestAnimationFrame(tick)}
+requestAnimationFrame(tick)});
+</script></html>
