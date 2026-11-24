@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>施工情報の登録</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #13231c;
+      --muted: #617068;
+      --line: #dce5df;
+      --soft: #f3f7f4;
+      --paper: #ffffff;
+      --accent: #16794a;
+      --accent-dark: #0e6039;
+      --accent-soft: #e7f5ed;
+      --danger: #b42318;
+      --danger-soft: #fff0ee;
+      --shadow: 0 14px 40px rgba(18, 57, 38, .09);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: #e9efeb; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(22, 121, 74, .09), transparent 28rem),
+        linear-gradient(180deg, #f6f9f7 0, #eef3f0 32rem, #e9efeb 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
+      line-height: 1.6;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .page {
+      width: min(100%, 680px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, .78);
+      box-shadow: 0 0 70px rgba(27, 61, 43, .08);
+    }
+
+    .hero {
+      padding: max(30px, env(safe-area-inset-top)) 22px 24px;
+      color: #fff;
+      background: linear-gradient(145deg, #0f5f3a, #188a55);
+    }
+
+    .hero h1 {
+      max-width: 560px;
+      margin: 0;
+      font-size: clamp(1.48rem, 6vw, 2.05rem);
+      line-height: 1.42;
+      letter-spacing: .015em;
+    }
+
+    main { padding: 18px 14px 56px; }
+
+    .privacy-note {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin: 0 2px 18px;
+      padding: 12px 14px;
+      color: #355344;
+      border: 1px solid #cfe0d6;
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .76);
+      font-size: .86rem;
+    }
+
+    .privacy-mark {
+      flex: 0 0 9px;
+      width: 9px;
+      height: 9px;
+      margin-top: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+    }
+
+    .card {
+      margin-top: 14px;
+      padding: 20px 16px;
+      border: 1px solid rgba(197, 212, 203, .84);
+      border-radius: var(--radius);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      margin: 0 0 4px;
+      font-size: 1.15rem;
+      line-height: 1.4;
+    }
+
+    .card-lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .field {
+      margin: 0;
+      padding: 18px 0;
+      border: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .field:first-of-type { border-top: 0; padding-top: 0; }
+
+    .label, .field legend {
+      display: block;
+      width: 100%;
+      margin: 0 0 9px;
+      padding: 0;
+      color: var(--ink);
+      font-size: .98rem;
+      font-weight: 750;
+    }
+
+    .required {
+      display: inline-block;
+      margin-left: 7px;
+      padding: 1px 7px;
+      color: #fff;
+      border-radius: 999px;
+      background: var(--accent);
+      font-size: .68rem;
+      font-weight: 800;
+      vertical-align: 2px;
+    }
+
+    .optional {
+      margin-left: 6px;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 500;
+    }
+
+    .hint {
+      margin: -3px 0 10px;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    input[type="text"], input[type="tel"], input[type="email"], textarea {
+      display: block;
+      width: 100%;
+      min-height: 52px;
+      padding: 13px 14px;
+      color: var(--ink);
+      border: 1.5px solid #c7d3cc;
+      border-radius: 12px;
+      outline: none;
+      background: #fff;
+      transition: border-color .16s ease, box-shadow .16s ease;
+    }
+
+    textarea { min-height: 96px; resize: vertical; }
+
+    input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(22, 121, 74, .12);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .choice { position: relative; min-width: 0; }
+
+    .choice input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice span {
+      display: flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 8px;
+      color: #30483b;
+      border: 1.5px solid #c8d4cd;
+      border-radius: 12px;
+      background: #fff;
+      font-size: .86rem;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: color .15s ease, border-color .15s ease, background .15s ease, transform .1s ease;
+    }
+
+    .choice span:active { transform: scale(.98); }
+
+    .choice input:focus-visible + span {
+      outline: 3px solid rgba(22, 121, 74, .22);
+      outline-offset: 2px;
+    }
+
+    .choice input:checked + span {
+      color: var(--accent-dark);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: inset 0 0 0 1px var(--accent);
+    }
+
+    .choice input:checked + span::before {
+      content: "✓";
+      margin-right: 6px;
+      font-weight: 900;
+    }
+
+    .choices.single .choice input:checked + span::before {
+      content: "●";
+      font-size: .68rem;
+    }
+
+    .choice.wide { grid-column: 1 / -1; }
+
+    .group-error, .form-error {
+      display: none;
+      margin: 10px 0 0;
+      padding: 9px 11px;
+      color: var(--danger);
+      border-radius: 9px;
+      background: var(--danger-soft);
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .group-error.show, .form-error.show { display: block; }
+
+    .actions {
+      margin: 20px 0 0;
+      padding: 14px 0 0;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .primary, .secondary, .copy-button {
+      display: inline-flex;
+      min-height: 52px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      width: 100%;
+      padding: 13px 18px;
+      color: #fff;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), #11905a);
+      box-shadow: 0 10px 20px rgba(22, 121, 74, .22);
+    }
+
+    .primary:hover { background: linear-gradient(135deg, var(--accent-dark), #147c4e); }
+
+    .secondary, .copy-button {
+      padding: 11px 14px;
+      color: var(--accent-dark);
+      border: 1.5px solid #9cbcab;
+      background: #fff;
+    }
+
+    .preview-grid {
+      display: grid;
+      gap: 0;
+      margin-top: 15px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .preview-row {
+      display: grid;
+      grid-template-columns: minmax(112px, 38%) 1fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .preview-row:first-child { border-top: 0; }
+
+    .preview-key, .preview-value {
+      min-width: 0;
+      padding: 10px 11px;
+      overflow-wrap: anywhere;
+      font-size: .82rem;
+    }
+
+    .preview-key {
+      color: #395044;
+      background: var(--soft);
+      font-weight: 750;
+    }
+
+    .preview-value { background: #fff; }
+
+    .preview-actions {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .saved-empty {
+      margin: 14px 0 0;
+      padding: 20px 12px;
+      color: var(--muted);
+      border: 1px dashed #bdcbc3;
+      border-radius: 12px;
+      background: var(--soft);
+      font-size: .86rem;
+      text-align: center;
+    }
+
+    .saved-list { display: grid; gap: 11px; margin-top: 14px; }
+
+    .saved-item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .saved-company { margin: 0; font-size: .98rem; }
+
+    .saved-meta {
+      margin: 4px 0 12px;
+      color: var(--muted);
+      font-size: .78rem;
+      overflow-wrap: anywhere;
+    }
+
+    .copy-button { min-height: 42px; font-size: .82rem; }
+
+    .copy-status {
+      min-height: 1.6em;
+      margin: 8px 0 0;
+      color: var(--accent-dark);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 390px) {
+      main { padding-inline: 10px; }
+      .card { padding-inline: 14px; }
+      .choices { gap: 8px; }
+      .choice span { font-size: .81rem; }
+      .preview-actions { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>案件をお送りするために、施工できるエリアと工種を教えてください</h1>
+    </header>
+
+    <main>
+      <p class="privacy-note"><span class="privacy-mark" aria-hidden="true"></span><span>入力内容はこの端末のブラウザ内にのみ保存されます。</span></p>
+
+      <section class="card" id="form-card" aria-labelledby="form-title">
+        <h2 class="card-title" id="form-title">施工情報の登録</h2>
+        <p class="card-lead">必須項目を入力し、内容をご確認ください。</p>
+
+        <form id="registration-form" novalidate>
+          <div class="field">
+            <label class="label" for="company">会社名<span class="required">必須</span></label>
+            <input id="company" name="company" type="text" autocomplete="organization" required>
+          </div>
+
+          <div class="field">
+            <label class="label" for="contact">担当者名<span class="required">必須</span></label>
+            <input id="contact" name="contact" type="text" autocomplete="name" required>
+          </div>
+
+          <div class="field">
+            <label class="label" for="phone">電話番号<span class="required">必須</span></label>
+            <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required>
+          </div>
+
+          <div class="field">
+            <label class="label" for="email">メールアドレス<span class="optional">任意</span></label>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="email">
+          </div>
+
+          <fieldset class="field">
+            <legend>LINEでの連絡<span class="optional">任意</span></legend>
+            <div class="choices single">
+              <label class="choice wide">
+                <input id="line-ok" name="line_ok" type="checkbox" checked>
+                <span>LINEで連絡を受け取れる</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field" data-required-group="headquarters">
+            <legend>本社所在地（都道府県）<span class="required">必須</span></legend>
+            <div class="choices single" id="headquarters-options"></div>
+            <p class="group-error" id="headquarters-error" role="alert">本社所在地を選択してください。</p>
+          </fieldset>
+
+          <fieldset class="field" data-required-group="areas">
+            <legend>施工可能エリア（都道府県）<span class="required">必須</span></legend>
+            <p class="hint">複数選択できます。</p>
+            <div class="choices" id="area-options"></div>
+            <p class="group-error" id="areas-error" role="alert">施工可能エリアを1つ以上選択してください。</p>
+          </fieldset>
+
+          <div class="field">
+            <label class="label" for="area-detail">施工可能エリア（市区町村・補足）<span class="optional">任意</span></label>
+            <input id="area-detail" name="area_detail" type="text" placeholder="例：〇〇市周辺、県南地域">
+          </div>
+
+          <fieldset class="field" data-required-group="work_types">
+            <legend>工種（大分類）<span class="required">必須</span></legend>
+            <p class="hint">対応できるものをすべて選択してください。</p>
+            <div class="choices" id="work-type-options"></div>
+            <p class="group-error" id="work-types-error" role="alert">工種を1つ以上選択してください。</p>
+          </fieldset>
+
+          <div class="field">
+            <label class="label" for="specialty">得意な内容（内容種別）<span class="optional">任意</span></label>
+            <input id="specialty" name="specialty" type="text" placeholder="例：設備工、外構、改修">
+          </div>
+
+          <fieldset class="field">
+            <legend>保有資格・許可<span class="optional">任意</span></legend>
+            <p class="hint">複数選択できます。</p>
+            <div class="choices" id="qualification-options"></div>
+            <label class="label" for="qualification-detail" style="margin-top:12px">資格・許可の補足<span class="optional">任意</span></label>
+            <input id="qualification-detail" name="qualification_detail" type="text" placeholder="上記以外の資格や許可">
+          </fieldset>
+
+          <div class="field">
+            <label class="label" for="experience">直近の官公庁案件実績<span class="optional">任意</span></label>
+            <p class="hint">件数や発注機関名など。空欄でも構いません。</p>
+            <textarea id="experience" name="experience"></textarea>
+          </div>
+
+          <fieldset class="field" data-required-group="relationship">
+            <legend>希望する関わり方<span class="required">必須</span></legend>
+            <div class="choices single" id="relationship-options"></div>
+            <p class="group-error" id="relationship-error" role="alert">希望する関わり方を選択してください。</p>
+          </fieldset>
+
+          <div class="field">
+            <label class="label" for="remarks">備考<span class="optional">任意</span></label>
+            <textarea id="remarks" name="remarks"></textarea>
+          </div>
+
+          <p class="form-error" id="form-error" role="alert">必須項目をご確認ください。</p>
+          <div class="actions">
+            <button class="primary" id="confirm-button" type="submit">登録内容を確認</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" id="preview-card" aria-labelledby="preview-title" hidden>
+        <h2 class="card-title" id="preview-title">登録内容の確認</h2>
+        <p class="card-lead">内容に間違いがないかご確認ください。</p>
+        <div class="preview-grid" id="preview-grid"></div>
+        <div class="preview-actions">
+          <button class="secondary" id="edit-button" type="button">入力内容を修正</button>
+          <button class="primary" id="save-button" type="button">この内容で登録</button>
+        </div>
+      </section>
+
+      <section class="card" id="saved-card" aria-labelledby="saved-title">
+        <h2 class="card-title" id="saved-title">登録済み一覧（このブラウザ内）</h2>
+        <p class="card-lead">この端末に保存した内容を確認できます。</p>
+        <p class="saved-empty" id="saved-empty">保存された登録内容はありません。</p>
+        <div class="saved-list" id="saved-list"></div>
+        <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      // 正式な29業種が届いたら、この定数だけを差し替える。
+      const WORK_TYPES = [
+        "建築", "土木", "造園", "電気", "管・空調・衛生",
+        "塗装", "防水", "内装", "解体", "その他"
+      ];
+
+      const PREFECTURES = [
+        "東京都", "神奈川県", "千葉県", "埼玉県", "茨城県",
+        "栃木県", "群馬県", "福島県", "その他"
+      ];
+
+      const QUALIFICATIONS = [
+        "建設業許可（一般）", "建設業許可（特定）", "経審あり",
+        "全省庁統一資格あり", "その他"
+      ];
+
+      const RELATIONSHIPS = [
+        "安定して仕事を受けたい",
+        "将来は元請として入札したい",
+        "まず話を聞きたい"
+      ];
+
+      const CSV_COLUMNS = [
+        "No.", "都道府県", "区市町村", "対応エリア", "工種", "事業内容",
+        "会社名", "事業所", "対応可否", "連絡日", "連絡者", "TEL", "FAX",
+        "e-mail", "担当者", "URL", "ﾊﾟｰﾄﾅｰ企業登録", "帝国DB点数",
+        "紹介元（ﾘｻｰﾁ元）", "備考", "連絡回数", "見積もり依頼回数",
+        "案件参画数", "入札回数"
+      ];
+
+      const STORAGE_KEY = "registration-mock-20260903";
+      const form = document.getElementById("registration-form");
+      const formCard = document.getElementById("form-card");
+      const previewCard = document.getElementById("preview-card");
+      const previewGrid = document.getElementById("preview-grid");
+      const savedList = document.getElementById("saved-list");
+      const savedEmpty = document.getElementById("saved-empty");
+      const copyStatus = document.getElementById("copy-status");
+      let pendingRecord = null;
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderChoices(containerId, name, values, type) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = values.map((value, index) => {
+          const id = `${name}-${index}`;
+          const wide = values.length === 3 ? " wide" : "";
+          return `<label class="choice${wide}"><input id="${id}" name="${name}" type="${type}" value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`;
+        }).join("");
+      }
+
+      renderChoices("headquarters-options", "headquarters", PREFECTURES, "radio");
+      renderChoices("area-options", "areas", PREFECTURES, "checkbox");
+      renderChoices("work-type-options", "work_types", WORK_TYPES, "checkbox");
+      renderChoices("qualification-options", "qualifications", QUALIFICATIONS, "checkbox");
+      renderChoices("relationship-options", "relationship", RELATIONSHIPS, "radio");
+
+      function selected(name) {
+        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+      }
+
+      function todayLocal() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function joinedNote(label, value) {
+        const text = Array.isArray(value) ? value.filter(Boolean).join("・") : String(value || "").trim();
+        return text ? `${label}: ${text}` : "";
+      }
+
+      function buildRecord() {
+        const qualifications = selected("qualifications");
+        const qualificationDetail = form.elements.qualification_detail.value.trim();
+        if (qualificationDetail) qualifications.push(qualificationDetail);
+
+        const notes = [
+          joinedNote("LINE連絡", form.elements.line_ok.checked ? "可" : "不可"),
+          joinedNote("資格", qualifications),
+          joinedNote("実績", form.elements.experience.value),
+          joinedNote("希望", selected("relationship")[0]),
+          joinedNote("備考", form.elements.remarks.value)
+        ].filter(Boolean).join("／");
+
+        return {
+          "No.": "",
+          "都道府県": selected("headquarters")[0] || "",
+          "区市町村": form.elements.area_detail.value.trim(),
+          "対応エリア": selected("areas").join("／"),
+          "工種": selected("work_types").join("／"),
+          "事業内容": form.elements.specialty.value.trim(),
+          "会社名": form.elements.company.value.trim(),
+          "事業所": "",
+          "対応可否": "可",
+          "連絡日": todayLocal(),
+          "連絡者": "",
+          "TEL": form.elements.phone.value.trim(),
+          "FAX": "",
+          "e-mail": form.elements.email.value.trim(),
+          "担当者": form.elements.contact.value.trim(),
+          "URL": "",
+          "ﾊﾟｰﾄﾅｰ企業登録": "モニター",
+          "帝国DB点数": "",
+          "紹介元（ﾘｻｰﾁ元）": "LINE登録",
+          "備考": notes,
+          "連絡回数": 0,
+          "見積もり依頼回数": 0,
+          "案件参画数": 0,
+          "入札回数": 0
+        };
+      }
+
+      function setGroupError(name, invalid) {
+        const error = document.getElementById(`${name.replace("_", "-")}-error`);
+        if (error) error.classList.toggle("show", invalid);
+      }
+
+      function validateForm() {
+        let valid = true;
+        const firstInvalidText = Array.from(form.querySelectorAll("input[required]")).find(input => !input.value.trim());
+        if (firstInvalidText) valid = false;
+
+        for (const name of ["headquarters", "areas", "work_types", "relationship"]) {
+          const invalid = selected(name).length === 0;
+          setGroupError(name, invalid);
+          valid = valid && !invalid;
+        }
+
+        const email = form.elements.email;
+        if (email.value && !email.checkValidity()) valid = false;
+        document.getElementById("form-error").classList.toggle("show", !valid);
+
+        if (!valid) {
+          const target = firstInvalidText || form.querySelector(".group-error.show")?.closest("fieldset")?.querySelector("input");
+          if (target) target.focus({ preventScroll: true });
+          (target || form).scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        return valid;
+      }
+
+      function renderPreview(record) {
+        previewGrid.innerHTML = CSV_COLUMNS.map(column => {
+          const value = record[column];
+          const display = value === "" ? "—" : value;
+          return `<div class="preview-row"><div class="preview-key">${escapeHtml(column)}</div><div class="preview-value">${escapeHtml(display)}</div></div>`;
+        }).join("");
+      }
+
+      function loadSaved() {
+        try {
+          const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+          return Array.isArray(value) ? value : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function storeSaved(records) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      }
+
+      function renderSaved() {
+        const records = loadSaved();
+        savedEmpty.hidden = records.length > 0;
+        savedList.innerHTML = records.map((entry, index) => {
+          const record = entry.record || {};
+          return `<article class="saved-item" data-saved-index="${index}"><h3 class="saved-company">${escapeHtml(record["会社名"] || "名称未入力")}</h3><p class="saved-meta">${escapeHtml(record["連絡日"] || "")}　${escapeHtml(record["対応エリア"] || "")}<br>${escapeHtml(record["工種"] || "")}</p><button class="copy-button" type="button" data-copy-index="${index}">JSONをコピー</button></article>`;
+        }).join("");
+      }
+
+      async function copyText(text) {
+        window.__lastCopiedJson = text;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+            return true;
+          }
+        } catch (_) {
+          // file:// などでClipboard APIが使えない場合は下の方法へ進む。
+        }
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        const copied = document.execCommand("copy");
+        area.remove();
+        return copied;
+      }
+
+      form.addEventListener("input", event => {
+        if (event.target.name) setGroupError(event.target.name, false);
+        document.getElementById("form-error").classList.remove("show");
+      });
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+        if (!validateForm()) return;
+        pendingRecord = buildRecord();
+        renderPreview(pendingRecord);
+        previewCard.hidden = false;
+        previewCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      document.getElementById("edit-button").addEventListener("click", () => {
+        previewCard.hidden = true;
+        formCard.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      document.getElementById("save-button").addEventListener("click", () => {
+        if (!pendingRecord) return;
+        const records = loadSaved();
+        records.push({ savedAt: new Date().toISOString(), record: pendingRecord });
+        storeSaved(records);
+        renderSaved();
+        previewCard.hidden = true;
+        form.reset();
+        form.elements.line_ok.checked = true;
+        pendingRecord = null;
+        copyStatus.textContent = "登録内容をこのブラウザ内に保存しました。";
+        document.getElementById("saved-card").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      savedList.addEventListener("click", async event => {
+        const button = event.target.closest("[data-copy-index]");
+        if (!button) return;
+        const entry = loadSaved()[Number(button.dataset.copyIndex)];
+        if (!entry) return;
+        const text = JSON.stringify(entry.record, null, 2);
+        const copied = await copyText(text);
+        copyStatus.textContent = copied ? "JSONをコピーしました。" : "JSONを選択してコピーしてください。";
+      });
+
+      window.__registrationMock = { CSV_COLUMNS: [...CSV_COLUMNS], STORAGE_KEY, buildRecord, loadSaved };
+      renderSaved();
+    })();
+  </script>
+</body>
+</html>
