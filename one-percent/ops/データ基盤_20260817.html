@@ -89,7 +89,8 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 </head>
 <body>
 <div class="wrap">
-<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="データ基盤_20260817.html" class="here">データ基盤（ポータル）</a><a href="https://one-percent-review.1031pro.workers.dev/">一次確認</a><a href="承認タスク管理表_20260826.html">承認タスク管理表</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="業者DBランキング_20260827.html">ランキング仮バージョン</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全1,517件）</a></nav>
+<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="#overview" class="here" data-overview="1">データ基盤（ポータル）</a><a href="#review">一次確認</a><a href="承認タスク管理表_20260826.html">承認タスク管理表</a><a href="会社情報_20260817.html">会社情報 DB3</a><a href="業者DB_20260817.html">業者DB DB2</a><a href="業者DBランキング_20260827.html">ランキング仮バージョン</a><a href="課題サマリー_20260817.html">課題サマリー DB4</a><a href="資料取得リスト_20260817.html">資料取得リスト（人間フロー①）</a><a href="承認画面_20260814.html">承認画面</a><a href="読解ビュー_20260817.html">読解ビュー</a><a href="承認用判定リスト_20260814.html">判定リスト（全1,517件）</a></nav>
+<section id="system-overview">
 
 <h1>データ基盤</h1>
 <p class="sub">4つのデータベース（案件・業者・会社条件・課題）の上でパイプラインが回る。
@@ -244,6 +245,101 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 <p>この画面の数値の出典:</p>
 <ul><li>案件マスタCSV <code>data\案件マスタ_20260807-13_20260814.csv</code>（3,118,470バイト・2026-09-10 11:10）— DB1／DB4の件数</li><li>協力会社CSV <code>data\協力会社整理_可空白_工種別_20260812.csv</code>（168,706バイト・2026-08-12 01:54）— DB2の件数</li><li>台帳分析 <code>data\analysis_東永希工公共工事台帳_20260805.md</code> ＋ 判定エンジン <code>tools\njss_judge.py</code> の定数 — DB3の項目数</li><li>設計正本 <code>data\design_MVP定義_20260814.md</code> §2.5（4DB＋2フローの定義）</li><li>読解件数・PDF数: <code>output\internal\読解ビュー_20260817.html</code>（67,895バイト・2026-08-17 20:59）と <code>output\internal\pdfs\</code> の実ファイルを生成時に数えた値</li><li>読解ナレッジ: <code>data\knowledge_仕様書読解_v1.md</code>（29,843バイト・2026-08-17 21:31）</li><li>公開ページURLは 2026-09-10 に HTTP 200 を実測確認</li></ul>
 </footer>
+</section>
+<style>
+#caseflow[hidden],#caseflow [hidden],#system-overview[hidden]{display:none}
+#caseflow {margin:18px 0;color:#193044}
+#caseflow .flow-body{display:grid;grid-template-columns:minmax(230px,.95fr) minmax(0,1.7fr);border:1px solid #cbd6df;border-radius:8px;background:white;overflow:hidden}
+#caseflow aside{padding:14px;background:#f5f8fa;border-right:1px solid #cbd6df}
+#caseflow article{padding:clamp(16px,3vw,32px)}
+#caseflow h2{margin:0 0 16px;background:none;padding:0;border:0}
+#caseflow h3{margin:18px 0 4px}#caseflow p{margin:6px 0 14px}
+#caseflow input,#caseflow textarea,#caseflow select,#caseflow button{font:inherit}
+#caseflow label{display:block;margin:14px 0 4px;font-weight:bold}
+#caseflow input,#caseflow select,#caseflow textarea{width:100%;padding:8px;border:1px solid #95a7b5;border-radius:4px;color:inherit;background:white}
+#caseflow button{cursor:pointer;border:1px solid #899ca9;border-radius:4px;background:white;color:#173e56;padding:8px 12px}
+#caseflow .pick{display:block;width:100%;text-align:left;margin:6px 0;padding:10px;font-weight:600}
+#caseflow .pick[aria-current=true]{border-left:4px solid #216482;background:#e5f2f7}
+#caseflow small{display:block;color:#526773;font-weight:400}
+#caseflow .primary{background:#195977;color:white;margin-top:10px}
+#caseflow .steps{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap}
+#caseflow .steps a{padding:8px 14px;background:#e4eaf0;color:#25475a;border-radius:4px;text-decoration:none}
+#caseflow .steps a[aria-current=page]{background:#234c63;color:white}
+#caseflow .unlock{max-width:430px}#cf-feedback{margin-inline-start:8px}
+@media(max-width:680px){#caseflow .flow-body{display:block}#caseflow aside{border-right:0;border-bottom:1px solid #cbd6df}#cf-picks{max-height:180px;overflow:auto}}
+</style>
+<section id="caseflow" hidden aria-labelledby="cf-heading">
+<h1 id="cf-heading">案件管理</h1>
+<nav class="steps" aria-label="案件の工程"><a href="#review" data-step="review">一次確認</a><a href="#detail-queue" data-step="detail-queue">仕様書確認待ち</a></nav>
+<form class="unlock" id="cf-login" hidden><label for="cf-key">アクセスキー</label><input id="cf-key" type="password" required autocomplete="current-password"><button class="primary">案件を開く</button></form>
+<p id="cf-message" role="status"></p>
+<div class="flow-body" id="cf-work" hidden><aside><strong id="cf-count"></strong><div id="cf-picks"></div></aside><article id="cf-record" hidden>
+<small id="cf-id"></small><h2 id="cf-name"></h2><h3>手続期限</h3><p id="cf-date"></p>
+<h3>確認事項</h3><p id="cf-note"></p><a id="cf-notice" target="_blank" rel="noopener noreferrer">公告を開く ↗</a>
+<form id="cf-answer"><label for="cf-decision">判断</label><select id="cf-decision" required><option value="">選んでください</option><option>詳細へ進む</option><option>保留</option><option>見送り</option></select>
+<label for="cf-reason">理由・確認したいこと</label><textarea id="cf-reason" rows="3" maxlength="4000" required></textarea><button class="primary">案件に保存</button><span id="cf-feedback" role="status"></span></form>
+<div id="cf-handoff" hidden><h3>一次確認からの引き継ぎ</h3><p id="cf-evidence"></p><a id="cf-open-review" href="#review">この案件の一次確認を見る</a></div>
+</article></div></section>
+<script>
+(()=>{
+ const host='https://one-percent-review.1031pro.workers.dev', get=id=>document.getElementById(id), el=id=>get('cf-'+id);
+ const panel=get('caseflow'), overview=get('system-overview'), menu=panel.parentElement.querySelector('.nav');
+ let records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
+ const initial=new URLSearchParams(location.hash.split('?')[1]||'');
+ let key=initial.get('access')||history.state?.reviewAccess||'';
+ if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#review');
+ function stage(){return location.hash.slice(1).split('?')[0]}
+ function go(next){history.pushState({reviewAccess:key},'','#'+next);render()}
+ async function api(path,body){
+   const r=await fetch(host+path,{method:body?'POST':'GET',credentials:'omit',referrerPolicy:'no-referrer',
+     headers:{Authorization:'Bearer '+key,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
+   const data=await r.json();if(!r.ok)throw Error(data.error||'通信できませんでした');return data;
+ }
+ function select(row){
+   active=row.offer_id;dirty=false;el('record').hidden=false;
+   for(const [id,value] of [['id','案件ID '+active],['name',row.title],['date',row.deadline],['note',row.note],['evidence',row.reason],['feedback',row.revision?'保存済み':'']])el(id).textContent=value;
+   el('notice').href=row.url;el('decision').value=row.decision||'';el('reason').value=row.reason;
+   const detail=stage()==='detail-queue';el('answer').hidden=detail;el('handoff').hidden=!detail;
+   for(const b of el('picks').children)b.setAttribute('aria-current',String(b.dataset.id===active));
+ }
+ function draw(){
+   const detail=stage()==='detail-queue', rows=detail?records.filter(r=>r.decision==='詳細へ進む'):records;
+   el('work').hidden=false;el('count').textContent=(detail?'仕様書確認待ち':'一次確認の対象')+'　'+rows.length+'件';
+   el('message').textContent=rows.length?'':(detail?'「詳細へ進む」で保存した案件がここに表示されます。':'対象案件はありません。');
+   el('picks').replaceChildren();el('record').hidden=true;
+   for(const row of rows){const b=document.createElement('button');b.className='pick';b.dataset.id=row.offer_id;
+     b.textContent=row.title;const s=document.createElement('small');s.textContent=row.decision||'未回答';b.append(s);
+     b.onclick=()=>{if(!saving&&(!dirty||confirm('未保存の入力を破棄しますか？')))select(row)};el('picks').append(b)}
+   if(rows.length)select(rows.find(r=>r.offer_id===active)||rows[0]);
+ }
+ async function render(){
+   const seq=++requestNo, view=stage(),show=['review','detail-queue'].includes(view);
+   panel.hidden=!show;overview.hidden=show;
+   for(const a of menu.querySelectorAll('a')){if(a.hash==='#review'||a.dataset.overview)a.classList.toggle('here',a.dataset.overview?!show:show)}
+   if(!show)return;
+   for(const a of panel.querySelectorAll('[data-step]'))a.setAttribute('aria-current',a.dataset.step===view?'page':'false');
+   el('login').hidden=Boolean(key);
+   if(!key){el('work').hidden=true;return}
+   if(!loaded){el('message').textContent='読み込み中…';
+     try{const data=await api('/api/state');if(seq!==requestNo)return;records=data.cases;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
+     catch(e){if(seq!==requestNo)return;el('message').textContent=e.message;el('login').hidden=false;return}}
+   draw();
+ }
+ el('login').onsubmit=e=>{e.preventDefault();key=el('key').value.trim();render()};
+ el('answer').oninput=()=>{dirty=true;el('feedback').textContent='未保存'};
+ el('answer').onsubmit=async e=>{e.preventDefault();if(saving)return;
+   const row=records.find(r=>r.offer_id===active);saving=true;
+   const fields=Array.from(el('answer').elements);fields.forEach(x=>x.disabled=true);
+   try{const result=await api('/api/first-review',{offer_id:active,decision:el('decision').value,reason:el('reason').value,revision:row.revision});
+     Object.assign(row,result.first_review);dirty=false;draw();el('feedback').textContent='保存しました'}
+   catch(e){el('feedback').textContent=e.message}finally{saving=false;fields.forEach(x=>x.disabled=false)}};
+ document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||!['#review','#detail-queue','#overview'].includes(a.hash))return;
+   e.preventDefault();if(saving||(dirty&&!confirm('未保存の入力を破棄しますか？')))return;dirty=false;go(a.hash.slice(1))});
+ window.addEventListener('popstate',render);
+ window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+ render();
+})();
+</script>
 </div>
 </body>
 </html>
