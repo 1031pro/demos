@@ -89,7 +89,7 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 </head>
 <body>
 <div class="wrap">
-<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="#overview" class="here" data-overview="1">データ基盤（ポータル）</a><a href="#intake">案件管理</a><a href="tasks.html">承認タスク管理表</a><a href="company.html">会社情報 DB3</a><a href="contractors.html">業者DB DB2</a><a href="contractor-ranking.html">ランキング仮バージョン</a><a href="issues.html">課題サマリー DB4</a><a href="documents.html">資料取得リスト（人間フロー①）</a><a href="approvals.html">承認画面</a><a href="document-review.html">読解ビュー</a><a href="screening.html">判定リスト（全1,517件）</a></nav>
+<nav class="nav" aria-label="システムメニュー"><a href="#intake">案件管理</a><a href="../workspace.html">業者側：案件選択・日程・タスク</a><details><summary>台帳・参考画面</summary><div><a href="#overview" class="here" data-overview="1">データ基盤（ポータル）</a><a href="tasks.html">承認タスク管理表</a><a href="company.html">会社情報 DB3</a><a href="contractors.html">業者DB DB2</a><a href="contractor-ranking.html">ランキング仮バージョン</a><a href="issues.html">課題サマリー DB4</a><a href="documents.html">資料取得リスト（人間フロー①）</a><a href="approvals.html">承認画面</a><a href="document-review.html">読解ビュー</a><a href="screening.html">判定リスト（全1,517件）</a></div></details></nav>
 <section id="system-overview">
 
 <h1>データ基盤</h1>
@@ -247,6 +247,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 </footer>
 </section>
 <style>
+.nav details>summary{cursor:pointer;padding:5px 10px}.nav details[open]{flex-basis:100%}.nav details[open]>div{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 #caseflow[hidden],#caseflow [hidden],#system-overview[hidden]{display:none}
 #caseflow {margin:18px 0;color:#193044}
 #caseflow .flow-body{display:grid;grid-template-columns:minmax(230px,.95fr) minmax(0,1.7fr);border:1px solid #cbd6df;border-radius:8px;background:white;overflow:hidden}
