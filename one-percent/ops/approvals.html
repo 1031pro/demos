@@ -114,7 +114,71 @@ footer { margin-top:36px; padding-top:14px; border-top:1px solid var(--line); co
 </head>
 <body data-today="2026-08-25">
 <div class="wrap">
-  <h1>案件承認</h1>
+  <h1>案件承認</h1><style>
+#linked-review{margin:16px 0 24px;padding:14px;border:1px solid #bacad7;border-radius:6px;background:white}
+#linked-review [hidden]{display:none!important}#linked-review label{font-weight:600}#linked-review input,#linked-review select,#linked-review button{font:inherit;padding:7px;max-width:100%;border:1px solid #879eb0;border-radius:4px;background:#fff}
+#linked-review .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}
+#linked-review p{white-space:pre-wrap;margin:6px 0}
+</style>
+<section id="linked-review" aria-labelledby="linked-title">
+<h2 id="linked-title">確認依頼・回答</h2>
+<form id="linked-login" class="controls" hidden><label for="linked-key">アクセスキー</label><input type="password" id="linked-key" required autocomplete="current-password"><button>回答を読み込む</button></form>
+<div id="linked-fields" hidden>
+<div class="controls"><label for="linked-case">依頼した案件</label><select id="linked-case"></select>
+<a id="linked-open" href="portal.html#review">この案件の確認画面を開く →</a>
+<button type="button" id="linked-refresh">回答を再読み込み</button></div>
+<p id="linked-answer"></p><p id="linked-reason"></p>
+</div>
+<p id="linked-status" role="status"></p>
+</section>
+<script>
+(()=>{
+ const view=id=>document.getElementById('linked-'+id);
+ const store='one-percent-review-session';
+ const params=new URLSearchParams(location.search);
+ const fragment=new URLSearchParams(location.hash.slice(1));
+ let key=fragment.get('access')||sessionStorage.getItem(store)||'';
+ let active=params.get('offer_id')||'', rows=[], seq=0;
+ if(fragment.has('access'))history.replaceState(null,'',location.pathname+location.search+'#linked-review');
+ function show(){
+   const r=rows.find(c=>c.offer_id===view('case').value);
+   if(!r)return;
+   active=r.offer_id;
+   view('open').href='portal.html#review?offer_id='+encodeURIComponent(active);
+   view('answer').textContent='判断　'+(r.decision||'未回答');
+   view('reason').textContent=r.decision?'理由　'+(r.reason||'記載なし'):'';
+   const url=new URL(location.href);url.searchParams.set('offer_id',active);history.replaceState(null,'',url);
+ }
+ async function load(){
+   const n=++seq;
+   if(!key){view('login').hidden=false;return}
+   view('status').textContent='回答を読み込み中…';
+   try {
+     const res=await fetch('https://one-percent-review.1031pro.workers.dev/api/state',{headers:{Authorization:'Bearer '+key},cache:'no-store'});
+     if(!res.ok)throw Error('アクセスキーを確認してください。');
+     const data=await res.json();if(n!==seq)return;
+     rows=data.cases;sessionStorage.setItem(store,key);
+     const choices=view('case');choices.replaceChildren();
+     for(const r of rows){const o=document.createElement('option');o.value=r.offer_id;o.textContent=r.title+'（'+r.offer_id+'）';choices.append(o)}
+     const found=rows.some(r=>r.offer_id===active);
+     if(found)choices.value=active;
+     view('login').hidden=true;view('fields').hidden=!rows.length;
+     if(active&&!found){
+       const o=document.createElement('option');o.value=active;o.textContent='案件ID '+active+'（依頼なし）';choices.prepend(o);choices.value=active;
+       view('open').hidden=true;view('answer').textContent='この案件の確認依頼はありません。';view('reason').textContent='';
+     }else if(rows.length){view('open').hidden=false;show()}
+     view('status').textContent=rows.length?'':'確認依頼はありません。';
+   }catch(e){if(n!==seq)return;view('status').textContent=e.message;view('login').hidden=false;view('fields').hidden=true}
+ }
+ view('login').onsubmit=e=>{e.preventDefault();key=view('key').value.trim();view('key').value='';load()};
+ view('case').onchange=()=>{view('open').hidden=false;show()};
+ view('refresh').onclick=load;
+ addEventListener('pageshow',e=>{if(e.persisted)load()});
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&key)load()});
+ load();
+})();
+</script>
+
   <p class="sub">AIの一次判定を確認して○×を付ける画面（内部用）。表示日 2026年8月25日（火）／
   対象は判定「候補」のみ。全313件の一次判定は
   <a href="screening.html">承認用判定リスト_20260814.html</a>。</p>

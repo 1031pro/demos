@@ -277,7 +277,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 <p id="cf-message" role="status"></p>
 <p id="cf-context" hidden></p><div id="cf-upstream" hidden></div>
 <div class="flow-body" id="cf-work" hidden><aside><strong id="cf-count"></strong><div id="cf-picks"></div></aside><article id="cf-record" hidden>
-<small id="cf-id"></small><h2 id="cf-name"></h2><h3>手続期限</h3><p id="cf-date"></p>
+<p><a id="cf-return" href="approvals.html#linked-review">この案件の承認画面に戻る</a></p><small id="cf-id"></small><h2 id="cf-name"></h2><h3>手続期限</h3><p id="cf-date"></p>
 <h3>確認事項</h3><p id="cf-note"></p><a id="cf-notice" target="_blank" rel="noopener noreferrer">公告を開く ↗</a>
 <form id="cf-answer"><label for="cf-decision">判断</label><select id="cf-decision" required><option value="">選んでください</option><option>詳細へ進む</option><option>保留</option><option>見送り</option></select>
 <label for="cf-reason">理由・確認したいこと</label><textarea id="cf-reason" rows="3" maxlength="4000" required></textarea><button class="primary">案件に保存</button><span id="cf-feedback" role="status"></span></form>
@@ -289,8 +289,10 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
  const panel=get('caseflow'), overview=get('system-overview'), menu=panel.parentElement.querySelector('.nav');
  let workflow=null,catalog=null,records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
  const initial=new URLSearchParams(location.hash.split('?')[1]||'');
- let key=initial.get('access')||history.state?.reviewAccess||'';
- if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#'+(stage()||'intake'));
+ const storageKey='one-percent-review-session';
+ active=/^\d{1,20}$/.test(initial.get('offer_id')||'')?initial.get('offer_id'):'';
+ let key=initial.get('access')||history.state?.reviewAccess||sessionStorage.getItem(storageKey)||'';
+ if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#'+stage()+(active?'?offer_id='+encodeURIComponent(active):''));
  function stage(){return location.hash.slice(1).split('?')[0]||'intake'}
  function go(next){history.pushState({reviewAccess:key},'','#'+next);render()}
  async function api(path,body){
@@ -300,6 +302,8 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
  }
  function select(row){
    active=row.offer_id;dirty=false;el('record').hidden=false;
+   el('return').href='approvals.html?offer_id='+encodeURIComponent(active)+'#linked-review';
+   if(stage()==='review')history.replaceState({reviewAccess:key},'','#review?offer_id='+encodeURIComponent(active));
    for(const [id,value] of [['id',(workflow.summary.origins[active]||'')+'　案件ID '+active],['name',row.title],['date',row.deadline],['note',row.note],['evidence',row.reason],['feedback',row.revision?'保存済み':'']])el(id).textContent=value;
    el('notice').href=row.url;el('decision').value=row.decision||'';el('reason').value=row.reason;
    const detail=stage()==='detail-queue';el('answer').hidden=detail;el('handoff').hidden=!detail;
@@ -401,6 +405,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    const view=stage(),earlier=['intake','screen'].includes(view);
    el('upstream').hidden=!earlier;el('work').hidden=earlier;el('context').hidden=false;
    const meta=workflow.summary;
+   el('context').hidden=!(meta.previous||meta.additional);
    el('context').textContent='11月18日の優先確認 '+meta.previous+'件 ＋ 11月24日に追加 '+meta.additional+'件 ＝ 11月24日の依頼 '+Object.keys(meta.origins).length+'件';
    if(earlier){el('message').textContent='';upstream(view);return}
    const detail=view==='detail-queue', rows=detail?records.filter(r=>r.decision==='詳細へ進む'):records;
@@ -410,7 +415,10 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    for(const row of rows){const b=document.createElement('button');b.className='pick';b.dataset.id=row.offer_id;
      b.textContent=row.title;const s=document.createElement('small');s.textContent=row.decision||'未回答';b.append(s);
      b.onclick=()=>{if(!saving&&(!dirty||confirm('未保存の入力を破棄しますか？')))select(row)};el('picks').append(b)}
-   if(rows.length)select(rows.find(r=>r.offer_id===active)||rows[0]);
+   const exact=rows.find(r=>r.offer_id===active);
+   if(view==='review'&&active&&!exact){
+     el('message').textContent='この案件の確認依頼はありません。';
+   }else if(rows.length)select(exact||rows[0]);
  }
  async function render(){
    const seq=++requestNo, view=stage(),show=['intake','screen','review','detail-queue'].includes(view);
@@ -421,7 +429,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    el('login').hidden=Boolean(key);
    if(!key){el('work').hidden=true;return}
    if(!loaded){el('message').textContent='読み込み中…';
-     try{const data=await api('/api/state');if(seq!==requestNo)return;const latest=data.workflow.screening?await api('/api/catalog'):null;if(seq!==requestNo)return;catalog=latest?.rows||null;records=data.cases;workflow=data.workflow;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
+     try{const data=await api('/api/state');if(seq!==requestNo)return;const latest=data.workflow.screening?await api('/api/catalog'):null;if(seq!==requestNo)return;catalog=latest?.rows||null;records=data.cases;workflow=data.workflow;loaded=true;sessionStorage.setItem(storageKey,key);history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
      catch(e){if(seq!==requestNo)return;el('message').textContent=e.message;el('login').hidden=false;return}}
    draw();
  }
