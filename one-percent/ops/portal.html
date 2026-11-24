@@ -287,7 +287,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 (()=>{
  const host='https://one-percent-review.1031pro.workers.dev', get=id=>document.getElementById(id), el=id=>get('cf-'+id);
  const panel=get('caseflow'), overview=get('system-overview'), menu=panel.parentElement.querySelector('.nav');
- let workflow=null,records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
+ let workflow=null,catalog=null,records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
  const initial=new URLSearchParams(location.hash.split('?')[1]||'');
  let key=initial.get('access')||history.state?.reviewAccess||'';
  if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#'+(stage()||'intake'));
@@ -312,8 +312,65 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    for(const r of rows)list.append(node('li',r.title+'（'+r.id+'）'+(r.note?'　'+r.note:'')));
    d.append(list);parent.append(d);
  }
+ function masterPanel(parent){
+   const card=node('section'), counts=new Map();
+   for(const r of catalog)counts.set(r.verdict,(counts.get(r.verdict)||0)+1);
+   card.append(node('h2','案件マスタから確認依頼を作成　'+catalog.length+'件'));
+   const filter=document.createElement('select'),search=document.createElement('input'),matches=document.createElement('select');
+   function option(select,value,text){const opt=node('option',text);opt.value=value;select.append(opt)}
+   option(filter,'','すべての一次判定');
+   for(const [label,n] of counts)option(filter,label,label+'　'+n+'件');
+   function label(text,control){const l=node('label',text);l.append(control);return l}
+   const details=node('div'),matchCount=node('p');
+   matches.size=5;matches.id='cf-master-matches';search.type='search';search.id='cf-master-search';
+   card.append(label('一次判定',filter),label('案件名・発注機関・IDで検索',search),matchCount,label('案件を選択',matches),details);
+   function show(){
+     details.replaceChildren();
+     const r=catalog.find(v=>v.offer_id===matches.value);
+     if(!r)return;
+     details.append(node('h3',r.title),node('p',r.agency+' ／ '+r.source_date+'取得 ／ '+r.offer_id),
+       node('h3','取り込み時の判定・根拠'),node('p',r.verdict+'　'+r.evidence),
+       node('h3','取得した参加資格'),node('p',r.qualification||'記載の確認が必要'));
+     if(records.some(v=>v.offer_id===r.offer_id)){
+       const link=node('a','確認依頼の回答を見る →');link.href='#review';link.onclick=()=>{active=r.offer_id};details.append(link);return;
+     }
+     const form=document.createElement('form'),url=document.createElement('input'),deadline=document.createElement('input'),note=document.createElement('textarea');
+     url.type='url';url.placeholder='https://';url.required=deadline.required=note.required=true;
+     deadline.maxLength=note.maxLength=4000;
+     const save=node('button','確認依頼に追加'),feedback=node('p');
+     save.className='primary';feedback.setAttribute('role','status');form.id='cf-assign';
+     form.append(label('確認した公告のURL',url),label('手続の種類と期限',deadline),label('会社条件と照合した根拠・先方に確認する点',note),save,feedback);
+     form.oninput=()=>dirty=true;
+     form.onsubmit=async e=>{
+       e.preventDefault();if(saving)return;saving=true;
+       for(const x of [...form.elements,filter,search,matches])x.disabled=true;
+       try{await api('/api/assign',{offer_id:r.offer_id,url:url.value,deadline:deadline.value,note:note.value});
+         records=(await api('/api/state')).cases;active=r.offer_id;dirty=false;go('review')
+       }catch(err){feedback.textContent=err.message}
+       finally{saving=false;for(const x of [...form.elements,filter,search,matches])x.disabled=false}
+     };details.append(form);
+   }
+   function refresh(){
+     const term=search.value.toLowerCase().trim();
+     const visible=catalog.filter(r=>(!filter.value||r.verdict===filter.value)&&[r.offer_id,r.agency,r.title].join(' ').toLowerCase().includes(term));
+     matchCount.textContent=visible.length+'件';matches.replaceChildren();for(const r of visible)option(matches,r.offer_id,r.title+' ／ '+r.offer_id);
+     if(visible.length)matches.selectedIndex=0;show();
+   }
+   let lastFilter='',lastTerm='',lastId='';
+   function change(rebuild){
+     if(dirty&&!confirm('未保存の依頼内容を破棄しますか？')){filter.value=lastFilter;search.value=lastTerm;matches.value=lastId;return}
+     dirty=false;if(rebuild)refresh();else show();lastFilter=filter.value;lastTerm=search.value;lastId=matches.value;
+   }
+   filter.onchange=()=>change(true);search.oninput=()=>change(true);matches.onchange=()=>change(false);
+   refresh();lastId=matches.value;parent.append(card);
+ }
+
  function upstream(view){
    const parent=el('upstream'),summary=workflow.summary;parent.replaceChildren();
+   if(catalog){
+     if(view==='screen')masterPanel(parent);
+     else {const head=node('section'),link=node('a','案件マスタを開いて会社条件を確認 →');link.href='#screen';head.append(node('h2','現行の案件マスタ　'+catalog.length+'件'),node('p','最新の素材日　'+(catalog[0]?.source_date||'―')),link);parent.append(head)}
+   }
    if(view==='intake'){
      for(const batch of summary.batches){
        const st=batch.statuses,card=node('section'),count=k=>st[k]||0;
@@ -344,7 +401,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    const view=stage(),earlier=['intake','screen'].includes(view);
    el('upstream').hidden=!earlier;el('work').hidden=earlier;el('context').hidden=false;
    const meta=workflow.summary;
-   el('context').textContent='11月18日の優先確認 '+meta.previous+'件 ＋ 11月24日に追加 '+meta.additional+'件 ＝ 今回の確認依頼 '+Object.keys(meta.origins).length+'件';
+   el('context').textContent='11月18日の優先確認 '+meta.previous+'件 ＋ 11月24日に追加 '+meta.additional+'件 ＝ 11月24日の依頼 '+Object.keys(meta.origins).length+'件';
    if(earlier){el('message').textContent='';upstream(view);return}
    const detail=view==='detail-queue', rows=detail?records.filter(r=>r.decision==='詳細へ進む'):records;
    el('work').hidden=false;el('count').textContent=(detail?'仕様書確認待ち':'一次確認の対象')+'　'+rows.length+'件';
@@ -364,7 +421,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    el('login').hidden=Boolean(key);
    if(!key){el('work').hidden=true;return}
    if(!loaded){el('message').textContent='読み込み中…';
-     try{const data=await api('/api/state');if(seq!==requestNo)return;records=data.cases;workflow=data.workflow;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
+     try{const data=await api('/api/state');if(seq!==requestNo)return;const latest=data.workflow.screening?await api('/api/catalog'):null;if(seq!==requestNo)return;catalog=latest?.rows||null;records=data.cases;workflow=data.workflow;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
      catch(e){if(seq!==requestNo)return;el('message').textContent=e.message;el('login').hidden=false;return}}
    draw();
  }
