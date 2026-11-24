@@ -624,6 +624,10 @@ async function load(){
   if(r.legacy)note(historyPanel,'移行した確認依頼',r.legacy.deadline+'　'+r.legacy.note+'　'+(r.legacy.decision||'未回答'));
   if(r.documents)note(historyPanel,'仕様書確認',r.documents.reviewer+'　'+r.documents.spec+'　'+r.documents.evidence);
   if(r.go)note(historyPanel,'GOの理由',r.go.reason);
+  if(r.history?.length){
+   const d=el('details',''),list=el('ol',''),names={ingest:'取得',migrate:'移行',verify_notice:'公告照合',notice:'公告更新',notice_changed:'公告変更により掲載停止',screen:'会社照合',assign:'確認依頼',answer:'一次回答',documents:'仕様書確認',go:'GO',publish:'公開',recheck:'原文再確認',withdraw:'掲載取り下げ'};
+   d.append(el('summary','工程の履歴'));for(const h of r.history)list.append(el('li',[new Date(h.at).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}),names[h.action]||h.action,h.decision,h.reason].filter(Boolean).join('　')));d.append(list);historyPanel.append(d);
+  }
  }catch(err){view('status').textContent=err.message;view('body').hidden=true;if(!reviewer)view('login').hidden=false}
 }
 view('login').onsubmit=e=>{e.preventDefault();key=view('login').querySelector('input').value.trim();view('login').reset();load()};
