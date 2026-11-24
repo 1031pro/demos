@@ -476,7 +476,7 @@ function show(){
  get('count').textContent=(group?group+' ／ ':'')+'表示 '+subset.length+'件　登録全体 '+rows.length+'件';
  const items=document.createDocumentFragment();
  for(const r of subset){
-   const d=el('details',''),summary=el('summary',r.title);d.append(summary);
+   const d=el('details',''),summary=el('summary',r.title);d.dataset.offerId=r.offer_id;d.append(summary);
    d.append(el('small',[r.agency,r.offer_id,r.deadline||(r.submission?'資料提出 '+r.submission:r.bid?'入札日 '+r.bid:'')].filter(Boolean).join('　')));
    d.append(el('p',r.evidence||'この取得区分では案件マスタへの新規登録はありません。'));
    if(r.request_id){
@@ -493,9 +493,10 @@ function runs(){
  const items=[];
  for(const [run,entries] of groups){
   const d=el('details',''), match=run.match(/(\d{4})(\d\d)(\d\d)/);
+  d.dataset.run=run;
   const date=match?match[1]+'年'+Number(match[2])+'月'+Number(match[3])+'日':run;
   d.append(el('summary',date+'取得　'+entries.reduce((n,v)=>n+v.count,0)+'件 ／ 新規登録 '+(entries.find(v=>v.category==='新規登録')?.count||0)+'件'));
-  for(const entry of entries){const b=el('button',entry.category+' '+entry.count+'件');b.onclick=async()=>{
+  for(const entry of entries){const b=el('button',entry.category+' '+entry.count+'件');b.dataset.category=entry.category;b.onclick=async()=>{
     const seq=++serial;
     try{const value=await read('intake-members?'+new URLSearchParams({run,category:entry.category}));if(seq!==serial)return;selected=value.ids;group=date+' '+entry.category;get('filter').reset();show();get('list-heading').scrollIntoView()}catch(e){get('status').textContent=e.message}
   };d.append(b)}items.push(d)
