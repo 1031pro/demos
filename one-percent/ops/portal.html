@@ -447,6 +447,87 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
  render();
 })();
 </script>
+<section id="intake-queue" hidden>
+<header class="iq-header">案件運営</header>
+<nav aria-label="運営メニュー" id="iq-nav"><a href="#acquisition">案件</a><a href="#acquisition-tasks">タスク管理</a><a href="#acquisition-reference">台帳・資料</a></nav>
+<h1 id="iq-title">案件</h1>
+<form id="iq-login" hidden><label>運営アクセスキー <input type="password" required autocomplete="current-password"></label> <button>案件を開く</button></form>
+<p role="status" id="iq-status"></p>
+<div id="iq-refs" hidden><h2>会社・業者の台帳</h2><p><a href="company.html">会社情報・資格</a>　<a href="contractors.html">業者DB</a>　<a href="registration.html">業者の詳細登録</a></p><h2>公告・仕様書</h2><p><a href="documents.html">資料取得リスト</a>　<a href="document-review.html">読解ビュー</a></p><h2>分析・運用</h2><p><a href="contractor-ranking.html">業者ランキング</a>　<a href="issues.html">運用上の課題</a>　<a href="#overview">データ基盤の集計</a></p></div>
+<div id="iq-tasks" hidden></div><div id="iq-content" hidden>
+<h2>取得の内訳</h2><div id="iq-runs"></div>
+<h2 id="iq-list-heading">案件一覧</h2><form id="iq-filter"><label>案件名・発注機関・ID <input type="search" name="q"></label> <label>表示範囲 <select name="scope"><option value="all">全案件</option><option value="requested">確認依頼済み</option></select></label> <button>絞り込む</button> <button type="button" id="iq-clear">条件を解除</button></form>
+<p id="iq-count" aria-live="polite"></p><div id="iq-items"></div></div></section>
+<style>
+body:has(#intake-queue:not([hidden])) .wrap>.nav{display:none}#iq-nav{display:flex;gap:24px;border-bottom:1px solid #cdd9dc;margin-bottom:18px}#iq-nav a{color:#264654;padding:10px 0;text-decoration:none;font-weight:650}#iq-nav a[aria-current=page]{border-bottom:3px solid #176a63}.iq-header{background:#16364a;color:white;padding:12px 16px;font-size:19px;font-weight:650}#intake-queue [hidden],#intake-queue[hidden]{display:none!important}#intake-queue{background:white;color:#193544;padding:clamp(12px,3vw,28px);border:1px solid #d4dfe3;border-radius:8px}
+#intake-queue h2{border:0;background:transparent;padding:0}#intake-queue :is(input,select,button){font:inherit;padding:6px 9px;max-width:100%}#intake-queue button,#intake-queue summary{cursor:pointer}#intake-queue details{border-bottom:1px solid #dae4e9;padding:9px 0}#intake-queue summary{font-weight:600}#iq-runs button{margin:4px;background:#f1f6f7;border:1px solid #cedde1;border-radius:4px}#iq-filter{display:flex;flex-wrap:wrap;align-items:end;gap:8px}#iq-filter label{display:grid;gap:4px}#iq-count{margin:12px 0;color:#485b65}#iq-items small{display:block;color:#526773}#iq-items p{margin-top:8px;overflow-wrap:anywhere}
+</style>
+<script>
+(()=>{
+const root=document.querySelector('#intake-queue'), get=id=>document.querySelector('#iq-'+id);
+const base='https://one-percent-intake.1031pro.workers.dev/api/v2/',store='one-percent-review-session';
+let key=sessionStorage.getItem(store)||'', rows=[],runRows=[],initialized=false,loading=false,selected=null,group='',serial=0;
+const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
+async function read(path){const res=await fetch(base+path,{headers:{Authorization:'Bearer '+key},cache:'no-store',referrerPolicy:'no-referrer'});if(!res.ok)throw Error(res.status===401||res.status===403?'運営アクセスキーを確認してください。':'取得結果を読み込めません。');return res.json()}
+function show(){
+ const form=get('filter'),q=form.elements.q.value.trim().toLowerCase(),requested=form.elements.scope.value==='requested';
+ const data=selected?selected.map(id=>rows.find(r=>r.offer_id===id)||{offer_id:id,title:'案件ID '+id}):rows;
+ const subset=data.filter(r=>(!requested||r.request_id)&&[r.title,r.agency||'',r.offer_id].join(' ').toLowerCase().includes(q));
+ get('count').textContent=(group?group+' ／ ':'')+'表示 '+subset.length+'件　登録全体 '+rows.length+'件';
+ const items=document.createDocumentFragment();
+ for(const r of subset){
+   const d=el('details',''),summary=el('summary',r.title);d.append(summary);
+   d.append(el('small',[r.agency,r.offer_id,r.deadline||(r.submission?'資料提出 '+r.submission:r.bid?'入札日 '+r.bid:'')].filter(Boolean).join('　')));
+   d.append(el('p',r.evidence||'この取得区分では案件マスタへの新規登録はありません。'));
+   if(r.request_id){
+     d.append(el('p','確認事項　'+r.note),el('p','回答　'+(r.decision||'未回答')+(r.reason?' ／ '+r.reason:'')));
+     const a=el('a','この案件の承認画面を開く');a.href='approvals.html?offer_id='+encodeURIComponent(r.offer_id)+'#linked-review';d.append(a);
+   }
+   items.append(d);
+ }
+ get('items').replaceChildren(items);
+}
+function runs(){
+ const groups=new Map();
+ for(const row of runRows){if(!groups.has(row.run))groups.set(row.run,[]);groups.get(row.run).push(row)}
+ const items=[];
+ for(const [run,entries] of groups){
+  const d=el('details',''), match=run.match(/(\d{4})(\d\d)(\d\d)/);
+  const date=match?match[1]+'年'+Number(match[2])+'月'+Number(match[3])+'日':run;
+  d.append(el('summary',date+'取得　'+entries.reduce((n,v)=>n+v.count,0)+'件 ／ 新規登録 '+(entries.find(v=>v.category==='新規登録')?.count||0)+'件'));
+  for(const entry of entries){const b=el('button',entry.category+' '+entry.count+'件');b.onclick=async()=>{
+    const seq=++serial;
+    try{const value=await read('intake-members?'+new URLSearchParams({run,category:entry.category}));if(seq!==serial)return;selected=value.ids;group=date+' '+entry.category;get('filter').reset();show();get('list-heading').scrollIntoView()}catch(e){get('status').textContent=e.message}
+  };d.append(b)}items.push(d)
+ }
+ get('runs').replaceChildren(...items);
+}
+async function load(){
+ get('login').hidden=Boolean(key);
+ if(!key)return;
+ loading=true;
+ try{const data=await read('queue');rows=data.cases;runRows=data.runs;initialized=true;sessionStorage.setItem(store,key);get('content').hidden=false;get('status').textContent='';runs();show();route()}
+ catch(e){get('status').textContent=e.message;get('login').hidden=false;get('content').hidden=true;key=''}finally{loading=false}
+}
+function route(){
+ const tab=location.hash;const on=['#acquisition','#acquisition-tasks','#acquisition-reference'].includes(tab);root.hidden=!on;
+ if(!on)return;
+ document.getElementById('system-overview').hidden=true;document.getElementById('caseflow').hidden=true;
+ const ref=tab.endsWith('-reference'),task=tab.endsWith('-tasks');
+ get('title').textContent=ref?'台帳・資料':task?'タスク管理':'案件';
+ for(const link of get('nav').children)link.setAttribute('aria-current',link.hash===tab?'page':'false');
+ get('refs').hidden=!ref;get('tasks').hidden=!task||!initialized;get('content').hidden=ref||task||!initialized;
+ if(ref){get('login').hidden=true;get('status').textContent='';return}
+ if(initialized && task){const active=rows.filter(r=>['go','published'].includes(r.state));get('tasks').replaceChildren(el('p','GO案件 '+active.length+'件'),...active.map(r=>el('p',r.title+'　'+(r.bid||'期限要確認'))))}
+ if(!initialized&&!loading)load()
+}
+get('filter').onsubmit=e=>{e.preventDefault();show()};get('clear').onclick=()=>{serial++;selected=null;group='';get('filter').reset();show()};
+get('login').onsubmit=e=>{e.preventDefault();key=get('login').querySelector('input').value.trim();get('login').reset();load()};
+window.addEventListener('hashchange',route);window.addEventListener('popstate',route);document.addEventListener('click',()=>queueMicrotask(route));
+route();
+})();
+</script>
+
 
 </div>
 </body>
