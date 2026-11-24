@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>承認タスク管理表 2026-11-25</title>
+<style>
+:root {
+  --ink:#172033; --muted:#667085; --line:#cfd5df; --head:#17365d;
+  --subhead:#dce6f1; --done:#eaf7ef; --overdue:#b42318; --bg:#f5f7fa;
+}
+* { box-sizing:border-box; }
+body { margin:0; padding:24px 18px 48px; background:var(--bg); color:var(--ink);
+       font-family:"Yu Gothic UI","Meiryo",sans-serif; font-size:13px; line-height:1.5; }
+.wrap { max-width:1800px; margin:0 auto; }
+h1 { margin:0 0 4px; font-size:24px; }
+.sub { margin:0 0 14px; color:var(--muted); }
+.notice { display:flex; flex-wrap:wrap; gap:10px 22px; margin-bottom:14px; padding:11px 14px;
+          border:1px solid #b8c6d9; border-left:5px solid var(--head); background:#fff; }
+.notice strong { color:var(--head); }
+.summary { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.summary span { min-width:130px; padding:8px 12px; border-radius:4px; background:var(--head); color:#fff; }
+.summary b { margin-left:8px; font-size:18px; font-variant-numeric:tabular-nums; }
+.section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:16px;
+                   margin:18px 0 8px; }
+.section-heading h2 { margin:0; font-size:18px; }
+.section-heading p { margin:0; color:var(--muted); font-size:12px; }
+.scroll-shell { position:relative; border:1px solid var(--line); background:#fff; }
+.scroll-shell::after { content:""; position:absolute; z-index:12; top:0; right:0; bottom:16px;
+                       width:44px; pointer-events:none;
+                       background:linear-gradient(to right, rgba(23,54,93,0), rgba(23,54,93,.22));
+                       opacity:1; transition:opacity .15s ease; }
+.scroll-shell::before { content:""; position:absolute; z-index:12; top:0; left:0; bottom:16px;
+                        width:44px; pointer-events:none;
+                        background:linear-gradient(to left, rgba(23,54,93,0), rgba(23,54,93,.22));
+                        opacity:0; transition:opacity .15s ease; }
+.scroll-shell.is-scrolled::before { opacity:1; }
+.scroll-shell.at-scroll-end::after, .scroll-shell.no-horizontal-overflow::after { opacity:0; }
+.scroll-pane { overflow:auto; scrollbar-gutter:stable; }
+/* scrollbar-colorを指定するとChromeが::-webkit-scrollbarを無視して自動で隠れる
+   オーバーレイバーへ戻るため、Firefoxだけに限定して指定する。 */
+@supports (-moz-appearance:none) {
+  .scroll-pane, .scroll-strip { scrollbar-width:auto; scrollbar-color:var(--head) #d5dde8; }
+}
+.scroll-pane::-webkit-scrollbar, .scroll-strip::-webkit-scrollbar {
+  width:16px; height:16px; background:#d5dde8; }
+.scroll-pane::-webkit-scrollbar-track, .scroll-strip::-webkit-scrollbar-track { background:#d5dde8; }
+.scroll-pane::-webkit-scrollbar-thumb, .scroll-strip::-webkit-scrollbar-thumb {
+  background:var(--head); border:3px solid #d5dde8; border-radius:9px; }
+.scroll-pane::-webkit-scrollbar-thumb:hover, .scroll-strip::-webkit-scrollbar-thumb:hover {
+  background:#0f2440; }
+.scroll-pane::-webkit-scrollbar-corner, .scroll-strip::-webkit-scrollbar-corner { background:#d5dde8; }
+.scroll-strip { overflow-x:scroll; overflow-y:hidden; border-bottom:1px solid var(--line);
+                background:#d5dde8; }
+.scroll-strip-spacer { height:1px; }
+.table-wrap { max-height:78vh; background:#fff; }
+table { width:100%; min-width:2300px; border-collapse:separate; border-spacing:0; }
+th, td { border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+         padding:7px 8px; vertical-align:top; background:#fff; }
+thead th { position:sticky; z-index:3; text-align:center; white-space:nowrap; }
+thead tr.group th { top:0; background:var(--head); color:#fff; font-size:13px; }
+thead tr.columns th { top:35px; background:var(--subhead); color:#172033; font-size:12px; }
+.sticky-col { position:sticky; z-index:4; }
+.sticky-1 { left:0; }
+.sticky-2 { left:113px; border-right:2px solid #94a3b8; }
+thead .sticky-col { z-index:6; }
+thead tr.group th.group-corner { z-index:6; }
+tbody td.sticky-col { background:#f8fafc; }
+tbody tr.task-row.is-complete td { background:var(--done); color:#52605a; }
+tbody tr.task-row.is-complete .case-title { text-decoration:line-through; }
+td.number, th.sticky-1 { width:113px; min-width:113px; max-width:113px; white-space:nowrap; }
+td.org { min-width:220px; }
+td.case-title, th.sticky-2 { width:280px; min-width:280px; max-width:280px; font-weight:600; }
+td.case-title { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+td.place { min-width:230px; }
+td.category { min-width:150px; }
+td.date { min-width:126px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+td.progress { min-width:130px; }
+td.company-list { min-width:240px; }
+td.note { min-width:230px; }
+td.timeline, th.timeline-columns-head { padding:0; vertical-align:middle; }
+th.timeline-head { text-align:left; font-weight:600; }
+.task-check { width:18px; height:18px; margin:0 6px 0 0; vertical-align:middle; cursor:pointer; }
+.progress-label { display:block; margin:4px 0 0 26px; color:var(--muted); font-size:11px; }
+.deadline-note { display:block; margin-top:3px; color:var(--muted); font-size:11px; white-space:normal; }
+.deadline-note.overdue { color:var(--overdue); font-weight:700; }
+.data-gap-note { margin:8px 0 0; padding:8px 11px; border:1px dashed #98a2b3;
+                 background:#fff; color:var(--muted); }
+.gantt-chart { background:#fff; }
+.gantt-header-track { position:relative; height:26px; background:#e9eff6; }
+.gantt-period { position:absolute; top:0; bottom:0; padding:3px 7px; overflow:hidden;
+                 border-right:1px solid #94a3b8; white-space:nowrap; font-weight:700; text-align:left; }
+.gantt-week-track { background:#f8fafc; }
+.gantt-week { font-size:11px; color:var(--muted); font-weight:600; }
+.gantt-track { position:relative; min-height:44px; height:100%;
+               background:repeating-linear-gradient(to right, transparent 0, transparent 29px, #eef2f6 29px, #eef2f6 30px); }
+.gantt-week-grid { position:absolute; z-index:1; top:0; bottom:0; border-left:1px solid #cbd5e1; }
+.gantt-bar { position:absolute; z-index:3; top:11px; height:22px; min-width:8px; overflow:hidden;
+              border:1px solid #24588f; border-radius:4px; padding:0 6px; background:#4f8fc9;
+              color:#fff; font-size:11px; line-height:20px; text-align:left; white-space:nowrap; cursor:pointer; }
+.gantt-bar:hover, .gantt-bar:focus { z-index:6; outline:3px solid rgba(36,88,143,.25); }
+.gantt-bar.is-overdue { border-color:var(--overdue); background:var(--overdue); }
+.gantt-milestone { position:absolute; z-index:5; top:8px; width:10px; height:28px;
+                    margin-left:-5px; border:2px solid #fff; border-radius:50%; background:#f79009;
+                    box-shadow:0 0 0 1px #7a2e0e; }
+.milestone-bid, .milestone-opening { border-radius:1px; transform:rotate(45deg); background:#7f56d9; }
+.gantt-today-line { position:absolute; z-index:7; top:0; bottom:0; width:0;
+                     border-left:3px solid #d92d20; pointer-events:none; }
+.gantt-no-date { display:inline-block; padding:12px 10px; color:var(--muted); }
+.empty { padding:36px 16px; text-align:center; color:var(--muted); }
+.actions { margin-top:12px; }
+button { border:1px solid var(--head); border-radius:4px; padding:7px 13px; background:#fff;
+         color:var(--head); font:inherit; font-weight:600; cursor:pointer; }
+footer { margin-top:16px; color:var(--muted); font-size:12px; }
+@media (max-width:700px) {
+  body { padding:14px 10px 32px; }
+  h1 { font-size:20px; }
+  .table-wrap { max-height:none; }
+  td.case-title, th.sticky-2 { width:190px; min-width:190px; max-width:190px; }
+  .sticky-2 { left:113px; }
+}
+@page { size:A3 landscape; margin:10mm; }
+@media print {
+  body { padding:0; background:#fff; font-size:8pt; }
+  .scroll-shell { border:0; }
+  .scroll-shell::after, .scroll-shell::before, .scroll-strip { display:none; }
+  .table-wrap { overflow:visible; max-height:none; }
+  table { min-width:0; }
+  thead th { position:static; }
+  .sticky-col { position:static; }
+  .actions, footer { display:none; }
+}
+</style>
+</head>
+<body data-workflow-runtime>
+<div class="wrap">
+  <nav><a href="portal.html#acquisition">案件一覧に戻る</a>　<a href="portal.html#acquisition-reference">台帳・資料</a></nav><form id="task-login" hidden><label>運営アクセスキー <input type="password" required autocomplete="current-password"></label> <button>タスクを開く</button></form><p id="task-message" role="status"></p><h1>承認タスク管理表</h1>
+  <p class="sub">承認済み案件を入札日・締切日の昇順で表示（内部用／生成日 2026-11-25）</p>
+
+  <div class="notice">
+    <span><strong>担当者:</strong> 担当者マスタ未整備のため、この画面では未設定です。</span>
+    <span><strong>進捗:</strong> No.欄のチェック状態をこのブラウザのlocalStorageにのみ保存します。案件マスタCSVは更新しません。</span>
+  </div>
+  <div class="summary" aria-live="polite">
+    <span>承認済み案件<b id="count-total">0</b></span>
+    <span>未着手<b id="count-open">0</b></span>
+    <span>対応済み<b id="count-complete">0</b></span>
+  </div>
+
+  <p class="data-gap-note"><strong>進捗管理:</strong> 見積依頼の記録データが未整備のため、連絡数・見積依頼済・依頼済み会社・見込み会社・見積数は空欄です。</p>
+  <div class="scroll-shell table-shell" data-scroll-shell="table">
+    <div class="scroll-strip" data-scroll-strip aria-hidden="true"><div class="scroll-strip-spacer"></div></div>
+    <div class="table-wrap scroll-pane" data-scroll-pane="table" tabindex="0" aria-label="スケジュール付き案件別タスク一覧（横スクロール）">
+      <table>
+      <thead>
+        <tr class="group">
+          <th colspan="2" class="sticky-col sticky-1 group-corner">案件</th>
+          <th class="timeline-head">スケジュール（棒=公示日→入札日／◆ 入札・開札　● 資料提出・見積期限）</th>
+          <th colspan="4">案件基本情報</th>
+          <th colspan="8">期限管理</th>
+          <th colspan="8">進捗管理</th>
+        </tr>
+        <tr class="columns">
+          <th class="sticky-col sticky-1">No.</th><th class="sticky-col sticky-2">工事名</th>
+          <th class="timeline-columns-head"><span class="gantt-no-date">日付未登録</span></th>
+          <th>発注機関</th><th>施工場所</th><th>工種</th><th>履行保証等</th>
+          <th>公示</th><th>質疑応答</th><th>現調</th><th>参考見積内訳書等</th><th>資料提出</th><th>入札</th><th>開札</th><th>見積期限</th>
+          <th>連絡数</th><th>見積依頼済</th><th>依頼済み会社</th><th>見込み会社</th><th>見積数</th><th>完了日（資料提出）</th><th>完了日（入札）</th><th>備考・落札実績等</th>
+        </tr>
+      </thead>
+      <tbody>
+<tr><td class="empty" colspan="23">承認済み案件はありません。</td></tr>
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="actions"><button type="button" id="reset-progress">チェック状態をリセット</button></div>
+  <footer>案件と日程は運営データベースから取得します。</footer>
+</div>
+<script>
+const apiRoot='https://one-percent-intake.1031pro.workers.dev/api/v2/';
+const getTasks=async key=>{
+ const res=await fetch(apiRoot+'queue',{headers:{Authorization:'Bearer '+key},cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('運営アクセスキーを確認してください。');return (await res.json()).cases.filter(r=>['go','published'].includes(r.state));
+};
+function renderTasks(cases){
+ const day=x=>/^\d{4}-\d\d-\d\d$/.test(x||'')?Date.parse(x+'T00:00:00Z')/86400000:NaN;
+ const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+ const cell=(tag,cls,text='')=>{const n=document.createElement(tag);n.className=cls;n.textContent=text;return n};
+ cases.sort((a,b)=>(a.bid||'9999').localeCompare(b.bid||'9999')||a.offer_id.localeCompare(b.offer_id));
+ document.querySelector('.sub').textContent='GO案件の日程　'+today;document.querySelector('#count-total').textContent=cases.length;
+ if(!cases.length)return;
+ const starts=cases.map(c=>day(c.notice_date)).filter(Number.isFinite),ends=cases.map(c=>day(c.bid)).filter(Number.isFinite),start=Math.min(...starts),end=Math.max(...ends);
+ const px=30,span=(end-start+1)*px,periods=[];
+ function positioned(tag,cls,text,left,width){const n=cell(tag,cls,text);n.style.left=left+'px';if(width!==null)n.style.width=width+'px';return n}
+ if(Number.isFinite(span)&&span>0){
+  const box=cell('div','gantt-chart');box.style.width=span+'px';
+  for(const unit of ['month','week']){
+   const track=cell('div','gantt-header-track');track.style.width=span+'px';
+   for(let n=start;n<=end;){
+    const d=new Date(n*86400000),next=unit==='month'?Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)/86400000:n+7-(d.getUTCDay()+6)%7;
+    const until=Math.min(next,end+1),left=(n-start)*px;
+    track.append(positioned('div','gantt-period gantt-'+unit,unit==='month'?(d.getUTCFullYear()+'年'+(d.getUTCMonth()+1)+'月'):((d.getUTCMonth()+1)+'/'+d.getUTCDate()+'週'),left,(until-n)*px));if(unit==='week')periods.push(left);n=until;
+   }box.append(track)
+  }
+  document.querySelector('.timeline-columns-head').replaceChildren(box);
+ }
+ const body=document.querySelector('table tbody');body.replaceChildren();
+ for(const r of cases){
+  const tr=cell('tr','task-row');tr.dataset.taskId=r.offer_id;tr.dataset.offerId=r.offer_id;
+  const chk=cell('input','task-check');chk.type='checkbox';chk.setAttribute('aria-label',r.title+'の進捗');
+  const number=cell('td','number sticky-col sticky-1');number.append(chk,document.createTextNode(r.case_no||r.offer_id),cell('span','progress-label','未着手'));
+  const title=cell('td','case-title sticky-col sticky-2'),a=cell('a','',r.title);a.href='approvals.html?offer_id='+encodeURIComponent(r.offer_id)+'#workflow';title.append(a);
+  const graph=cell('td','timeline'),track=cell('div','gantt-track'),left=(day(r.notice_date)-start)*px,right=(day(r.bid)-start)*px;
+  if(Number.isFinite(left)&&Number.isFinite(right)&&right>=left){
+   track.style.width=span+'px';for(const x of periods)track.append(positioned('span','gantt-week-grid','',x,null));
+   const bar=positioned('a','gantt-bar'+(r.bid<today?' is-overdue':''),r.title,left,right-left+px);bar.href=a.href;bar.title=[r.title,r.agency,'公示 '+r.notice_date,'資料提出 '+(r.submission||'―'),'入札 '+r.bid].join('\n');track.append(bar);
+   for(const [kind,val] of [['document',r.submission],['bid',r.bid]]){
+    const d=day(val);if(d>=start&&d<=end)track.append(positioned('span','gantt-milestone milestone-'+kind,'',(d-start)*px,null));
+   }
+   if(day(today)>=start&&day(today)<=end)track.append(positioned('span','gantt-today-line','',(day(today)-start)*px,null));
+   graph.append(track);
+  }else graph.textContent='日付未登録';
+  tr.append(number,title,graph);
+  for(const value of [r.agency,r.place,r.trade,'',r.notice_date,'','','',r.submission,r.bid,'','','','','','','','','',''])tr.append(cell('td','',value||''));
+  body.append(tr);
+ }
+}
+
+function startInteractions(){(function () {
+  "use strict";
+  var STORAGE_KEY = 'one-percent-task-scheduler-20260826';
+
+  function loadState() {
+    try { return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}") || {}; }
+    catch (e) { return {}; }
+  }
+
+  function saveState(state) {
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (e) { /* file:// で保存不可でも表の操作は継続する */ }
+  }
+
+  var state = loadState();
+
+  function render() {
+    var complete = 0;
+    document.querySelectorAll("tr.task-row[data-task-id]").forEach(function (row) {
+      var id = row.getAttribute("data-task-id");
+      var checked = state[id] === true;
+      var box = row.querySelector("input.task-check");
+      var label = row.querySelector(".progress-label");
+      if (box) { box.checked = checked; }
+      row.classList.toggle("is-complete", checked);
+      if (label) { label.textContent = checked ? "対応済み" : "未着手"; }
+      if (checked) { complete += 1; }
+    });
+    document.getElementById("count-complete").textContent = String(complete);
+    document.getElementById("count-open").textContent =
+      String(document.querySelectorAll("tr.task-row").length - complete);
+  }
+
+  document.addEventListener("change", function (event) {
+    if (!event.target.matches("input.task-check")) { return; }
+    var row = event.target.closest("tr.task-row[data-task-id]");
+    if (!row) { return; }
+    state[row.getAttribute("data-task-id")] = event.target.checked;
+    saveState(state);
+    render();
+  });
+
+  document.getElementById("reset-progress").addEventListener("click", function () {
+    state = {};
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) { /* noop */ }
+    render();
+  });
+
+  function updateScrollCue(shell) {
+    var pane = shell.querySelector("[data-scroll-pane]");
+    if (!pane) { return; }
+    var hasOverflow = pane.scrollWidth > pane.clientWidth + 2;
+    // scrollbar-gutter分はscrollWidthと最大scrollLeftの差へ残るため余裕を持たせる。
+    var endTolerance = Math.max(20, pane.offsetWidth - pane.clientWidth + 2);
+    var atEnd = !hasOverflow ||
+      pane.scrollLeft + pane.clientWidth >= pane.scrollWidth - endTolerance;
+    shell.classList.toggle("no-horizontal-overflow", !hasOverflow);
+    shell.classList.toggle("at-scroll-end", atEnd);
+    shell.classList.toggle("is-scrolled", hasOverflow && pane.scrollLeft > 4);
+  }
+
+  function refreshScrollCues() {
+    document.querySelectorAll("[data-scroll-shell]").forEach(updateScrollCue);
+  }
+
+  document.querySelectorAll("[data-scroll-shell]").forEach(function (shell) {
+    var pane = shell.querySelector("[data-scroll-pane]");
+    if (!pane) { return; }
+    var strip = shell.querySelector("[data-scroll-strip]");
+    var spacer = strip ? strip.querySelector(".scroll-strip-spacer") : null;
+    var syncing = false;
+    function syncStripWidth() {
+      if (spacer) { spacer.style.width = pane.scrollWidth + "px"; }
+    }
+    if (strip) {
+      syncStripWidth();
+      window.addEventListener("resize", syncStripWidth);
+      window.addEventListener("load", syncStripWidth);
+      strip.addEventListener("scroll", function () {
+        if (syncing) { return; }
+        syncing = true; pane.scrollLeft = strip.scrollLeft; syncing = false;
+      }, {passive:true});
+    }
+    pane.addEventListener("scroll", function () {
+      if (strip && !syncing) { syncing = true; strip.scrollLeft = pane.scrollLeft; syncing = false; }
+      updateScrollCue(shell);
+    }, {passive:true});
+    updateScrollCue(shell);
+  });
+  window.addEventListener("load", refreshScrollCues);
+  window.addEventListener("resize", refreshScrollCues);
+  window.requestAnimationFrame(refreshScrollCues);
+
+  render();
+})();}
+const form=document.getElementById('task-login'), msg=document.getElementById('task-message'), table=document.querySelector('.table-shell'), summary=document.querySelector('.summary');
+async function boot(key){table.hidden=true;summary.hidden=true;form.hidden=Boolean(key);if(!key)return;
+try{const cases=await getTasks(key);sessionStorage.setItem('one-percent-review-session',key);renderTasks(cases);table.hidden=false;summary.hidden=false;msg.textContent=''; startInteractions()}catch(err){form.hidden=false;msg.textContent=err.message}}
+form.onsubmit=e=>{e.preventDefault();const key=form.querySelector('input').value.trim();form.reset();boot(key)};
+boot(sessionStorage.getItem('one-percent-review-session'));
+addEventListener('pageshow',e=>{if(e.persisted)location.reload()});
+</script>
+</body>
+</html>

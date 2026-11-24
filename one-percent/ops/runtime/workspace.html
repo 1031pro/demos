@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>業者向けマイページ</title>
+<style>
+:root{--ink:#173332;--muted:#5c706e;--accent:#096b60;--line:#d7e2de;--overdue:#ad3838}*{box-sizing:border-box}body{margin:0;background:#f3f6f3;color:var(--ink);font:15px/1.65 system-ui,'Meiryo',sans-serif}button,input,select{font:inherit}button,a,input{touch-action:manipulation}button{cursor:pointer}a{color:var(--accent)}header{background:#fff;border-bottom:1px solid var(--line);padding:18px max(20px,calc((100vw - 1200px)/2))}header .top{display:flex;justify-content:space-between;gap:15px;align-items:center}h1{font-size:25px;margin:4px 0}h2{font-size:21px;margin:0 0 8px}h3{font-size:17px;margin:0}p{margin:6px 0}.eyebrow{font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700}.muted{color:var(--muted);font-size:13px}.links{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.tabs{display:flex;gap:10px;margin-top:18px}.tabs a,.mode button,.primary{display:inline-block;padding:10px 18px;border:1px solid var(--line);border-radius:8px;background:white;text-decoration:none;color:var(--ink);font-weight:600}.tabs a[aria-current=page],.mode button[aria-pressed=true],.primary{background:var(--accent);color:white;border-color:var(--accent)}main{max-width:1240px;margin:auto;padding:25px 20px 100px}.intro{margin-bottom:22px}.mode{display:flex;gap:8px;margin-bottom:16px}.filters{display:flex;gap:12px;flex-wrap:wrap;padding:16px;background:white;border:1px solid var(--line);border-radius:12px}.filters label{display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px}.filters input,.filters select{border:1px solid #adbfb8;padding:10px;border-radius:6px;background:white;width:100%}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}.card{background:white;padding:20px;border:1px solid var(--line);border-radius:12px}.card.selected{border:2px solid var(--accent);padding:19px}.choice{display:flex;align-items:flex-start;gap:10px;font-weight:650;cursor:pointer}.choice input{width:22px;height:22px;flex:0 0 22px;margin:3px 0;accent-color:var(--accent)}.card .meta{margin:10px 0;color:var(--muted);font-size:13px}.dates{display:flex;gap:16px;flex-wrap:wrap;font-size:13px}.dates strong{display:block;color:var(--ink)}.status{font-size:12px;display:inline-block;background:#edf4ef;padding:2px 8px;border-radius:4px}.expired{color:var(--overdue);background:#fff0ec}.dock{position:fixed;bottom:0;left:0;right:0;background:var(--ink);color:white;padding:12px 24px;display:flex;justify-content:center;gap:28px;align-items:center;z-index:20}.dock a{color:white;background:var(--accent);padding:8px 16px;border-radius:6px;text-decoration:none}.empty{padding:40px 20px;text-align:center;background:white;border:1px dashed var(--line);border-radius:12px;margin:20px 0}.empty a{display:inline-block;margin:10px}#more{display:block;margin:20px auto}.hidden,[hidden]{display:none!important}.chart-shell{position:relative;border:1px solid var(--line);background:white;border-radius:10px;overflow:hidden}.chart-shell:after{content:'';position:absolute;right:0;top:0;bottom:18px;width:34px;background:linear-gradient(90deg,transparent,#c0d3cd);pointer-events:none}.chart-shell.at-end:after{display:none}.chart-scroll{overflow-x:scroll;scrollbar-gutter:stable;max-height:560px}.chart-scroll::-webkit-scrollbar{height:16px;width:12px}.chart-scroll::-webkit-scrollbar-track{background:#dce5e0}.chart-scroll::-webkit-scrollbar-thumb{background:#69857c;border:3px solid #dce5e0;border-radius:8px}.chart-head,.chart-row{display:flex;min-width:max-content}.chart-head{position:sticky;top:0;z-index:5;background:#edf3ef}.chart-label{position:sticky;left:0;width:240px;flex:0 0 240px;background:white;padding:12px;border-right:1px solid var(--line);z-index:3;overflow-wrap:anywhere}.chart-head .chart-label{background:#edf3ef;z-index:6;font-weight:bold}.axis{position:relative;height:64px}.tick{position:absolute;height:64px;border-left:1px solid #c5d4ce;padding-left:5px;white-space:nowrap;font-size:11px;top:0;padding-top:10px}.track{position:relative;min-height:78px;border-bottom:1px solid var(--line);background:repeating-linear-gradient(90deg,transparent 0,transparent 139px,#dce5df 139px,#dce5df 140px)}.chart-label{border-bottom:1px solid var(--line);font-size:12px}.bar{position:absolute;top:25px;height:26px;background:#1c8173;border:0;border-radius:5px;color:white;min-width:6px;padding:0;cursor:pointer}.bar.overdue{background:var(--overdue)}.today-line{position:absolute;top:0;bottom:0;width:2px;background:#d46b28;pointer-events:none;z-index:2}.point{position:absolute;top:23px;border:2px solid white;background:#263f84;width:16px;height:16px;border-radius:50%;transform:translateX(-50%);z-index:4;padding:0}.task-panel{background:white;padding:20px;border:1px solid var(--line);border-radius:12px;margin-top:18px}.task-line{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}.task-line label{flex:1;min-width:160px}.task-line input[type=checkbox]{width:20px;height:20px;vertical-align:middle;accent-color:var(--accent);margin-right:8px}.task-line.done label{text-decoration:line-through;color:var(--muted)}.task-line input[type=date]{padding:5px;border:1px solid var(--line);border-radius:5px}.schedule-title{display:flex;justify-content:space-between;gap:20px;align-items:center}.secondary{background:white;border:1px solid var(--line);border-radius:6px;padding:7px 12px;color:var(--ink)}.legend{display:flex;gap:18px;flex-wrap:wrap;margin:15px 0;font-size:12px}.legend span:first-child{color:#d46b28}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #edb34c;outline-offset:3px}@media(max-width:650px){header{padding:15px}.top{align-items:flex-start!important;flex-direction:column}main{padding:20px 14px 100px}.cards{grid-template-columns:1fr}.tabs a{padding:10px 12px}.chart-label{width:160px;flex-basis:160px}.dock{padding:10px;gap:14px;font-size:13px}.schedule-title{align-items:flex-start;flex-direction:column}h1{font-size:22px}.mode button{padding:8px 12px}}
+/* 明示スクロールバーで領域を確保するため、追加のガターは設けない。 */
+.chart-scroll{scrollbar-gutter:auto}
+.detail-title{display:block;text-align:left;font:inherit;font-weight:650;color:var(--accent);background:none;border:0;padding:0;margin-bottom:12px;text-decoration:underline;overflow-wrap:anywhere}.card .choice{font-size:13px}dialog{width:min(760px,calc(100% - 24px));max-height:90vh;border:1px solid var(--line);border-radius:12px;padding:24px;color:var(--ink)}dialog::backdrop{background:#122d2acc}dialog dl{margin:20px 0}dialog dt{font-weight:bold;margin-top:16px}dialog dd{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}.detail-actions{display:flex;gap:12px;flex-wrap:wrap;position:sticky;bottom:-24px;background:white;padding:16px 0}
+button:disabled{opacity:.55;cursor:default}.mode{flex-wrap:wrap}
+</style></head><body data-workflow-runtime>
+<header><div class="top"><div><span class="eyebrow">PARTNER WORKSPACE</span><h1>業者向けマイページ</h1></div><div class="links"><a href="#cases">案件一覧</a><a href="#applied">申込み済みの案件</a></div></div>
+<nav class="tabs" aria-label="業者側の操作"><a href="#cases" id="nav-cases">1. 案件を選ぶ</a><a href="#schedule" id="nav-schedule">2. 選んだ案件の日程・タスク <span id="nav-count">0</span></a></nav></header>
+<p role="status" id="public-read-status"></p><main><p class="muted">選択・チェックは、このブラウザに保存されます。申込みフォームとの連携は準備中です。</p><p id="storage-warning" role="alert" hidden>このブラウザでは保存できません。画面を閉じると選択や入力が失われます。</p>
+<section id="cases"><div class="intro"><h2>案件一覧</h2><p class="muted">チェックした案件は「選んだ案件の日程・タスク」で確認できます。</p><p class="muted">案件の選択と申込みは別です。申込みフォームとの連携は準備中です。</p></div>
+<div class="mode" aria-label="表示対象"><button id="mode-all" aria-pressed="true">全件</button><button id="mode-selected" aria-pressed="false">選択した案件のみ</button><button id="mode-applied" aria-pressed="false">申込み済み</button></div>
+<div class="filters"><label>工事名・工事内容で検索<input type="search" id="query" placeholder="例：空調、清掃、庁舎"></label><label>日程<select id="period"><option value="all">掲載中の全案件</option><option value="active">見積提出締切前・締切日未登録</option></select></label><label>地域・工種<input id="category" placeholder="例：東京都、管工事"></label></div>
+<p id="result-count" aria-live="polite"></p><div id="cards" class="cards"></div><div id="list-empty" class="empty" hidden>該当する案件がありません。検索条件を変えるか、全件表示に戻してください。</div><button id="more" class="secondary">さらに50件表示</button></section>
+<section id="schedule" hidden><div class="schedule-title"><div><h2>選んだ案件の日程・タスク</h2><p>案件ごとの期限を横並びで見ながら、作業の完了をチェックできます。</p></div><a href="#cases" class="primary">案件の選択に戻る</a></div><div id="schedule-empty" class="empty"><h3>まだ案件が選択されていません</h3><p>一覧で気になる案件にチェックを入れてください。</p><a href="#cases" class="primary">案件を選ぶ</a></div>
+<div id="schedule-content" hidden><div class="legend"><span>│ 本日</span><span>緑の棒：登録日〜見積提出締切日</span><span>赤の棒：見積提出締切日を経過</span><span>● 現調最終日・見積準備（表示期間内）</span></div><p id="range" class="muted"></p><p class="muted">左右にスクロールすると全期間が見られます。棒や点を押すと、その案件のタスクへ移動します。</p><div class="chart-shell" id="chart-shell"><div class="chart-scroll" id="chart-scroll" tabindex="0" aria-label="選択案件のガントチャート（横スクロール）"><div id="chart"></div></div></div><div id="tasks"></div></div></section>
+</main><div class="dock"><span>選択中 <strong id="selected-count">0</strong> 件</span><a href="#schedule">選んだ案件の日程・タスクを見る →</a></div>
+<dialog id="case-detail" aria-labelledby="detail-title"><h2 id="detail-title"></h2><div id="detail-body"></div><p id="application-status" class="muted" role="status"></p><div class="detail-actions"><button id="detail-select" class="secondary"></button><button id="detail-apply" class="primary"></button><button id="detail-close" class="secondary">一覧・タスクに戻る</button></div></dialog>
+<script id="catalog-data" type="application/json">[]</script>
+<script>
+(()=>{'use strict';
+const DATA = JSON.parse(document.getElementById('catalog-data').textContent);
+const KEY = 'partner-workspace-v1';
+const $ = id => document.getElementById(id);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const day = s => Date.parse(s + 'T00:00:00Z') / 86400000;
+const iso = n => new Date(n * 86400000).toISOString().slice(0,10);
+const currentDate = () => new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+let today = currentDate(), state = {selected:{},tasks:{},dates:{}}, mode = 'all', limit = 50, detailId = '';
+try {
+  const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+  for (const k of Object.keys(state)) if (saved[k] && typeof saved[k] === 'object' && !Array.isArray(saved[k])) state[k] = saved[k];
+} catch { $('storage-warning').hidden = false; }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { $('storage-warning').hidden = false; } }
+// 将来のフォーム連携から受け取る状態。現時点では取得・更新処理を実装しない。
+const applied = c => c.application_status === 'submitted';
+const visible = c => applied(c) || !c.hide_on || today < c.hide_on;
+const due = c => c.dates.deadline || '';
+const visitLabel = c => c.dates.site_visit || '―（要確認）';
+const chosen = () => DATA.filter(c => visible(c) && state.selected[c.id] === true);
+function status(c) { if(c.public_status==='受付終了')return '受付終了'; return applied(c) ? '申込み済み' : !due(c) ? '見積提出締切日未登録' : today > due(c) ? '見積提出締切を経過' : `見積提出締切まで ${day(due(c)) - day(today)}日`; }
+function updateCounts() { $('selected-count').textContent = chosen().length; $('nav-count').textContent = chosen().length; }
+function renderCases() {
+  const q = $('query').value.trim().toLowerCase(), cat = $('category').value.trim().toLowerCase();
+  const all = DATA.filter(c => visible(c) && (mode === 'all' || mode === 'selected' && state.selected[c.id] || mode === 'applied' && applied(c)) && (!q || (c.title+' '+c.place+' '+(c.details['工事内容・作業範囲']||'')).toLowerCase().includes(q)) && (!cat || (c.place+' '+c.category).toLowerCase().includes(cat)) && ($('period').value === 'all' || applied(c) || !due(c) || due(c) >= today));
+  all.sort((a,b) => (due(a)||'9999').localeCompare(due(b)||'9999'));
+  for (const name of ['all','selected','applied']) $('mode-'+name).setAttribute('aria-pressed', mode === name);
+  $('result-count').textContent = `条件に一致 ${all.length}件 ／ 掲載案件 ${DATA.filter(visible).length}件`;
+  $('cards').innerHTML = all.slice(0,limit).map(c => `<article class="card ${state.selected[c.id]?'selected':''}" data-id="${c.id}">
+    <button class="detail-title" data-detail="${c.id}" aria-label="${esc(c.title)}の詳細を見る">${esc(c.title)}</button>
+    <label class="choice"><input type="checkbox" data-select="${c.id}" ${state.selected[c.id]?'checked':''}><span>この案件を選択</span></label>
+    <p class="meta">工事場所：${esc(c.place||'要確認')}<br>工種：${esc(c.category||'要確認')}<br>工期：${esc(c.details['工期']||'要確認')}</p>
+    <p class="work-summary">${esc(c.summary||c.details['工事内容・作業範囲']||'')}</p>
+    <p class="meta">数量・規模：${esc(c.details['数量・規模']||'要確認')}${c.details['建物・作業場所']?'<br>'+esc(c.details['建物・作業場所']):''}</p>
+    <div class="dates"><div>登録日<strong>${esc(c.dates.registered||'未登録')}</strong></div><div>見積提出締切日<strong>${esc(due(c)||'未登録')}</strong></div><div>現調最終日<strong>${esc(visitLabel(c))}</strong></div></div>
+    <span class="status ${!applied(c)&&due(c)&&due(c)<today?'expired':''}">${status(c)}</span>
+    <p><button class="secondary" data-detail="${c.id}">詳細を確認${applied(c)?'':'して申し込む'}</button></p></article>`).join('');
+  $('list-empty').hidden = all.length > 0; $('more').hidden = all.length <= limit; updateCounts();
+}
+function openDetail(id) {
+  const c = DATA.find(c => c.id === id);
+  if (!c || !visible(c)) { if ($('case-detail').open) $('case-detail').close(); return; }
+  detailId = id; $('detail-title').textContent = c.title;
+  const fields = {'工事内容・作業範囲':c.details['工事内容・作業範囲'],'施工場所':c.place,'工期':c.details['工期'],'数量・規模':c.details['数量・規模'],...Object.fromEntries(Object.entries(c.details).filter(([k])=>!['工事内容・作業範囲','工期','数量・規模'].includes(k))),'工種':c.category,'登録日':c.dates.registered,'見積提出締切日':due(c),'現調最終日':visitLabel(c)};
+  $('detail-body').innerHTML = '<dl>'+Object.entries(fields).map(([k,v]) => `<dt>${esc(k)}</dt><dd>${esc(v||'情報未登録')}</dd>`).join('')+'</dl>';
+  $('detail-select').textContent = state.selected[id] ? '選択を外す' : 'この案件を選択';
+  $('detail-apply').textContent = applied(c) ? '申込み済み' : '申込みフォーム準備中';
+  $('detail-apply').disabled = true;
+  $('application-status').textContent = '申込みフォームとの連携は準備中です。この画面ではまだ申込みはできません。';
+  if (!$('case-detail').open) $('case-detail').showModal();
+}
+function taskRows(c) { return [['review','工事内容を確認',''],['visit','現調最終日',c.dates.site_visit||''],['quote','見積準備',state.dates[c.id]||'']]; }
+function renderSchedule() {
+  const rows = chosen(); $('schedule-empty').hidden = rows.length > 0; $('schedule-content').hidden = !rows.length;
+  if (!rows.length) { $('chart').innerHTML = ''; $('tasks').innerHTML = ''; return; }
+  const validRows = rows.filter(c => c.dates.registered && due(c) && day(c.dates.registered) <= day(due(c)));
+  let start, end;
+  if (validRows.length) {
+    start = Math.min(...validRows.map(c => day(c.dates.registered)));
+    end = Math.max(...validRows.map(c => day(due(c))));
+    start -= (new Date(start*86400000).getUTCDay()+6)%7;
+  }
+  const width = validRows.length ? (end-start+1)*20 : 400;
+  const t = day(today), line = validRows.length && t >= start && t <= end ? `<span class="today-line" aria-label="本日 ${today}" style="left:${(t-start)*20}px"></span>` : '';
+  let ticks = '';
+  if (validRows.length) for(let n=start;n<=end;n+=7) ticks += `<span class="tick" style="left:${(n-start)*20}px">${iso(n).slice(0,7)}<br>${iso(n).slice(5)}週</span>`;
+  $('range').textContent = (validRows.length ? `${iso(start)} 〜 ${iso(end)}` : '表示できる日程がありません') + ` ／ 選択 ${rows.length}件 ／ 本日 ${today}`;
+  $('chart').innerHTML = `<div class="chart-head"><div class="chart-label">選んだ案件</div><div class="axis" style="width:${width}px">${ticks}${line}</div></div>` + rows.map(c => {
+    const begin=c.dates.registered, last=due(c), valid=begin&&last&&day(last)>=day(begin);
+    const bar = valid ? `<button class="bar ${last<today?'overdue':''}" data-jump="${c.id}" data-start="${begin}" data-end="${last}" style="left:${(day(begin)-start)*20}px;width:${(day(last)-day(begin)+1)*20}px" title="${esc(c.title+'／登録日 '+begin+' → 見積提出締切日 '+last)}" aria-label="${esc(c.title)}の日程を確認"></button>` : '<span class="muted" style="padding:20px;display:block">日程なし・日付未登録</span>';
+    const points=valid?taskRows(c).filter(x=>x[2]&&day(x[2])>=day(begin)&&day(x[2])<=day(last)).map(x=>`<button class="point" data-jump="${c.id}" style="left:${(day(x[2])-start)*20}px" title="${esc(x[1]+' '+x[2])}" aria-label="${esc(c.title+' '+x[1]+' '+x[2])}"></button>`).join(''):'';
+    return `<div class="chart-row" data-id="${c.id}"><div class="chart-label"><button class="detail-title" data-detail="${c.id}">${esc(c.title)}</button><small>${status(c)}</small></div><div class="track" style="width:${width}px">${bar}${points}${line}</div></div>`;
+  }).join('');
+  $('tasks').innerHTML=rows.map(c=>`<article class="task-panel" id="task-${c.id}"><div class="schedule-title"><h3>${esc(c.title)}</h3><button class="secondary" data-remove="${c.id}">選択を外す</button></div><p><button class="secondary" data-detail="${c.id}">案件詳細・申込み</button> <span class="status">${status(c)}</span></p><p class="muted">見積提出締切日 ${esc(due(c)||'未登録')}</p>${taskRows(c).map(([key,label,date])=>`<div class="task-line ${state.tasks[c.id+':'+key]?'done':''}"><label><input type="checkbox" data-task="${c.id+':'+key}" ${state.tasks[c.id+':'+key]?'checked':''}>${label}</label>${key==='quote'?`<label style="flex:0;min-width:180px;font-size:12px">自分で決める期限<input aria-label="${esc(c.title)}の見積準備期限" type="date" data-date="${c.id}" value="${esc(date)}"></label>`:`<span>${esc(date||(key==='visit'?visitLabel(c):'日付未設定'))}</span>`}</div>`).join('')}</article>`).join('');
+  requestAnimationFrame(scrollCue);
+}
+function scrollCue() { const el=$('chart-scroll'); $('chart-shell').classList.toggle('at-end',el.scrollLeft+el.clientWidth>=el.scrollWidth-3); }
+function route() {
+  const schedule=location.hash==='#schedule';
+  if(location.hash==='#applied')mode='applied';
+  $('cases').hidden=schedule; $('schedule').hidden=!schedule;
+  $('nav-cases').setAttribute('aria-current',schedule?'false':'page'); $('nav-schedule').setAttribute('aria-current',schedule?'page':'false');
+  if(schedule)renderSchedule();else renderCases();updateCounts();
+}
+function refreshDate() { const next=currentDate();if(next!==today){today=next;route();if($('case-detail').open)openDetail(detailId);} }
+$('detail-close').onclick=()=>$('case-detail').close();
+$('detail-select').onclick=()=>{refreshDate();const c=DATA.find(c=>c.id===detailId);if(!c||!visible(c))return;state.selected[detailId]=!state.selected[detailId];save();route();openDetail(detailId);};
+document.addEventListener('change',e=>{
+  refreshDate();
+  if(e.target.dataset.select){state.selected[e.target.dataset.select]=e.target.checked;save();renderCases();}
+  if(e.target.dataset.task){state.tasks[e.target.dataset.task]=e.target.checked;save();e.target.closest('.task-line').classList.toggle('done',e.target.checked);}
+  if(e.target.dataset.date){state.dates[e.target.dataset.date]=e.target.value;save();renderSchedule();}
+});
+document.addEventListener('click',e=>{
+  refreshDate(); const detail=e.target.closest('[data-detail]');if(detail)openDetail(detail.dataset.detail);
+  const remove=e.target.closest('[data-remove]');if(remove){delete state.selected[remove.dataset.remove];save();renderSchedule();updateCounts();}
+  const jump=e.target.closest('[data-jump]');if(jump)$('task-'+jump.dataset.jump)?.scrollIntoView({behavior:'smooth',block:'center'});
+});
+for(const name of ['all','selected','applied'])$('mode-'+name).onclick=()=>{mode=name;limit=50;$('period').value='all';$('query').value='';$('category').value='';renderCases();};
+for(const id of ['query','category','period'])$(id).addEventListener('input',()=>{limit=50;renderCases();});
+$('more').onclick=()=>{limit+=50;renderCases();};$('chart-scroll').addEventListener('scroll',scrollCue);
+window.addEventListener('resize',scrollCue);window.addEventListener('hashchange',()=>{if(location.hash==='#cases')mode='all';route();});window.addEventListener('focus',refreshDate);
+setInterval(refreshDate,30000);route();
+
+async function syncPublicCases(){
+ const res=await fetch('https://one-percent-intake.1031pro.workers.dev/api/v2/published',{cache:'no-store',referrerPolicy:'no-referrer'});
+ if(!res.ok)throw Error('公開案件を読み込めません。再読み込みしてください。');
+ const response=await res.json();
+ return response.cases.map(r=>({id:r.offer_id,title:r.public['業者向け案件名'],place:r.public['履行場所'],category:'',public_status:r.status,details:{'工事内容・作業範囲':r.public['工事内容'],'工期':r.public['履行期間'],'数量・規模':r.public['数量・規模']},dates:{registered:r.registered,deadline:r.close,site_visit:r.public.site_visit||''}}));
+}
+let publicReadSequence=0;
+async function reloadPublic(){
+ const sequence=++publicReadSequence;
+ try{
+  const items=await syncPublicCases();if(sequence!==publicReadSequence)return false;
+  DATA.splice(0,DATA.length,...items);document.getElementById('public-read-status').textContent='';route();
+  if($('case-detail').open)openDetail(detailId);return true;
+ }catch(err){
+  if(sequence!==publicReadSequence)return false;
+  DATA.splice(0);route();if($('case-detail').open)$('case-detail').close();
+  document.getElementById('public-read-status').textContent=err.message;return false;
+ }
+}
+document.addEventListener('click',async event=>{
+ const card=event.target.closest('[data-detail]');
+ if(card){event.stopImmediatePropagation();if(await reloadPublic())openDetail(card.dataset.detail);}
+},true);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reloadPublic()});
+addEventListener('pageshow',reloadPublic);setInterval(()=>{if(document.visibilityState==='visible')reloadPublic()},60000);
+
+reloadPublic();})();
+</script></body></html>

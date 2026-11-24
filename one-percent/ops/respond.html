@@ -1,0 +1,122 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>案件の確認依頼</title><style>body{margin:0;background:#f1f5f7;font:16px/1.6 system-ui,sans-serif}</style></head><body><section id="workflow-case" hidden>
+<nav><a href="portal.html?resume=1#acquisition">案件一覧に戻る</a>　<a href="portal.html#acquisition-tasks">タスク管理</a>　<a href="portal.html#acquisition-reference">台帳・資料</a></nav>
+<h1 id="wc-title">案件詳細</h1><p id="wc-meta"></p><p role="status" id="wc-status"></p>
+<form id="wc-login" hidden><label>運営アクセスキー <input type="password" autocomplete="current-password" required></label><button>案件を開く</button></form>
+<div id="wc-body" hidden><div id="wc-source"></div><section id="wc-action"></section><section id="wc-record"></section></div>
+</section>
+<style>
+body:has(#workflow-case:not([hidden]))> :not(#workflow-case):not(script):not(template):not(style){display:none!important}
+#workflow-case{max-width:940px;margin:16px auto;padding:clamp(16px,3vw,32px);background:white;color:#16364a}#workflow-case [hidden]{display:none!important}#workflow-case h1{font-size:24px;margin:20px 0 6px}#workflow-case h2{font-size:18px;margin:20px 0 8px}#workflow-case form{display:grid;gap:10px}#workflow-case label{display:grid;gap:4px}#workflow-case :is(input,select,textarea,button){max-width:100%;padding:8px;font:inherit}#workflow-case textarea{min-height:64px}#workflow-case button{justify-self:start;background:#155b55;color:white;border:0;border-radius:4px;cursor:pointer}#workflow-case .axis{display:grid;grid-template-columns:minmax(90px,1fr) 2fr;gap:8px}#workflow-case:not(.wc-recipient) #wc-body{display:grid;grid-template-columns:minmax(240px,0.8fr) minmax(0,1.45fr);gap:16px;align-items:start}
+#workflow-case:not(.wc-recipient) #wc-source{grid-column:1/-1}#workflow-case:not(.wc-recipient) #wc-record{grid-column:1;grid-row:2;background:#f3f7f8;padding:12px 16px;border-radius:6px}
+#workflow-case:not(.wc-recipient) #wc-action{grid-column:2;grid-row:2}#workflow-case nav{display:flex;flex-wrap:wrap;gap:14px;border-bottom:1px solid #cdd9dc;padding:8px 0 12px}
+@media(max-width:660px){#workflow-case:not(.wc-recipient) #wc-body{display:flex;flex-direction:column}#wc-body>section,#wc-source{width:100%}#workflow-case .axis{grid-template-columns:100px minmax(0,1fr)}}
+#workflow-case p{white-space:pre-wrap;overflow-wrap:anywhere}#workflow-case a{color:#155d82}
+</style>
+<script>
+(()=>{
+const start=new URL(location.href),fragment=start.hash.slice(1).split('?'),reviewer=fragment[0]==='respond';
+if(!reviewer && fragment[0]!=='workflow')return;
+const host='https://one-percent-intake.1031pro.workers.dev/api/v2/';
+const view=id=>document.getElementById('wc-'+id),root=document.getElementById('workflow-case');root.hidden=false;
+const axes=['工種','地域・営業所','資格・等級','技術者','元請実績','経審'];
+const fields=['業者向け案件名','履行場所','工事内容','履行期間','数量・規模'];
+const states={screen:'未照合',screened:'依頼候補',requested:'回答待ち',documents:'仕様書確認待ち',checked:'仕様書確認済み',go:'GO・公開準備',published:'公開中',hold:'保留',declined:'見送り',excluded:'除外'};
+const id=start.searchParams.get('offer_id'),company=start.searchParams.get('company')||'main';
+const storage='one-percent-review-session',scope=company+'/'+id;
+let key=sessionStorage.getItem(storage)||'',token=new URLSearchParams(fragment[1]).get('token')||history.state?.reviewToken||'',record,busy=false;
+if(reviewer){root.classList.add('wc-recipient');root.querySelector('nav').hidden=true;if(token)history.replaceState({reviewToken:token},'',start.pathname+start.search+'#respond')}
+const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
+async function api(action,payload){
+ const headers=reviewer?{'X-Review-Token':token}:{Authorization:'Bearer '+key};
+ const url=host+action+(payload?'':'?'+new URLSearchParams({offer_id:id,company}));
+ if(payload)headers['Content-Type']='application/json';
+ const res=await fetch(url,{method:payload?'POST':'GET',headers,cache:'no-store',referrerPolicy:'no-referrer',body:payload?JSON.stringify(payload):undefined});
+ const data=await res.json();if(!res.ok)throw Error(data.error||'通信を確認してください');return data;
+}
+async function shareToken(op){
+ const encoder=new TextEncoder(),h=await crypto.subtle.importKey('raw',encoder.encode(key),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+ const sig=await crypto.subtle.sign('HMAC',h,encoder.encode(scope+'/'+op));
+ return btoa(String.fromCharCode(...new Uint8Array(sig))).replaceAll('+','-').replaceAll('/','_').replaceAll('=','');
+}
+function note(parent,title,text){if(text)parent.append(el('h2',title),el('p',text))}
+function control(form,name,label,type,value=''){
+ const lab=el('label',label),input=document.createElement(type==='textarea'?'textarea':'input');
+ if(type!=='textarea')input.type=type;input.name=name;input.required=true;input.value=value;lab.append(input);form.append(lab);return input;
+}
+function wire(form,action){
+ form.onsubmit=async e=>{
+  e.preventDefault();if(busy)return;busy=true;
+  try{
+   const v=Object.fromEntries(new FormData(form)),operation=crypto.randomUUID();
+   const b={offer_id:id,company,version:record.version,operation};
+   if(!reviewer)b.sourceFingerprint=record.sourceFingerprint;
+   if(action==='screen'||action==='documents')b.criteria=Object.fromEntries(axes.map((a,i)=>[a,{status:v['status'+i],reason:v['reason'+i]}]));
+   if(action==='assign'){
+    b.question=v.question;b.deadline=new Date(v.deadline+'+09:00').toISOString();
+    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(await shareToken(operation)));
+    b.digest=Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
+   }
+   if(action==='answer'){b.decision=v.decision;b.reason=v.reason}
+   if(action==='documents'){b.spec=v.spec;b.reviewer=v.reviewer}
+   if(action==='go'||action==='withdraw')b.reason=v.reason;
+   if(action==='publish'){b.public=Object.fromEntries(fields.map((f,i)=>[f,v['public'+i]]));b.public.site_visit=v.site_visit;b.approved=v.approved==='on'}
+   if(v.evidence)b.evidence=v.evidence;
+   if(action==='notice'){b.notice=v.notice;b.bid=v.bid;b.submission=v.submission||null;b.accepting=v.accepting==='on'}
+   for(const n of form.elements)n.disabled=true;
+   await api(action,b);await load();view('status').textContent='保存しました';
+  }catch(err){view('status').textContent=err.message}finally{busy=false;for(const n of form.elements)n.disabled=false}
+ };
+}
+async function load(){
+ view('login').hidden=reviewer||Boolean(key);if(!reviewer&&!key)return;
+ try{
+  record=await api(reviewer?'request':'case');view('body').hidden=false;view('login').hidden=true;
+  if(!reviewer)sessionStorage.setItem(storage,key);
+  view('status').textContent='';const r=record,s=r.source||{};
+  view('title').textContent=r.title||s.title;view('meta').textContent='案件ID '+id+'　'+(reviewer?'確認依頼':states[r.state]);
+  const source=view('source'),action=view('action'),historyPanel=view('record');
+  for(const n of [source,action,historyPanel])n.replaceChildren();
+  const notice=el('a','公告・取得原文を開く');notice.href=reviewer?r.notice:s.notice;notice.rel='noreferrer';notice.target='_blank';source.append(notice);
+  note(source,'手続期限',r.deadline?new Intl.DateTimeFormat('ja-JP',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Tokyo'}).format(new Date(r.deadline)):r.legacy?.deadline);
+  note(source,'確認事項',r.question||r.request?.question||r.legacy?.note);
+  if(r.answer)note(source,'保存済みの回答',r.answer.decision+'　'+r.answer.reason);
+  if(reviewer){
+   if(key){
+    const check=await fetch(host+'case?'+new URLSearchParams({offer_id:id,company}),{headers:{Authorization:'Bearer '+key},cache:'no-store',referrerPolicy:'no-referrer'});
+    if(check.ok){const a=el('a','この案件の承認画面に戻る');a.href='approvals.html?offer_id='+encodeURIComponent(id)+'#workflow';root.querySelector('nav').replaceChildren(a);root.querySelector('nav').hidden=false}
+   }
+   const f=document.createElement('form'),lab=el('label','判断'),sel=document.createElement('select');sel.name='decision';sel.required=true;
+   for(const v of ['','詳細へ進む','保留','見送り']){const opt=el('option',v||'選んでください');opt.value=v;sel.append(opt)}sel.value=r.answer?.decision||'';
+   lab.append(sel);f.append(lab);control(f,'reason','判断理由','textarea',r.answer?.reason||'');f.append(el('button','案件に回答を保存'));wire(f,'answer');action.append(f);return;
+  }
+  const formTemplate=document.querySelector('template[data-state="'+r.state+'"]');
+  if(formTemplate){
+   action.append(formTemplate.content.cloneNode(true));
+   for(const f of action.querySelectorAll('form')){
+    const name=f.elements.action.value;
+    for(const [i,a] of axes.entries()){if(f.elements['status'+i]&&r.criteria?.[a]){f.elements['status'+i].value=r.criteria[a].status;f.elements['reason'+i].value=r.criteria[a].reason}}
+    wire(f,name);
+   }
+  }
+  if(['screen','screened','excluded'].includes(r.state)){
+   if(r.source.accepting!==true||new URL(s.notice).hostname.endsWith('njss.info')){note(action,'依頼前に必要な確認','公告原文で受付状態と手続日程を確認し、下の「公告の受付状態・日程を更新」に記録してください。')}
+   const d=el('details',''),f=document.createElement('form');d.append(el('summary','公告の受付状態・日程を更新'));
+   control(f,'notice','確認した公告URL','url',s.notice);control(f,'bid','入札日','date',s.bid);control(f,'submission','必須の資料提出期限（任意）','date',s.submission).required=false;
+   const accept=control(f,'accepting','公告で受付中を確認','checkbox');accept.required=false;accept.value='on';accept.checked=s.accepting===true;
+   control(f,'evidence','確認箇所と判断根拠','textarea');f.append(el('button','公告の確認を記録'));wire(f,'notice');d.append(f);action.prepend(d);
+  }
+  if(r.request?.operation){
+   const url=new URL('respond.html',location.href);url.search=new URLSearchParams({offer_id:id,company});url.hash='respond?token='+await shareToken(r.request.operation);
+   const a=el('a','この案件の回答画面を開く');a.href=url.href;a.rel='noreferrer';action.append(a);
+  }
+  note(historyPanel,'取得時の参加条件',s.evidence);
+  if(r.legacy)note(historyPanel,'移行した確認依頼',r.legacy.deadline+'　'+r.legacy.note+'　'+(r.legacy.decision||'未回答'));
+  if(r.documents)note(historyPanel,'仕様書確認',r.documents.reviewer+'　'+r.documents.spec+'　'+r.documents.evidence);
+  if(r.go)note(historyPanel,'GOの理由',r.go.reason);
+ }catch(err){view('status').textContent=err.message;view('body').hidden=true;if(!reviewer)view('login').hidden=false}
+}
+view('login').onsubmit=e=>{e.preventDefault();key=view('login').querySelector('input').value.trim();view('login').reset();load()};
+load();
+})();
+</script>
+</body></html>

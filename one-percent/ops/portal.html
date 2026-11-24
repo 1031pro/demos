@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+<head><script src="runtime/route.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
@@ -453,10 +453,10 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 <h1 id="iq-title">案件</h1>
 <form id="iq-login" hidden><label>運営アクセスキー <input type="password" required autocomplete="current-password"></label> <button>案件を開く</button></form>
 <p role="status" id="iq-status"></p>
-<div id="iq-refs" hidden><h2>会社・業者の台帳</h2><p><a href="company.html">会社情報・資格</a>　<a href="contractors.html">業者DB</a>　<a href="registration.html">業者の詳細登録</a></p><h2>公告・仕様書</h2><p><a href="documents.html">資料取得リスト</a>　<a href="document-review.html">読解ビュー</a></p><h2>分析・運用</h2><p><a href="contractor-ranking.html">業者ランキング</a>　<a href="issues.html">運用上の課題</a>　<a href="#overview">データ基盤の集計</a></p></div>
+<div id="iq-refs" hidden><h2>会社・業者の台帳</h2><p><a href="company.html">会社情報・資格</a>　<a href="contractors.html">業者DB</a>　<a href="registration.html">業者の詳細登録</a></p><h2>公告・仕様書</h2><p><a href="documents.html">資料取得リスト</a>　<a href="document-review.html">読解ビュー</a></p><h2>分析・運用</h2><p><a href="contractor-ranking.html">業者ランキング</a>　<a href="issues.html">運用上の課題</a>　<a href="#archive">データ基盤の集計</a></p></div>
 <div id="iq-tasks" hidden></div><div id="iq-content" hidden>
 <h2>取得の内訳</h2><div id="iq-runs"></div>
-<h2 id="iq-list-heading">案件一覧</h2><form id="iq-filter"><label>案件名・発注機関・ID <input type="search" name="q"></label> <label>表示範囲 <select name="scope"><option value="all">全案件</option><option value="requested">確認依頼済み</option></select></label> <button>絞り込む</button> <button type="button" id="iq-clear">条件を解除</button></form>
+<h2 id="iq-list-heading">案件一覧</h2><form id="iq-filter"><label>案件名・発注機関・ID <input type="search" name="q"></label> <label>表示範囲 <select name="scope"><option value="all">全案件</option><option value="todo">要対応</option><option value="requested">確認依頼済み</option><option value="documents">仕様書確認待ち</option><option value="go">GO・公開準備</option><option value="published">公開中</option></select></label> <button>絞り込む</button> <button type="button" id="iq-clear">条件を解除</button></form>
 <p id="iq-count" aria-live="polite"></p><div id="iq-items"></div></div></section>
 <style>
 body:has(#intake-queue:not([hidden])) .wrap>.nav{display:none}#iq-nav{display:flex;gap:24px;border-bottom:1px solid #cdd9dc;margin-bottom:18px}#iq-nav a{color:#264654;padding:10px 0;text-decoration:none;font-weight:650}#iq-nav a[aria-current=page]{border-bottom:3px solid #176a63}.iq-header{background:#16364a;color:white;padding:12px 16px;font-size:19px;font-weight:650}#intake-queue [hidden],#intake-queue[hidden]{display:none!important}#intake-queue{background:white;color:#193544;padding:clamp(12px,3vw,28px);border:1px solid #d4dfe3;border-radius:8px}
@@ -466,23 +466,31 @@ body:has(#intake-queue:not([hidden])) .wrap>.nav{display:none}#iq-nav{display:fl
 (()=>{
 const root=document.querySelector('#intake-queue'), get=id=>document.querySelector('#iq-'+id);
 const base='https://one-percent-intake.1031pro.workers.dev/api/v2/',store='one-percent-review-session';
-let key=sessionStorage.getItem(store)||'', rows=[],runRows=[],initialized=false,loading=false,selected=null,group='',serial=0;
+let key=sessionStorage.getItem(store)||'', rows=[],runRows=[],live=false,initialized=false,loading=false,selected=null,group='',serial=0;
 const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
 async function read(path){const res=await fetch(base+path,{headers:{Authorization:'Bearer '+key},cache:'no-store',referrerPolicy:'no-referrer'});if(!res.ok)throw Error(res.status===401||res.status===403?'運営アクセスキーを確認してください。':'取得結果を読み込めません。');return res.json()}
 function show(){
- const form=get('filter'),q=form.elements.q.value.trim().toLowerCase(),requested=form.elements.scope.value==='requested';
+ const form=get('filter'),q=form.elements.q.value.trim().toLowerCase(),filter=form.elements.scope.value;
+ const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const data=selected?selected.map(id=>rows.find(r=>r.offer_id===id)||{offer_id:id,title:'案件ID '+id}):rows;
- const subset=data.filter(r=>(!requested||r.request_id)&&[r.title,r.agency||'',r.offer_id].join(' ').toLowerCase().includes(q));
+ function wanted(r){
+  if(filter==='all')return true;if(filter==='requested')return Boolean(r.request_id);
+  if(filter==='todo')return (r.request_id||r.bid && Date.parse(r.bid)-Date.parse(today)>=14*86400000 && (!r.submission||r.submission>=today)) && !['excluded','published','declined'].includes(r.state);
+  return r.state===filter;
+ }
+ const subset=data.filter(r=>wanted(r)&&[r.title,r.agency||'',r.offer_id].join(' ').toLowerCase().includes(q));
  get('count').textContent=(group?group+' ／ ':'')+'表示 '+subset.length+'件　登録全体 '+rows.length+'件';
  const items=document.createDocumentFragment();
  for(const r of subset){
    const d=el('details',''),summary=el('summary',r.title);d.dataset.offerId=r.offer_id;d.append(summary);
-   d.append(el('small',[r.agency,r.offer_id,r.deadline||(r.submission?'資料提出 '+r.submission:r.bid?'入札日 '+r.bid:'')].filter(Boolean).join('　')));
+   const state=r.request_id&&r.state==='screen'?(live?'移行した依頼・再照合待ち':'確認依頼済み'):({screen:'未照合',screened:'依頼候補',requested:'回答待ち',documents:'仕様書確認待ち',checked:'GO判断待ち',go:'GO・公開準備',published:'公開中',hold:'保留',declined:'見送り',excluded:'除外'}[r.state]||'');
+   d.append(el('small',[state,r.agency,r.offer_id,r.deadline||(r.submission?'資料提出 '+r.submission:r.bid?'入札日 '+r.bid:'')].filter(Boolean).join('　')));
    d.append(el('p',r.evidence||'この取得区分では案件マスタへの新規登録はありません。'));
    if(r.request_id){
      d.append(el('p','確認事項　'+r.note),el('p','回答　'+(r.decision||'未回答')+(r.reason?' ／ '+r.reason:'')));
-     const a=el('a','この案件の承認画面を開く');a.href='approvals.html?offer_id='+encodeURIComponent(r.offer_id)+'#linked-review';d.append(a);
+
    }
+   if(r.state&&(live||r.request_id)){const a=el('a','この案件の承認画面を開く');a.href='approvals.html?offer_id='+encodeURIComponent(r.offer_id)+(live?'#workflow':'#linked-review');a.onclick=()=>{sessionStorage.setItem('intake-return',JSON.stringify({q:form.elements.q.value,scope:form.elements.scope.value,group,selected,offer:r.offer_id,y:scrollY}))};d.append(a)}
    items.append(d);
  }
  get('items').replaceChildren(items);
@@ -495,7 +503,8 @@ function runs(){
   const d=el('details',''), match=run.match(/(\d{4})(\d\d)(\d\d)/);
   d.dataset.run=run;
   const date=match?match[1]+'年'+Number(match[2])+'月'+Number(match[3])+'日':run;
-  d.append(el('summary',date+'取得　'+entries.reduce((n,v)=>n+v.count,0)+'件 ／ 新規登録 '+(entries.find(v=>v.category==='新規登録')?.count||0)+'件'));
+  const stamp=run.match(/-(\d{2})(\d{2})(\d{2})-/),time=stamp?' '+stamp[1]+':'+stamp[2]:'';
+  d.append(el('summary',date+time+'取得　'+entries.reduce((n,v)=>n+v.count,0)+'件 ／ 新規登録 '+(entries.find(v=>v.category==='新規登録')?.count||0)+'件'));
   for(const entry of entries){const b=el('button',entry.category+' '+entry.count+'件');b.dataset.category=entry.category;b.onclick=async()=>{
     const seq=++serial;
     try{const value=await read('intake-members?'+new URLSearchParams({run,category:entry.category}));if(seq!==serial)return;selected=value.ids;group=date+' '+entry.category;get('filter').reset();show();get('list-heading').scrollIntoView()}catch(e){get('status').textContent=e.message}
@@ -507,7 +516,13 @@ async function load(){
  get('login').hidden=Boolean(key);
  if(!key)return;
  loading=true;
- try{const data=await read('queue');rows=data.cases;runRows=data.runs;initialized=true;sessionStorage.setItem(store,key);get('content').hidden=false;get('status').textContent='';runs();show();route()}
+ try{const data=await read('queue');rows=data.cases;runRows=data.runs;live=data.mode==='live';if(live)get('filter').elements.scope.value='todo';initialized=true;sessionStorage.setItem(store,key);get('content').hidden=false;get('status').textContent='';runs();show();route();
+ if(new URLSearchParams(location.search).has('resume')){
+   try{const prev=JSON.parse(sessionStorage.getItem('intake-return')||'null');if(prev){
+    get('filter').elements.q.value=prev.q;get('filter').elements.scope.value=prev.scope;group=prev.group;selected=prev.selected;show();
+    const item=[...get('items').children].find(n=>n.dataset.offerId===prev.offer);if(item)item.open=true;scrollTo(0,prev.y)
+   }}catch{}
+ }}
  catch(e){get('status').textContent=e.message;get('login').hidden=false;get('content').hidden=true;key=''}finally{loading=false}
 }
 function route(){
@@ -519,6 +534,7 @@ function route(){
  for(const link of get('nav').children)link.setAttribute('aria-current',link.hash===tab?'page':'false');
  get('refs').hidden=!ref;get('tasks').hidden=!task||!initialized;get('content').hidden=ref||task||!initialized;
  if(ref){get('login').hidden=true;get('status').textContent='';return}
+ if(initialized && task && live){location.replace('tasks.html');return}
  if(initialized && task){const active=rows.filter(r=>['go','published'].includes(r.state));get('tasks').replaceChildren(el('p','GO案件 '+active.length+'件'),...active.map(r=>el('p',r.title+'　'+(r.bid||'期限要確認'))))}
  if(!initialized&&!loading)load()
 }
