@@ -89,7 +89,7 @@ footer ul { margin:6px 0 0; padding-left:20px; }
 </head>
 <body>
 <div class="wrap">
-<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="#overview" class="here" data-overview="1">データ基盤（ポータル）</a><a href="#review">一次確認</a><a href="tasks.html">承認タスク管理表</a><a href="company.html">会社情報 DB3</a><a href="contractors.html">業者DB DB2</a><a href="contractor-ranking.html">ランキング仮バージョン</a><a href="issues.html">課題サマリー DB4</a><a href="documents.html">資料取得リスト（人間フロー①）</a><a href="approvals.html">承認画面</a><a href="document-review.html">読解ビュー</a><a href="screening.html">判定リスト（全1,517件）</a></nav>
+<nav class="nav"><a href="../workspace.html">業者側：案件選択・日程・タスク</a><a href="#overview" class="here" data-overview="1">データ基盤（ポータル）</a><a href="#intake">案件管理</a><a href="tasks.html">承認タスク管理表</a><a href="company.html">会社情報 DB3</a><a href="contractors.html">業者DB DB2</a><a href="contractor-ranking.html">ランキング仮バージョン</a><a href="issues.html">課題サマリー DB4</a><a href="documents.html">資料取得リスト（人間フロー①）</a><a href="approvals.html">承認画面</a><a href="document-review.html">読解ビュー</a><a href="screening.html">判定リスト（全1,517件）</a></nav>
 <section id="system-overview">
 
 <h1>データ基盤</h1>
@@ -267,12 +267,14 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 #caseflow .steps a[aria-current=page]{background:#234c63;color:white}
 #caseflow .unlock{max-width:430px}#cf-feedback{margin-inline-start:8px}
 @media(max-width:680px){#caseflow .flow-body{display:block}#caseflow aside{border-right:0;border-bottom:1px solid #cbd6df}#cf-picks{max-height:180px;overflow:auto}}
+#cf-upstream{display:grid;gap:12px}#cf-upstream section{background:white;border:1px solid #cbd6df;border-radius:6px;padding:16px}#cf-upstream summary{cursor:pointer;padding:6px 0}#cf-upstream ul{max-height:260px;overflow:auto}#cf-upstream li{margin:5px 0}#cf-context{color:#41586b} 
 </style>
 <section id="caseflow" hidden aria-labelledby="cf-heading">
 <h1 id="cf-heading">案件管理</h1>
-<nav class="steps" aria-label="案件の工程"><a href="#review" data-step="review">一次確認</a><a href="#detail-queue" data-step="detail-queue">仕様書確認待ち</a></nav>
+<nav class="steps" aria-label="案件の工程"><a href="#intake" data-step="intake">取得・期限判定</a><a href="#screen" data-step="screen">会社条件との照合</a><a href="#review" data-step="review">確認依頼・回答</a><a href="#detail-queue" data-step="detail-queue">仕様書確認待ち</a></nav>
 <form class="unlock" id="cf-login" hidden><label for="cf-key">アクセスキー</label><input id="cf-key" type="password" required autocomplete="current-password"><button class="primary">案件を開く</button></form>
 <p id="cf-message" role="status"></p>
+<p id="cf-context" hidden></p><div id="cf-upstream" hidden></div>
 <div class="flow-body" id="cf-work" hidden><aside><strong id="cf-count"></strong><div id="cf-picks"></div></aside><article id="cf-record" hidden>
 <small id="cf-id"></small><h2 id="cf-name"></h2><h3>手続期限</h3><p id="cf-date"></p>
 <h3>確認事項</h3><p id="cf-note"></p><a id="cf-notice" target="_blank" rel="noopener noreferrer">公告を開く ↗</a>
@@ -284,11 +286,11 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 (()=>{
  const host='https://one-percent-review.1031pro.workers.dev', get=id=>document.getElementById(id), el=id=>get('cf-'+id);
  const panel=get('caseflow'), overview=get('system-overview'), menu=panel.parentElement.querySelector('.nav');
- let records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
+ let workflow=null,records=[],active='',loaded=false,dirty=false,saving=false,requestNo=0;
  const initial=new URLSearchParams(location.hash.split('?')[1]||'');
  let key=initial.get('access')||history.state?.reviewAccess||'';
- if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#review');
- function stage(){return location.hash.slice(1).split('?')[0]}
+ if(initial.has('access'))history.replaceState({reviewAccess:key},'',location.pathname+location.search+'#'+(stage()||'intake'));
+ function stage(){return location.hash.slice(1).split('?')[0]||'intake'}
  function go(next){history.pushState({reviewAccess:key},'','#'+next);render()}
  async function api(path,body){
    const r=await fetch(host+path,{method:body?'POST':'GET',credentials:'omit',referrerPolicy:'no-referrer',
@@ -297,13 +299,53 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
  }
  function select(row){
    active=row.offer_id;dirty=false;el('record').hidden=false;
-   for(const [id,value] of [['id','案件ID '+active],['name',row.title],['date',row.deadline],['note',row.note],['evidence',row.reason],['feedback',row.revision?'保存済み':'']])el(id).textContent=value;
+   for(const [id,value] of [['id',(workflow.summary.origins[active]||'')+'　案件ID '+active],['name',row.title],['date',row.deadline],['note',row.note],['evidence',row.reason],['feedback',row.revision?'保存済み':'']])el(id).textContent=value;
    el('notice').href=row.url;el('decision').value=row.decision||'';el('reason').value=row.reason;
    const detail=stage()==='detail-queue';el('answer').hidden=detail;el('handoff').hidden=!detail;
    for(const b of el('picks').children)b.setAttribute('aria-current',String(b.dataset.id===active));
  }
+ function node(tag,text){const n=document.createElement(tag);if(text)n.textContent=text;return n}
+ function breakdown(parent,label,rows){
+   if(!rows){parent.append(node('p',label));return}
+   const d=node('details'),list=node('ul');d.append(node('summary',label));
+   for(const r of rows)list.append(node('li',r.title+'（'+r.id+'）'+(r.note?'　'+r.note:'')));
+   d.append(list);parent.append(d);
+ }
+ function upstream(view){
+   const parent=el('upstream'),summary=workflow.summary;parent.replaceChildren();
+   if(view==='intake'){
+     for(const batch of summary.batches){
+       const st=batch.statuses,card=node('section'),count=k=>st[k]||0;
+       card.append(node('h2',batch.day.slice(4,6)+'月'+batch.day.slice(6)+'日取得　'+batch.total+'件'));
+       card.append(node('p','関東・福島の「工事」「販売・役務」で受付中の案件を取得し、同一案件IDを統合。'));
+       card.append(node('h3','一覧期限まで'+batch.minimum+'日以上　'+(batch.acquired+count('登録済み'))+'件'));
+       card.append(node('p','登録済み '+count('登録済み')+'件を除き、新規 '+batch.acquired+'件の詳細を取得。入札日と資料提出期限を再確認して '+count('新規登録')+'件を登録。'));
+       for(const [status,n] of Object.entries(st))breakdown(card,status+'　'+n+'件',workflow.intake?.filter(r=>r.day===batch.day&&r.status===status));
+       parent.append(card);
+     }
+   }else{
+     const first=node('section'),next=node('section');
+     first.append(node('h2','11月18日取得分　'+summary.batches[0].statuses['新規登録']+'件の会社照合'));
+     first.append(node('p','工事の内容・施工地域、公告の資格・等級と会社の資格台帳、手続期限を照合。元請実績・配置技術者など会社で確認する条件を残して振り分けました。'));
+     for(const group of ['先に確認','条件・資料を要確認','短納期の確認枠','必要な登録を台帳で確認できない','エリア外または施工場所の要確認','施工案件としては優先外'])
+       breakdown(first,group+'　'+summary.groups[group]+'件',workflow.screening?.filter(r=>r.group===group));
+     next.append(node('h2','11月24日追加分　'+summary.batches[1].statuses['新規登録']+'件'));
+     next.append(node('h3','取り込み時の一次判定'));
+     for(const [group,n] of Object.entries(summary.automatic))breakdown(next,group+'　'+n+'件',workflow.automatic?.filter(r=>r.group===group));
+     next.append(node('h3','公告・資格を確認して依頼に追加'));
+     next.append(node('p','千葉大学の2件は、文科省の建築一式Dが公告の等級条件に含まれ、参加申請が11月30日17時まで。元請実績と配置技術者を確認するため依頼に追加しました。'));
+     next.append(node('p','追加分全件を同じ会社条件で仕分けした記録は未確認です。'));
+     parent.append(first,next);
+   }
+   const link=node('a',view==='intake'?'会社条件との照合を見る →':'確認依頼の案件を見る →');link.href=view==='intake'?'#screen':'#review';parent.append(link);
+ }
  function draw(){
-   const detail=stage()==='detail-queue', rows=detail?records.filter(r=>r.decision==='詳細へ進む'):records;
+   const view=stage(),earlier=['intake','screen'].includes(view);
+   el('upstream').hidden=!earlier;el('work').hidden=earlier;el('context').hidden=false;
+   const meta=workflow.summary;
+   el('context').textContent='11月18日の優先確認 '+meta.previous+'件 ＋ 11月24日に追加 '+meta.additional+'件 ＝ 今回の確認依頼 '+Object.keys(meta.origins).length+'件';
+   if(earlier){el('message').textContent='';upstream(view);return}
+   const detail=view==='detail-queue', rows=detail?records.filter(r=>r.decision==='詳細へ進む'):records;
    el('work').hidden=false;el('count').textContent=(detail?'仕様書確認待ち':'一次確認の対象')+'　'+rows.length+'件';
    el('message').textContent=rows.length?'':(detail?'「詳細へ進む」で保存した案件がここに表示されます。':'対象案件はありません。');
    el('picks').replaceChildren();el('record').hidden=true;
@@ -313,15 +355,15 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    if(rows.length)select(rows.find(r=>r.offer_id===active)||rows[0]);
  }
  async function render(){
-   const seq=++requestNo, view=stage(),show=['review','detail-queue'].includes(view);
+   const seq=++requestNo, view=stage(),show=['intake','screen','review','detail-queue'].includes(view);
    panel.hidden=!show;overview.hidden=show;
-   for(const a of menu.querySelectorAll('a')){if(a.hash==='#review'||a.dataset.overview)a.classList.toggle('here',a.dataset.overview?!show:show)}
+   for(const a of menu.querySelectorAll('a')){if(a.hash==='#intake'||a.dataset.overview)a.classList.toggle('here',a.dataset.overview?!show:show)}
    if(!show)return;
    for(const a of panel.querySelectorAll('[data-step]'))a.setAttribute('aria-current',a.dataset.step===view?'page':'false');
    el('login').hidden=Boolean(key);
    if(!key){el('work').hidden=true;return}
    if(!loaded){el('message').textContent='読み込み中…';
-     try{const data=await api('/api/state');if(seq!==requestNo)return;records=data.cases;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
+     try{const data=await api('/api/state');if(seq!==requestNo)return;records=data.cases;workflow=data.workflow;loaded=true;history.replaceState({reviewAccess:key},'',location.href);el('key').value=''}
      catch(e){if(seq!==requestNo)return;el('message').textContent=e.message;el('login').hidden=false;return}}
    draw();
  }
@@ -333,13 +375,14 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
    try{const result=await api('/api/first-review',{offer_id:active,decision:el('decision').value,reason:el('reason').value,revision:row.revision});
      Object.assign(row,result.first_review);dirty=false;draw();el('feedback').textContent='保存しました'}
    catch(e){el('feedback').textContent=e.message}finally{saving=false;fields.forEach(x=>x.disabled=false)}};
- document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||!['#review','#detail-queue','#overview'].includes(a.hash))return;
+ document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||!['#intake','#screen','#review','#detail-queue','#overview'].includes(a.hash))return;
    e.preventDefault();if(saving||(dirty&&!confirm('未保存の入力を破棄しますか？')))return;dirty=false;go(a.hash.slice(1))});
  window.addEventListener('popstate',render);
  window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
  render();
 })();
 </script>
+
 </div>
 </body>
 </html>
