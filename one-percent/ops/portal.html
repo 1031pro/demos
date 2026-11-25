@@ -547,7 +547,10 @@ async function load(){
  try{const data=await read('queue');rows=data.cases;runRows=data.runs;historyRows=data.screening||[];
  const pickList=get('picks').querySelector('div');pickList.replaceChildren();
  for(const pick of data.picks||[]){
-  const article=el('article',''),a=el('a',pick.title);a.href='approvals.html?offer_id='+encodeURIComponent(pick.offer_id)+'#workflow';article.append(a,el('p',pick.why));
+  const article=el('article',''),a=el('a',pick.title);a.href='approvals.html?offer_id='+encodeURIComponent(pick.offer_id)+'#workflow';article.append(a);
+  const selection=historyRows.find(h=>h.offer_id===pick.offer_id&&h.kind==='確認依頼に選定');
+  if(selection)article.append(el('p','選定時の記録　'+selection.evidence));
+  article.append(el('p','今回の台帳照合　'+pick.why));
   const details=el('details','');details.append(el('summary','担当者への質問'));for(const q of JSON.parse(pick.questions))details.append(el('p',q));article.append(details);pickList.append(article);
  }
  const time=stamp=>stamp?new Date(stamp).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'';
