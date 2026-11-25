@@ -459,7 +459,7 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 <form id="iq-login" hidden><label>運営アクセスキー <input type="password" required autocomplete="current-password"></label> <button>案件を開く</button></form>
 <p role="status" id="iq-status"></p>
 <div id="iq-history" hidden></div>
-<div id="iq-tasks" hidden></div><div id="iq-content" hidden>
+<section id="iq-picks" hidden><h2>11月18日・24日取得分の選定理由</h2><div></div></section><div id="iq-tasks" hidden></div><div id="iq-content" hidden>
 <p id="iq-latest" role="status"></p><div id="iq-runs-panel"><h2>取得の内訳</h2><div id="iq-runs"></div></div>
 <h2 id="iq-list-heading">案件一覧</h2><form id="iq-filter"><label>案件名・発注機関・ID <input type="search" name="q"></label> <label>表示範囲 <select name="scope"><option value="all">全案件</option><option value="todo">要対応</option><option value="requested">確認依頼済み</option><option value="documents">仕様書確認待ち</option><option value="go">GO・公開準備</option><option value="published">公開中</option></select></label> <button>絞り込む</button> <button type="button" id="iq-clear">条件を解除</button></form>
 <p id="iq-count" aria-live="polite"></p><div id="iq-items"></div></div></section>
@@ -468,6 +468,7 @@ body:has(#intake-queue:not([hidden])) .wrap>.nav{display:none}#iq-nav{display:fl
 #intake-queue h2{border:0;background:transparent;padding:0}#intake-queue :is(input,select,button){font:inherit;padding:6px 9px;max-width:100%}#intake-queue button,#intake-queue summary{cursor:pointer}#intake-queue details{border-bottom:1px solid #dae4e9;padding:9px 0}#intake-queue summary{font-weight:600}#iq-runs button{margin:4px;background:#f1f6f7;border:1px solid #cedde1;border-radius:4px}#iq-filter{display:flex;flex-wrap:wrap;align-items:end;gap:8px}#iq-filter label{display:grid;gap:4px}#iq-count{margin:12px 0;color:#485b65}#iq-items small{display:block;color:#526773}#iq-items p{margin-top:8px;overflow-wrap:anywhere}
 #iq-nav{display:grid;gap:0;border:0;margin:0 0 1.5rem;background:#f4f8f9;padding:6px 14px}#iq-nav div{display:flex;gap:12px;align-items:baseline;padding:6px 0;border-bottom:1px solid #dce6e8}#iq-nav div:last-child{border:0}#iq-nav strong{flex:0 0 7em;font-size:.88rem;color:#425d65}#iq-nav span{display:flex;gap:4px 18px;flex-wrap:wrap}#iq-nav a{padding:3px 0;text-decoration:underline;text-underline-offset:3px}#iq-nav a[aria-current=page]{border:0;color:#005e55;text-decoration-thickness:3px}#iq-history{overflow-wrap:anywhere}#iq-history table{display:block;overflow:auto}
 @media(max-width:600px){#iq-nav div{display:block}#iq-nav strong{display:block}#iq-nav span{gap:2px 14px}#iq-nav a{font-size:.92rem}}
+#iq-picks article{border-bottom:1px solid #d8e1e4;padding:12px 0}#iq-picks p{margin:6px 0}#iq-picks article>a{font-weight:bold}
 </style>
 <script>
 (()=>{
@@ -544,6 +545,11 @@ async function load(){
  if(!key)return;
  loading=true;
  try{const data=await read('queue');rows=data.cases;runRows=data.runs;historyRows=data.screening||[];
+ const pickList=get('picks').querySelector('div');pickList.replaceChildren();
+ for(const pick of data.picks||[]){
+  const article=el('article',''),a=el('a',pick.title);a.href='approvals.html?offer_id='+encodeURIComponent(pick.offer_id)+'#workflow';article.append(a,el('p',pick.why));
+  const details=el('details','');details.append(el('summary','担当者への質問'));for(const q of JSON.parse(pick.questions))details.append(el('p',q));article.append(details);pickList.append(article);
+ }
  const time=stamp=>stamp?new Date(stamp).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}):'';
  get('latest').textContent=[data.latest?.status==='failed'?'直近の取得に失敗':data.latest?.status==='running'?'取得・照合中':'',data.success?'一覧反映を確認　'+time(data.success.finished_at):''].filter(Boolean).join(' ／ ');
  live=data.mode==='live';if(live)get('filter').elements.scope.value='todo';initialized=true;sessionStorage.setItem(store,key);get('content').hidden=false;get('status').textContent='';runs();show();route();
@@ -566,7 +572,7 @@ function route(){
  const past=tab.endsWith('-history'),approval=tab.endsWith('-approval'),task=tab.endsWith('-tasks');
  get('title').textContent=past?'過去の集計（2026年9月10日時点）':approval?'案件確認・承認':task?'タスク管理':'案件';
  for(const link of get('nav').querySelectorAll('a'))link.setAttribute('aria-current',link.hash===tab?'page':'false');
- get('history').hidden=!past;get('runs-panel').hidden=approval;get('tasks').hidden=!task||!initialized;get('content').hidden=past||task||!initialized;
+ get('history').hidden=!past;get('picks').hidden=!initialized||!approval;get('runs-panel').hidden=approval;get('tasks').hidden=!task||!initialized;get('content').hidden=past||task||!initialized;
  if(past&&!get('history').childElementCount){for(const item of Array.from(overview.children))if(item.tagName!=='H1')get('history').append(item)}
  if(initialized && lastTab!==tab){if(approval||lastTab==='#acquisition-approval'){selected=null;group='';get('filter').reset();get('filter').elements.scope.value=approval?'requested':'todo';show()}lastTab=tab}
  if(past){get('login').hidden=true;get('status').textContent='';return}

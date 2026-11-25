@@ -567,7 +567,10 @@ function wire(form,action){
     const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(await shareToken(operation)));
     b.digest=Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
    }
-   if(action==='answer'){b.decision=v.decision;b.reason=v.reason}
+   if(action==='answer'){
+    b.decision=v.decision;b.reason=v.reason;
+    if(record.prompts){b.responses=record.prompts.map((_,i)=>v['response'+i].trim());if(!b.responses.some(Boolean))throw Error('確認事項への回答を入力してください');b.reason=b.responses.filter(Boolean).join(' ／ ')}
+   }
    if(action==='documents'){b.spec=v.spec;b.reviewer=v.reviewer}
    if(action==='go'||action==='withdraw')b.reason=v.reason;
    if(action==='publish'){b.public=Object.fromEntries(fields.map((f,i)=>[f,v['public'+i]]));b.public.site_visit=v.site_visit;b.approved=v.approved==='on'}
@@ -589,7 +592,15 @@ async function load(){
   for(const n of [source,action,historyPanel])n.replaceChildren();
   const notice=el('a','公告・取得原文を開く');notice.href=reviewer?r.notice:s.notice;notice.rel='noreferrer';notice.target='_blank';source.append(notice);
   note(source,'手続期限',r.deadline?new Intl.DateTimeFormat('ja-JP',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Tokyo'}).format(new Date(r.deadline)):r.legacy?.deadline);
-  note(source,'確認事項',r.question||r.request?.question||r.legacy?.note);
+  if(r.assessment){
+   note(source,'選定理由',r.assessment.why);
+   const details=el('details','');details.append(el('summary','公告・仕様書と台帳の照合結果'));
+   for(const [axis,result] of Object.entries(r.assessment.criteria))note(details,axis+' ／ '+result.status,result.reason);
+   note(details,'確認した配布資料',r.assessment.docs);if(r.assessment.spec){const link=el('a','仕様書・添付資料を開く');link.href=r.assessment.spec;link.target='_blank';link.rel='noreferrer';details.append(link)}source.append(details);
+   const preview=el('section','');preview.id='wc-questions';preview.append(el('h2','担当者に確認すること'));
+   const ol=el('ol','');for(const q of r.assessment.questions)ol.append(el('li',q));preview.append(ol);source.append(preview);
+  }
+  if((!r.assessment||r.request||reviewer)&&!r.prompts)note(source,'確認事項',r.question||r.request?.question||r.legacy?.note);
   if(r.answer)note(source,'保存済みの回答',r.answer.decision+'　'+r.answer.reason);
   if(reviewer){
    if(key){
@@ -598,14 +609,17 @@ async function load(){
    }
    const f=document.createElement('form'),lab=el('label','判断'),sel=document.createElement('select');sel.name='decision';sel.required=true;
    for(const v of ['','詳細へ進む','保留','見送り']){const opt=el('option',v||'選んでください');opt.value=v;sel.append(opt)}sel.value=r.answer?.decision||'';
-   lab.append(sel);f.append(lab);control(f,'reason','判断理由','textarea',r.answer?.reason||'');f.append(el('button','案件に回答を保存'));wire(f,'answer');action.append(f);return;
+   if(r.prompts){for(const [i,q] of r.prompts.entries()){const input=control(f,'response'+i,q,'textarea',r.answer?.responses?.[i]||'');input.required=false;input.maxLength=2000}}
+   lab.append(sel);f.append(lab);if(!r.prompts)control(f,'reason','判断理由','textarea',r.answer?.reason||'');f.append(el('button','案件に回答を保存'));wire(f,'answer');action.append(f);return;
   }
   const formTemplate=document.querySelector('template[data-state="'+r.state+'"]');
   if(formTemplate){
    action.append(formTemplate.content.cloneNode(true));
    for(const f of action.querySelectorAll('form')){
     const name=f.elements.action.value;
-    for(const [i,a] of axes.entries()){if(f.elements['status'+i]&&r.criteria?.[a]){f.elements['status'+i].value=r.criteria[a].status;f.elements['reason'+i].value=r.criteria[a].reason}}
+    const criteria=r.criteria||(name==='screen'?r.assessment?.criteria:null);
+    for(const [i,a] of axes.entries()){if(f.elements['status'+i]&&criteria?.[a]){f.elements['status'+i].value=criteria[a].status;f.elements['reason'+i].value=criteria[a].reason}}
+    if(name==='assign'&&r.assessment)f.elements.question.value=r.assessment.questions.join('\n\n');
     wire(f,name);
    }
   }
