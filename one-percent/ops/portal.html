@@ -449,24 +449,31 @@ NJSS新着メール → 案件パース（DB1第1層） → 一次判定（左�
 </script>
 <section id="intake-queue" hidden>
 <header class="iq-header">案件運営</header>
-<nav aria-label="運営メニュー" id="iq-nav"><a href="#acquisition">案件</a><a href="#acquisition-tasks">タスク管理</a><a href="#acquisition-reference">台帳・資料</a></nav>
+<nav aria-label="運営メニュー" id="iq-nav">
+<div><strong>案件運営</strong><span><a href="#acquisition">案件一覧・判定</a><a href="#acquisition-approval">案件確認・承認</a><a href="tasks.html">承認タスク管理表</a><a href="../workspace.html?from=ops">業者向け公開画面</a></span></div>
+<div><strong>公告・仕様書</strong><span><a href="documents.html">資料取得リスト</a><a href="document-review.html">公告・仕様書の読解</a></span></div>
+<div><strong>会社・業者</strong><span><a href="company.html">会社情報・資格</a><a href="contractors.html">業者DB</a><a href="registration.html?from=ops">業者の詳細登録</a><a href="contractor-ranking.html">業者ランキング</a></span></div>
+<div><strong>運用資料</strong><span><a href="issues.html">課題サマリー</a><a href="#acquisition-history">過去の集計</a></span></div>
+</nav>
 <h1 id="iq-title">案件</h1>
 <form id="iq-login" hidden><label>運営アクセスキー <input type="password" required autocomplete="current-password"></label> <button>案件を開く</button></form>
 <p role="status" id="iq-status"></p>
-<div id="iq-refs" hidden><h2>会社・業者の台帳</h2><p><a href="company.html">会社情報・資格</a>　<a href="contractors.html">業者DB</a>　<a href="registration.html">業者の詳細登録</a></p><h2>公告・仕様書</h2><p><a href="documents.html">資料取得リスト</a>　<a href="document-review.html">読解ビュー</a></p><h2>分析・運用</h2><p><a href="contractor-ranking.html">業者ランキング</a>　<a href="issues.html">運用上の課題</a>　<a href="#archive">データ基盤の集計</a></p></div>
+<div id="iq-history" hidden></div>
 <div id="iq-tasks" hidden></div><div id="iq-content" hidden>
-<p id="iq-latest" role="status"></p><h2>取得の内訳</h2><div id="iq-runs"></div>
+<p id="iq-latest" role="status"></p><div id="iq-runs-panel"><h2>取得の内訳</h2><div id="iq-runs"></div></div>
 <h2 id="iq-list-heading">案件一覧</h2><form id="iq-filter"><label>案件名・発注機関・ID <input type="search" name="q"></label> <label>表示範囲 <select name="scope"><option value="all">全案件</option><option value="todo">要対応</option><option value="requested">確認依頼済み</option><option value="documents">仕様書確認待ち</option><option value="go">GO・公開準備</option><option value="published">公開中</option></select></label> <button>絞り込む</button> <button type="button" id="iq-clear">条件を解除</button></form>
 <p id="iq-count" aria-live="polite"></p><div id="iq-items"></div></div></section>
 <style>
 body:has(#intake-queue:not([hidden])) .wrap>.nav{display:none}#iq-nav{display:flex;gap:24px;border-bottom:1px solid #cdd9dc;margin-bottom:18px}#iq-nav a{color:#264654;padding:10px 0;text-decoration:none;font-weight:650}#iq-nav a[aria-current=page]{border-bottom:3px solid #176a63}.iq-header{background:#16364a;color:white;padding:12px 16px;font-size:19px;font-weight:650}#intake-queue [hidden],#intake-queue[hidden]{display:none!important}#intake-queue{background:white;color:#193544;padding:clamp(12px,3vw,28px);border:1px solid #d4dfe3;border-radius:8px}
 #intake-queue h2{border:0;background:transparent;padding:0}#intake-queue :is(input,select,button){font:inherit;padding:6px 9px;max-width:100%}#intake-queue button,#intake-queue summary{cursor:pointer}#intake-queue details{border-bottom:1px solid #dae4e9;padding:9px 0}#intake-queue summary{font-weight:600}#iq-runs button{margin:4px;background:#f1f6f7;border:1px solid #cedde1;border-radius:4px}#iq-filter{display:flex;flex-wrap:wrap;align-items:end;gap:8px}#iq-filter label{display:grid;gap:4px}#iq-count{margin:12px 0;color:#485b65}#iq-items small{display:block;color:#526773}#iq-items p{margin-top:8px;overflow-wrap:anywhere}
+#iq-nav{display:grid;gap:0;border:0;margin:0 0 1.5rem;background:#f4f8f9;padding:6px 14px}#iq-nav div{display:flex;gap:12px;align-items:baseline;padding:6px 0;border-bottom:1px solid #dce6e8}#iq-nav div:last-child{border:0}#iq-nav strong{flex:0 0 7em;font-size:.88rem;color:#425d65}#iq-nav span{display:flex;gap:4px 18px;flex-wrap:wrap}#iq-nav a{padding:3px 0;text-decoration:underline;text-underline-offset:3px}#iq-nav a[aria-current=page]{border:0;color:#005e55;text-decoration-thickness:3px}#iq-history{overflow-wrap:anywhere}#iq-history table{display:block;overflow:auto}
+@media(max-width:600px){#iq-nav div{display:block}#iq-nav strong{display:block}#iq-nav span{gap:2px 14px}#iq-nav a{font-size:.92rem}}
 </style>
 <script>
 (()=>{
 const root=document.querySelector('#intake-queue'), get=id=>document.querySelector('#iq-'+id);
 const base='https://one-percent-intake.1031pro.workers.dev/api/v2/',store='one-percent-review-session';
-let key=sessionStorage.getItem(store)||'', rows=[],runRows=[],historyRows=[],live=false,initialized=false,loading=false,selected=null,group='',serial=0;
+let key=history.state?.reviewAccess||sessionStorage.getItem(store)||'', rows=[],runRows=[],historyRows=[],live=false,initialized=false,loading=false,selected=null,group='',serial=0;
 const el=(tag,text)=>{const n=document.createElement(tag);n.textContent=text;return n};
 async function read(path){const res=await fetch(base+path,{headers:{Authorization:'Bearer '+key},cache:'no-store',referrerPolicy:'no-referrer'});if(!res.ok)throw Error(res.status===401||res.status===403?'運営アクセスキーを確認してください。':'取得結果を読み込めません。');return res.json()}
 function show(){
@@ -548,15 +555,21 @@ async function load(){
  }}
  catch(e){get('status').textContent=e.message;get('login').hidden=false;get('content').hidden=true;key=''}finally{loading=false}
 }
+let lastTab='';
 function route(){
- const tab=location.hash;const on=['#acquisition','#acquisition-tasks','#acquisition-reference'].includes(tab);root.hidden=!on;
+ let tab=location.hash;
+ if(['#archive','#overview','#acquisition-reference'].includes(tab)){history.replaceState(null,'',location.pathname+location.search+'#acquisition');tab=location.hash}
+ const on=['#acquisition','#acquisition-tasks','#acquisition-approval','#acquisition-history'].includes(tab);root.hidden=!on;
  if(!on)return;
- document.getElementById('system-overview').hidden=true;document.getElementById('caseflow').hidden=true;
- const ref=tab.endsWith('-reference'),task=tab.endsWith('-tasks');
- get('title').textContent=ref?'台帳・資料':task?'タスク管理':'案件';
- for(const link of get('nav').children)link.setAttribute('aria-current',link.hash===tab?'page':'false');
- get('refs').hidden=!ref;get('tasks').hidden=!task||!initialized;get('content').hidden=ref||task||!initialized;
- if(ref){get('login').hidden=true;get('status').textContent='';return}
+ document.title='案件運営';
+ const overview=document.getElementById('system-overview');overview.hidden=true;document.getElementById('caseflow').hidden=true;
+ const past=tab.endsWith('-history'),approval=tab.endsWith('-approval'),task=tab.endsWith('-tasks');
+ get('title').textContent=past?'過去の集計（2026年9月10日時点）':approval?'案件確認・承認':task?'タスク管理':'案件';
+ for(const link of get('nav').querySelectorAll('a'))link.setAttribute('aria-current',link.hash===tab?'page':'false');
+ get('history').hidden=!past;get('runs-panel').hidden=approval;get('tasks').hidden=!task||!initialized;get('content').hidden=past||task||!initialized;
+ if(past&&!get('history').childElementCount){for(const item of Array.from(overview.children))if(item.tagName!=='H1')get('history').append(item)}
+ if(initialized && lastTab!==tab){if(approval||lastTab==='#acquisition-approval'){selected=null;group='';get('filter').reset();get('filter').elements.scope.value=approval?'requested':'todo';show()}lastTab=tab}
+ if(past){get('login').hidden=true;get('status').textContent='';return}
  if(initialized && task && live){location.replace('tasks.html');return}
  if(initialized && task){const active=rows.filter(r=>['go','published'].includes(r.state));get('tasks').replaceChildren(el('p','GO案件 '+active.length+'件'),...active.map(r=>el('p',r.title+'　'+(r.bid||'期限要確認'))))}
  if(!initialized&&!loading)load()

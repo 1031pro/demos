@@ -20,6 +20,7 @@
    document.open();document.write(html);document.close();return;
   }
   const search=new URLSearchParams(original.hash.split('?')[1]||'');
+  if(page==='portal.html'&&hash==='intake'&&search.get('access'))sessionStorage.setItem('one-percent-review-session',search.get('access'));
   const id=original.searchParams.get('offer_id')||search.get('offer_id');
   if(hash==='review' && (search.has('access')||!id)){
     const p=document.createElement('p');p.textContent='以前の確認依頼は受付を終了しました。送付元の運営担当者に新しい依頼リンクをご確認ください。';
