@@ -610,11 +610,13 @@ async function load(){
    }
   }
   if(['screen','screened','excluded'].includes(r.state)){
-   if(r.source.accepting!==true||new URL(s.notice).hostname.endsWith('njss.info')){note(action,'依頼前に必要な確認','公告原文で受付状態と手続日程を確認し、下の「公告の受付状態・日程を更新」に記録してください。')}
-   const d=el('details',''),f=document.createElement('form');d.append(el('summary','公告の受付状態・日程を更新'));
-   control(f,'notice','確認した公告URL','url',s.notice);control(f,'bid','入札日','date',s.bid);control(f,'submission','必須の資料提出期限（任意）','date',s.submission).required=false;
-   const accept=control(f,'accepting','公告で受付中を確認','checkbox');accept.required=false;accept.value='on';accept.checked=s.accepting===true;
-   control(f,'evidence','確認箇所と判断根拠','textarea');f.append(el('button','公告の確認を記録'));wire(f,'notice');d.append(f);action.prepend(d);
+   const period=r.officialPeriod;
+   if(period){note(source,'参加申請の受付状態（公告から自動判定）',period.status+'　'+period.start+' 〜 '+period.close.slice(0,16).replace('T',' ')+'（日本時間）');note(source,'判定の根拠',period.evidence)}
+   if(!period&&(r.source.accepting!==true||new URL(s.notice).hostname.endsWith('njss.info'))){note(action,'依頼前に必要な確認','公告原文で受付状態と手続日程を確認し、下の「公告の受付状態・日程を更新」に記録してください。')}
+   const d=el('details',''),f=document.createElement('form');d.append(el('summary',period?'公告の記録を手動で訂正':'公告の受付状態・日程を更新'));
+   control(f,'notice','確認した公告URL','url',s.notice);control(f,'bid','入札日','date',s.bid);control(f,'submission','必須の資料提出期限（任意）','date',period?.submission||s.submission).required=false;
+   const accept=control(f,'accepting','公告で受付中を確認','checkbox');accept.required=false;accept.value='on';accept.checked=period?period.status==='受付中':s.accepting===true;
+   control(f,'evidence','確認箇所と判断根拠','textarea',period?.evidence||'');f.append(el('button','公告の確認を記録'));wire(f,'notice');d.append(f);action.prepend(d);
   }
   if(r.request?.operation){
    const url=new URL('respond.html',location.href);url.search=new URLSearchParams({offer_id:id,company});url.hash='respond?token='+await shareToken(r.request.operation);
