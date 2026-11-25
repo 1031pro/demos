@@ -592,6 +592,11 @@ async function load(){
   for(const n of [source,action,historyPanel])n.replaceChildren();
   const notice=el('a','公告・取得原文を開く');notice.href=reviewer?r.notice:s.notice;notice.rel='noreferrer';notice.target='_blank';source.append(notice);
   note(source,'手続期限',r.deadline?new Intl.DateTimeFormat('ja-JP',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Tokyo'}).format(new Date(r.deadline)):r.legacy?.deadline);
+  if(r.distribution){
+   const v=r.distribution,stamp=new Date(v.checked).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}),stale=Date.now()-Date.parse(v.checked)>65*60000;
+   note(source,'公開資料の更新確認',stamp+'（日本時間）　'+({same:'保存済み公告との差分・追加の公開添付は見つかりませんでした。',changed:v.note+'。資料を再照合してください。',failed:v.note+'。'}[v.state])+(stale?' 次の確認結果を待っています。':''));
+   const link=el('a','発注元の掲載を開く');link.href=id==='34285450'?'https://www.nmri.go.jp/bid/bid.html':v.url;link.target='_blank';link.rel='noreferrer';source.append(link);
+  }
   if(r.assessment){
    note(source,'選定理由',r.assessment.why);
    const details=el('details','');details.append(el('summary','公告・仕様書と台帳の照合結果'));
